@@ -25,17 +25,24 @@ This repository contains **real security testing data** from 300+ prompt injecti
 
 Until we test the same model locally, this finding reflects "Groq's Llama 3 8B endpoint" - not necessarily the model itself. See [GROQ_HYPOTHESIS.md](docs/GROQ_HYPOTHESIS.md).
 
-| Attack Source | Attacks Tested | Llama 3 8B (Groq)* | Llama 3.3 70B (Groq) | Qwen 2.5 3B (local) |
+| Attack Source | Attacks Tested | Llama 3 8B (Groq) | Llama 3 8B (Local) | Qwen 2.5 3B (local) |
 |---------------|----------------|------------|---------------|-------------|
-| Plinius/L1B3RT4S (17k stars) | 11 | 0% | 81.8% | 81.8% |
-| UltraBr3aks | 11 | 0% | 100% | 72.7% |
-| Novel attacks (original) | 14 | 0% | 0% | 92.9% |
-| Aggressive (21 vectors) | 21 | 0% | 0% | 81.0% |
-| Advanced 2025 research | 11 | 0% | 27.3% | 81.8% |
-| Basic proven attacks | 16 | 0% | ~50% | 68.8% |
-| **TOTAL** | **117+** | **0%*** | **~50%** | **~80%** |
+| Mega Test (all combined) | 77 | 0% | **77.9%** | ~80% |
+| Aggressive (21 vectors) | 21 | 0% | 57.1% | 81.0% |
+| Plinius/L1B3RT4S | 11 | 0% | - | 81.8% |
+| UltraBr3aks | 11 | 0% | - | 72.7% |
+| Novel attacks | 14 | 0% | - | 92.9% |
 
-*\*Llama 3 8B results may reflect Groq API filtering, not model behavior. Verification pending.*
+### CONFIRMED: Groq API Filtering
+
+We tested the **same model** (Llama 3 8B) locally and via Groq API:
+
+| Environment | Vulnerability Rate | Attacks |
+|-------------|-------------------|---------|
+| Groq API | **0%** | 117 |
+| Local Ollama | **77.9%** | 77 |
+
+**The model itself is vulnerable. Groq's API filtering blocks all attacks.**
 
 ### Counterintuitive Result: Smaller Model More Secure
 

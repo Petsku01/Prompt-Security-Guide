@@ -100,12 +100,28 @@ If Hypothesis B is correct (model training):
 - There's a capability/security tradeoff worth investigating
 - Meta's safety training on 8B is remarkably effective
 
-## Current Status
+## RESOLVED: Groq Filters, Model Is Vulnerable
 
-**Unresolved**. We need to run Llama locally to determine which hypothesis is correct.
+We ran the same model (Llama 3 8B) both locally and via Groq:
 
-The download of llama3.2:3b (a related but not identical model) is in progress. This will provide partial evidence but not definitive proof.
+| Environment | Attacks | Success Rate |
+|-------------|---------|--------------|
+| Groq API | 117 | **0%** |
+| Local Ollama | 77 | **77.9%** |
+
+**Hypothesis A confirmed.** Groq applies API-level filtering that blocks attacks before they reach the model.
+
+The model itself is highly vulnerable:
+- 100% success: Structure injection, identity manipulation, emotional manipulation
+- 75%+ success: Classic jailbreaks, hierarchy attacks, encoding tricks
+
+### Implications
+
+1. **API filtering works** - Groq's approach effectively blocks prompt injection
+2. **Model training alone is insufficient** - Llama 3 8B's safety training fails 78% of the time
+3. **Defense in depth matters** - The API layer provides critical protection
+4. **Local deployments are risky** - Running Llama locally exposes full vulnerability
 
 ---
 
-*This document represents active research questions, not conclusions.*
+*Resolved 2026-02-13 via local testing.*
