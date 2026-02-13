@@ -17,7 +17,8 @@
 <p align="center">
   <img src="https://img.shields.io/badge/status-educational-blue.svg" alt="Status"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
-  <img src="https://img.shields.io/badge/evidence-conceptual-orange.svg" alt="Evidence Level"/>
+  <img src="https://img.shields.io/badge/evidence-preliminary-orange.svg" alt="Evidence Level"/>
+  <img src="https://img.shields.io/badge/sample_size-small-red.svg" alt="Sample Size"/>
 </p>
 
 ---
@@ -35,10 +36,12 @@ This repository contains educational documentation about security considerations
 
 ## What This Is Not
 
-- **Original research** - This synthesizes existing public knowledge
-- **Validated framework** - Defense strategies are theoretical, not empirically tested
-- **Production-ready tools** - Code examples are conceptual illustrations
-- **Authoritative source** - No formal security audit or peer review
+- **Rigorous research** - Sample sizes are too small for statistical significance
+- **Generalizable results** - Only tested 2 models from one family
+- **Production-ready tools** - Detection methods are crude (substring matching)
+- **Authoritative source** - No formal peer review, results may not replicate
+
+**Read [LIMITATIONS.md](docs/LIMITATIONS.md) before citing any numbers from this repository.**
 
 ## Actual Test Results
 
@@ -51,12 +54,13 @@ This repository includes **real security testing** performed against local LLM d
 | Qwen 2.5 3B | 4/5 (80%) | 4/5 (80%) | 1/4 (25%) | 11/16 (68.8%) |
 | Qwen 2.5 1.5B | 3/5 (60%) | 4/5 (80%) | 1/4 (25%) | 10/16 (62.5%) |
 
-**Key findings:**
-- Basic prompt injection ("ignore previous instructions") succeeds on both models
-- Fake [SYSTEM] tags are accepted as authoritative
+**Observations (not statistically validated):**
+- Basic prompt injection ("ignore previous instructions") succeeded on both models in our tests
+- Fake [SYSTEM] tags were accepted as authoritative
 - Smaller model (1.5B) leaked entire system prompt when asked to repeat it
-- Larger model (3B) better at rejecting fake authority claims
-- Model size does not reliably predict security
+- Larger model (3B) better at rejecting fake authority claims in this sample
+
+**Caveat:** With only 16 tests per model, these patterns need replication before drawing conclusions.
 
 See [TEST_RESULTS.md](docs/TEST_RESULTS.md) and [MODEL_COMPARISON.md](docs/MODEL_COMPARISON.md) for full analysis.
 
@@ -69,7 +73,9 @@ See [TEST_RESULTS.md](docs/TEST_RESULTS.md) and [MODEL_COMPARISON.md](docs/MODEL
 | Threat enumeration | 62.5% | 25% |
 | Combined defenses | 50.0% | 37.5% |
 
-**Key finding:** Simply telling the model "don't reveal your instructions" provides **zero improvement**. Explicit threat enumeration and defense stacking help significantly, but even the best prompt-only defense still fails half the attacks.
+**Observation:** In our 8-attack test, adding basic restrictions showed no improvement over no defense (both 87.5%). However, with only 8 tests, one different result = 12.5% change. This suggests the defense may be weak but is not statistical proof.
+
+Explicit threat enumeration and defense stacking appeared to help, but even the best prompt-only defense still failed half the attacks in our small sample.
 
 See [DEFENSE_EFFECTIVENESS.md](docs/DEFENSE_EFFECTIVENESS.md) for full methodology and recommendations.
 
@@ -94,7 +100,8 @@ See [DEFENSE_EFFECTIVENESS.md](docs/DEFENSE_EFFECTIVENESS.md) for full methodolo
 | [Model Comparison](docs/MODEL_COMPARISON.md) | Security comparison: 3B vs 1.5B models |
 | [Defense Effectiveness](docs/DEFENSE_EFFECTIVENESS.md) | Which defenses actually work (with data) |
 | [References](docs/REFERENCES.md) | Academic papers and further reading |
-| [Blog Post](BLOG_POST.md) | Accessible writeup of key findings |
+| [Limitations](docs/LIMITATIONS.md) | Honest assessment of what this can/cannot tell you |
+| [Blog Post](BLOG_POST.md) | Accessible writeup (with caveats) |
 
 ---
 
