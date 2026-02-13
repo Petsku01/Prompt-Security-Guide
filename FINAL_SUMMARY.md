@@ -2,7 +2,11 @@
 
 ## Executive Summary
 
-This research tested 300+ prompt injection and jailbreak attacks against 4 LLM configurations. The key finding is a stark security divide: Llama 3 8B (via Groq) blocked 100% of attacks, while Qwen 2.5 3B was vulnerable to 80%+.
+This research tested 300+ prompt injection and jailbreak attacks against 4 LLM configurations. 
+
+**Key observation**: Llama 3 8B (via Groq) blocked 100% of attacks, while Qwen 2.5 3B was vulnerable to ~80%.
+
+**Critical caveat**: We cannot determine if Llama's results reflect model training or Groq's API filtering. This is the largest unresolved question in our research.
 
 ## Research Scope
 
@@ -107,17 +111,32 @@ This remains an open research question. Testing the same model locally would res
 3. **Rate limit** - Slow down attack iteration
 4. **Prefer API models** - API filtering adds security layer
 
-## Limitations
+## Limitations (Be Skeptical)
 
-This research has significant limitations:
+This research has **significant limitations** that affect all conclusions:
 
-1. **Small sample sizes** - Not statistically rigorous
-2. **Crude detection** - Substring matching misses nuances
-3. **Limited models** - Only 4 configurations tested
-4. **No peer review** - Results may not replicate
-5. **Groq confound** - API filtering may explain some results
+| Limitation | Why It Matters |
+|------------|----------------|
+| Small samples (11-21 per test) | No statistical significance possible |
+| Substring detection | Unknown false positive/negative rate |
+| 4 model configs | Cannot generalize to other models |
+| Groq confound | Llama 8B results may be API filtering |
+| No human verification | Don't know if attacks actually succeeded |
+| Single-shot testing | Real attackers iterate |
 
-See [LIMITATIONS.md](docs/LIMITATIONS.md) for full discussion.
+### Self-Assessment
+
+This is **exploratory research**, not rigorous security analysis. Use it to:
+- Understand attack categories
+- Learn testing methodologies
+- Generate hypotheses for further study
+
+Do NOT use it to:
+- Make deployment decisions
+- Claim any model is "secure"
+- Cite specific vulnerability percentages
+
+See [METHODOLOGY.md](docs/METHODOLOGY.md) and [LIMITATIONS.md](docs/LIMITATIONS.md) for full discussion.
 
 ## Files Produced
 

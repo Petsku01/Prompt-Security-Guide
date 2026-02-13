@@ -1,4 +1,6 @@
-# Limitations and Caveats
+# Limitations
+
+**Read this entire document before citing any results from this repository.** and Caveats
 
 This document honestly describes what this research can and cannot tell you.
 

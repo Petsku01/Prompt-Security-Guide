@@ -15,11 +15,17 @@ This repository contains **real security testing data** from 300+ prompt injecti
 
 ## Key Findings
 
-### The Llama 3 8B Anomaly
+### The Llama 3 8B Anomaly (Unresolved)
 
-Our most significant finding: **Llama 3 8B (via Groq) blocked 100% of all attacks** across 117 different attack vectors from 9 sources.
+**Llama 3 8B (via Groq) blocked 100% of all attacks** across 117 different attack vectors.
 
-| Attack Source | Attacks Tested | Llama 3 8B | Llama 3.3 70B | Qwen 2.5 3B |
+**IMPORTANT CAVEAT**: We cannot determine if this is due to:
+- Llama 3 8B's training (model-level security), or
+- Groq's API filtering (provider-level security)
+
+Until we test the same model locally, this finding reflects "Groq's Llama 3 8B endpoint" - not necessarily the model itself. See [GROQ_HYPOTHESIS.md](docs/GROQ_HYPOTHESIS.md).
+
+| Attack Source | Attacks Tested | Llama 3 8B (Groq)* | Llama 3.3 70B (Groq) | Qwen 2.5 3B (local) |
 |---------------|----------------|------------|---------------|-------------|
 | Plinius/L1B3RT4S (17k stars) | 11 | 0% | 81.8% | 81.8% |
 | UltraBr3aks | 11 | 0% | 100% | 72.7% |
@@ -27,7 +33,9 @@ Our most significant finding: **Llama 3 8B (via Groq) blocked 100% of all attack
 | Aggressive (21 vectors) | 21 | 0% | 0% | 81.0% |
 | Advanced 2025 research | 11 | 0% | 27.3% | 81.8% |
 | Basic proven attacks | 16 | 0% | ~50% | 68.8% |
-| **TOTAL** | **117+** | **0%** | **~50%** | **~80%** |
+| **TOTAL** | **117+** | **0%*** | **~50%** | **~80%** |
+
+*\*Llama 3 8B results may reflect Groq API filtering, not model behavior. Verification pending.*
 
 ### Counterintuitive Result: Smaller Model More Secure
 
@@ -173,6 +181,7 @@ python tools/aggressive_tester.py --provider groq --model llama3-8b-8192
 
 | Document | Description |
 |----------|-------------|
+| [METHODOLOGY.md](docs/METHODOLOGY.md) | How tests were conducted (READ FIRST) |
 | [ATTACK_TAXONOMY.md](docs/ATTACK_TAXONOMY.md) | Classification of attack techniques |
 | [COMMUNITY_RESOURCES.md](docs/COMMUNITY_RESOURCES.md) | Major jailbreak repositories analyzed |
 | [DEFENSE_STRATEGIES.md](docs/DEFENSE_STRATEGIES.md) | Defensive approaches |
@@ -184,16 +193,31 @@ python tools/aggressive_tester.py --provider groq --model llama3-8b-8192
 
 ---
 
-## Limitations
+## Limitations (Critical)
 
-**Read [LIMITATIONS.md](docs/LIMITATIONS.md) before citing this research.**
+**Read [METHODOLOGY.md](docs/METHODOLOGY.md) and [LIMITATIONS.md](docs/LIMITATIONS.md) before citing this research.**
 
-Key limitations:
-- Small sample sizes (not statistically rigorous)
-- Detection via substring matching (crude)
-- Tested only 4 model configurations
-- Groq results may reflect API filtering, not model behavior
-- No formal peer review
+### Why You Should Be Skeptical
+
+| Issue | Impact |
+|-------|--------|
+| Sample sizes (11-21 per test) | Cannot establish statistical significance |
+| Substring detection | False positives/negatives unknown |
+| Groq API confound | Llama 8B results may be provider filtering, not model |
+| No human verification | Actual attack success not confirmed |
+| Single-shot tests | Real attackers iterate and refine |
+
+### What This Research Is
+
+- **Exploratory** - surfaces interesting questions
+- **Preliminary** - needs replication
+- **Educational** - demonstrates testing methods
+
+### What This Research Is NOT
+
+- **Rigorous** - no statistical validation
+- **Generalizable** - 4 configs tested
+- **Definitive** - major confounds unresolved
 
 ---
 
