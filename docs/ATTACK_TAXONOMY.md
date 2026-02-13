@@ -1,4 +1,4 @@
-# Attack Taxonomy 🗂️
+# Attack Taxonomy 
 
 *A systematic classification of LLM prompt security vulnerabilities*
 

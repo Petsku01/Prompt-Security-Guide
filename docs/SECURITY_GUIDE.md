@@ -1,4 +1,4 @@
-# The Prompt Engineer's Guide to AI Security Vulnerabilities 🎯
+# The Prompt Engineer's Guide to AI Security Vulnerabilities 
 
 *A technical deep-dive into the adversarial landscape of large language models*
 

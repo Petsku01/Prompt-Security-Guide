@@ -1,4 +1,4 @@
-# Defense Strategies 🛡️
+# Defense Strategies 
 
 *Architectural patterns and techniques for secure LLM deployment*
 
@@ -479,14 +479,14 @@ class IncidentResponder:
 
 | Defense Technique | Extraction | Jailbreaking | Injection | Context Manip |
 |------------------|------------|--------------|-----------|---------------|
-| Pattern Detection | ★★★☆☆ | ★★☆☆☆ | ★★★☆☆ | ★☆☆☆☆ |
-| Semantic Analysis | ★★★★☆ | ★★★☆☆ | ★★★★☆ | ★★☆☆☆ |
-| Instruction Isolation | ★★★★☆ | ★★★☆☆ | ★★★★★ | ★★★☆☆ |
-| Capability Restriction | ★★☆☆☆ | ★★★★☆ | ★★★☆☆ | ★★☆☆☆ |
-| Output Filtering | ★★★★★ | ★★★☆☆ | ★★☆☆☆ | ★★☆☆☆ |
-| Behavioral Monitoring | ★★★☆☆ | ★★★★☆ | ★★★★☆ | ★★★★☆ |
+| Pattern Detection | 3/5 | 2/5 | 3/5 | 1/5 |
+| Semantic Analysis | 4/5 | 3/5 | 4/5 | 2/5 |
+| Instruction Isolation | 4/5 | 3/5 |  | 3/5 |
+| Capability Restriction | 2/5 | 4/5 | 3/5 | 2/5 |
+| Output Filtering |  | 3/5 | 2/5 | 2/5 |
+| Behavioral Monitoring | 3/5 | 4/5 | 4/5 | 4/5 |
 
-**Legend:** ★☆☆☆☆ = Minimal | ★★★☆☆ = Moderate | ★★★★★ = Strong
+**Legend:** 1/5 = Minimal | 3/5 = Moderate |  = Strong
 
 ---
 

@@ -2,7 +2,7 @@
   <img src="assets/logo.png" alt="Prompt Security Guide Logo" width="200"/>
 </p>
 
-<h1 align="center">🛡️ Prompt Security Guide</h1>
+<h1 align="center"> Prompt Security Guide</h1>
 
 <p align="center">
   <strong>A comprehensive security framework for LLM prompt engineering</strong>
@@ -25,7 +25,7 @@
 
 ---
 
-## 🎯 Overview
+##  Overview
 
 **Prompt Security Guide** is a comprehensive framework for understanding, testing, and defending against security vulnerabilities in Large Language Model (LLM) systems.
 
@@ -43,7 +43,7 @@ Bridge the knowledge gap between AI security researchers and practitioners deplo
 
 ---
 
-## ⚡ Quick Start
+##  Quick Start
 
 ### For Security Testers
 
@@ -76,7 +76,7 @@ response = processor.process(user_input)
 
 ---
 
-## 📚 Documentation
+##  Documentation
 
 ### Core Guides
 
@@ -97,7 +97,7 @@ response = processor.process(user_input)
 
 ---
 
-## 🔬 Attack Taxonomy
+##  Attack Taxonomy
 
 ### Vulnerability Classes
 
@@ -126,7 +126,7 @@ response = processor.process(user_input)
 
 ---
 
-## 🛠️ Tools
+##  Tools
 
 ### Security Scanner
 
@@ -168,7 +168,7 @@ python tools/monitor.py --config monitor.yaml --port 8080
 
 ---
 
-## 🏗️ Defensive Architecture
+##  Defensive Architecture
 
 ### Recommended Security Layers
 
@@ -217,7 +217,7 @@ python tools/monitor.py --config monitor.yaml --port 8080
 
 ---
 
-## 📊 Security Metrics
+##  Security Metrics
 
 ### Assessment Framework
 
@@ -244,7 +244,7 @@ print(f"Overall Security:      {results.overall_score}/100")
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Run Security Tests
 
@@ -270,7 +270,7 @@ pytest tests/ --cov=prompt_security --cov-report=html
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```
 prompt-security-guide/
@@ -316,7 +316,7 @@ prompt-security-guide/
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions from the security research community!
 
@@ -330,29 +330,29 @@ We welcome contributions from the security research community!
 
 ### Contribution Areas
 
-- 🔍 **New Attack Vectors**: Document newly discovered vulnerabilities
-- 🛡️ **Defense Strategies**: Propose and implement defensive techniques
-- 🧪 **Test Cases**: Add adversarial test scenarios
-- 📚 **Documentation**: Improve guides and references
-- 🛠️ **Tools**: Enhance security testing tools
+-  **New Attack Vectors**: Document newly discovered vulnerabilities
+-  **Defense Strategies**: Propose and implement defensive techniques
+-  **Test Cases**: Add adversarial test scenarios
+-  **Documentation**: Improve guides and references
+-  **Tools**: Enhance security testing tools
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
-## ⚠️ Responsible Disclosure
+##  Responsible Disclosure
 
 This project is intended for **educational and defensive purposes**.
 
 ### Ethical Guidelines
 
-✅ **Acceptable Use:**
+ **Acceptable Use:**
 - Testing systems you own or have permission to test
 - Educational research and learning
 - Developing better defensive measures
 - Responsible disclosure of vulnerabilities
 
-❌ **Prohibited Use:**
+ **Prohibited Use:**
 - Attacking systems without authorization
 - Causing harm to individuals or organizations
 - Violating terms of service or laws
@@ -369,13 +369,13 @@ If you discover a vulnerability in a production system:
 
 ---
 
-## 📜 License
+##  License
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - The AI security research community
 - Open source contributors
@@ -384,7 +384,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 
 ---
 
-## 📬 Contact
+##  Contact
 
 - **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/prompt-security-guide/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/prompt-security-guide/discussions)
@@ -398,5 +398,5 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 </p>
 
 <p align="center">
-  Made with 🛡️ by security researchers, for security practitioners
+  Made with  by security researchers, for security practitioners
 </p>

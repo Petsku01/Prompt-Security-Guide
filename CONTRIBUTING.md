@@ -10,7 +10,7 @@ By participating in this project, you agree to maintain a respectful and profess
 
 **This is a security research project.** All contributions must adhere to responsible disclosure and ethical security research principles:
 
-### ✅ Acceptable Contributions
+###  Acceptable Contributions
 
 - Documentation of publicly known vulnerabilities
 - Defensive techniques and mitigation strategies
@@ -19,7 +19,7 @@ By participating in this project, you agree to maintain a respectful and profess
 - Bug fixes and improvements to existing tools
 - Research papers and academic references
 
-### ❌ Not Acceptable
+###  Not Acceptable
 
 - Exploits targeting specific commercial systems without disclosure
 - Personal data or credentials

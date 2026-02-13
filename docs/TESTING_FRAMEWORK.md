@@ -1,4 +1,4 @@
-# Testing Framework 🧪
+# Testing Framework 
 
 *Systematic methodology for assessing LLM security*
 
