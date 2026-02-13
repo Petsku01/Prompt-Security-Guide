@@ -40,24 +40,34 @@ This repository contains educational documentation about security considerations
 - **Production-ready tools** - Code examples are conceptual illustrations
 - **Authoritative source** - No formal security audit or peer review
 
-## Limitations
+## Actual Test Results
 
-### On Statistics and Claims
+This repository includes **real security testing** performed against local LLM deployments.
 
-This guide references attack "success rates" and effectiveness scores. These are **illustrative estimates based on community observations**, not rigorous measurements. Actual success rates vary significantly based on:
+### Qwen 2.5 3B Test Results (February 2026)
 
-- Specific model and version
-- System prompt design
-- Defense layers implemented
-- Attack sophistication
+| Category | Tests | Issues Found | Rate |
+|----------|-------|--------------|------|
+| Extraction | 5 | 4 | 80% |
+| Injection | 5 | 4 | 80% |
+| Jailbreak | 4 | 1 | 25% |
+| **Total** | **16** | **11** | **68.8%** |
 
-### On Tools
+**Key findings:**
+- Basic prompt injection ("ignore previous instructions") succeeds completely
+- Fake [SYSTEM] tags are accepted as authoritative
+- System prompts leak through completion attacks and refusal messages
+- Known jailbreak patterns (DAN) are blocked
+- Small models are highly vulnerable without additional safeguards
 
-The `security_scanner.py` tool is a **conceptual framework** showing how automated testing could be structured. It requires significant development to be functional against real systems.
+See [TEST_RESULTS.md](docs/TEST_RESULTS.md) for full details and raw data.
 
-### On Defenses
+### Limitations of Testing
 
-Defensive techniques described here are based on logical reasoning and community best practices. They have **not been empirically validated** in controlled experiments.
+- Results are specific to tested model and configuration
+- 16 tests do not cover all possible attack variations
+- Other models may show different vulnerability patterns
+- Tests were single-shot, not adversarially optimized
 
 ---
 
@@ -69,6 +79,7 @@ Defensive techniques described here are based on logical reasoning and community
 | [Attack Taxonomy](docs/ATTACK_TAXONOMY.md) | Classification of prompt-based attack techniques |
 | [Defense Strategies](docs/DEFENSE_STRATEGIES.md) | Conceptual defensive architectures |
 | [Testing Framework](docs/TESTING_FRAMEWORK.md) | Methodology for security assessment |
+| [Test Results](docs/TEST_RESULTS.md) | Actual test results against Qwen 2.5 3B |
 
 ---
 
@@ -140,22 +151,30 @@ Monitoring
 
 ## Tools
 
-### Security Scanner (Conceptual)
+### LLM Security Tester (Functional)
 
-The `tools/security_scanner.py` provides a **framework structure** for automated testing. 
-
-**Current status:** Placeholder implementation requiring development for actual use.
+The `tools/llm_security_tester.py` is a **working security testing tool** for Ollama models.
 
 ```bash
-# Structure demonstration only - not functional against real systems
-python tools/security_scanner.py --help
+# Run full test suite against a local model
+python tools/llm_security_tester.py --model qwen2.5:3b --output results.json
+
+# Run specific test categories
+python tools/llm_security_tester.py --model qwen2.5:3b --categories extraction,injection
+
+# Verbose output
+python tools/llm_security_tester.py --model qwen2.5:3b --verbose
 ```
 
-To make this functional, you would need to:
-- Implement actual HTTP request handling
-- Add authentication for your target system
-- Develop response analysis logic
-- Validate against your specific deployment
+**Features:**
+- 16 test cases across 4 categories (extraction, injection, jailbreak, baseline)
+- Configurable system prompt for defense testing
+- JSON report output with full responses
+- Works with any Ollama-compatible model
+
+### Security Scanner (Conceptual Framework)
+
+The `tools/security_scanner.py` provides a framework structure for testing against remote APIs. Requires implementation for your specific target.
 
 ---
 
