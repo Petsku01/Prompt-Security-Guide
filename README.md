@@ -93,6 +93,8 @@ See [DEFENSE_EFFECTIVENESS.md](docs/DEFENSE_EFFECTIVENESS.md) for full methodolo
 | [Test Results](docs/TEST_RESULTS.md) | Actual test results against Qwen 2.5 3B |
 | [Model Comparison](docs/MODEL_COMPARISON.md) | Security comparison: 3B vs 1.5B models |
 | [Defense Effectiveness](docs/DEFENSE_EFFECTIVENESS.md) | Which defenses actually work (with data) |
+| [References](docs/REFERENCES.md) | Academic papers and further reading |
+| [Blog Post](BLOG_POST.md) | Accessible writeup of key findings |
 
 ---
 
