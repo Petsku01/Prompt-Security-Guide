@@ -44,23 +44,21 @@ This repository contains educational documentation about security considerations
 
 This repository includes **real security testing** performed against local LLM deployments.
 
-### Qwen 2.5 3B Test Results (February 2026)
+### Test Results Summary (February 2026)
 
-| Category | Tests | Issues Found | Rate |
-|----------|-------|--------------|------|
-| Extraction | 5 | 4 | 80% |
-| Injection | 5 | 4 | 80% |
-| Jailbreak | 4 | 1 | 25% |
-| **Total** | **16** | **11** | **68.8%** |
+| Model | Extraction | Injection | Jailbreak | Total |
+|-------|------------|-----------|-----------|-------|
+| Qwen 2.5 3B | 4/5 (80%) | 4/5 (80%) | 1/4 (25%) | 11/16 (68.8%) |
+| Qwen 2.5 1.5B | 3/5 (60%) | 4/5 (80%) | 1/4 (25%) | 10/16 (62.5%) |
 
 **Key findings:**
-- Basic prompt injection ("ignore previous instructions") succeeds completely
+- Basic prompt injection ("ignore previous instructions") succeeds on both models
 - Fake [SYSTEM] tags are accepted as authoritative
-- System prompts leak through completion attacks and refusal messages
-- Known jailbreak patterns (DAN) are blocked
-- Small models are highly vulnerable without additional safeguards
+- Smaller model (1.5B) leaked entire system prompt when asked to repeat it
+- Larger model (3B) better at rejecting fake authority claims
+- Model size does not reliably predict security
 
-See [TEST_RESULTS.md](docs/TEST_RESULTS.md) for full details and raw data.
+See [TEST_RESULTS.md](docs/TEST_RESULTS.md) and [MODEL_COMPARISON.md](docs/MODEL_COMPARISON.md) for full analysis.
 
 ### Limitations of Testing
 
@@ -80,6 +78,7 @@ See [TEST_RESULTS.md](docs/TEST_RESULTS.md) for full details and raw data.
 | [Defense Strategies](docs/DEFENSE_STRATEGIES.md) | Conceptual defensive architectures |
 | [Testing Framework](docs/TESTING_FRAMEWORK.md) | Methodology for security assessment |
 | [Test Results](docs/TEST_RESULTS.md) | Actual test results against Qwen 2.5 3B |
+| [Model Comparison](docs/MODEL_COMPARISON.md) | Security comparison: 3B vs 1.5B models |
 
 ---
 
