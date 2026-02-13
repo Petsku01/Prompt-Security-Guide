@@ -181,6 +181,7 @@ python tools/aggressive_tester.py --provider groq --model llama3-8b-8192
 
 | Document | Description |
 |----------|-------------|
+| [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | How to run tests yourself |
 | [METHODOLOGY.md](docs/METHODOLOGY.md) | How tests were conducted (READ FIRST) |
 | [ATTACK_TAXONOMY.md](docs/ATTACK_TAXONOMY.md) | Classification of attack techniques |
 | [COMMUNITY_RESOURCES.md](docs/COMMUNITY_RESOURCES.md) | Major jailbreak repositories analyzed |
