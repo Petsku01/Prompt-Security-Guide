@@ -7,7 +7,7 @@
 If you discover a security vulnerability in the code or tools within this repository:
 
 1. **Do not** open a public issue
-2. Email the maintainers at: [security contact email]
+2. Email the maintainers at: Open an issue on this repository
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce

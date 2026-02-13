@@ -1,11 +1,9 @@
 # Prompt Security Guide
 
-**Empirical LLM security testing with real attack data**
+**Exploratory LLM security testing - treat as preliminary notes, not rigorous research**
 
-[![Status](https://img.shields.io/badge/status-research-blue.svg)](#)
+[![Status](https://img.shields.io/badge/status-exploratory-orange.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-300%2B-brightgreen.svg)](#test-results-summary)
-[![Models](https://img.shields.io/badge/models-7-orange.svg)](#models-tested)
 
 ---
 
