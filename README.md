@@ -60,6 +60,19 @@ This repository includes **real security testing** performed against local LLM d
 
 See [TEST_RESULTS.md](docs/TEST_RESULTS.md) and [MODEL_COMPARISON.md](docs/MODEL_COMPARISON.md) for full analysis.
 
+### Defense Effectiveness (February 2026)
+
+| Defense Strategy | Vulnerability Rate | Improvement |
+|-----------------|-------------------|-------------|
+| No defense (baseline) | 87.5% | - |
+| "Don't reveal instructions" | 87.5% | 0% |
+| Threat enumeration | 62.5% | 25% |
+| Combined defenses | 50.0% | 37.5% |
+
+**Key finding:** Simply telling the model "don't reveal your instructions" provides **zero improvement**. Explicit threat enumeration and defense stacking help significantly, but even the best prompt-only defense still fails half the attacks.
+
+See [DEFENSE_EFFECTIVENESS.md](docs/DEFENSE_EFFECTIVENESS.md) for full methodology and recommendations.
+
 ### Limitations of Testing
 
 - Results are specific to tested model and configuration
@@ -79,6 +92,7 @@ See [TEST_RESULTS.md](docs/TEST_RESULTS.md) and [MODEL_COMPARISON.md](docs/MODEL
 | [Testing Framework](docs/TESTING_FRAMEWORK.md) | Methodology for security assessment |
 | [Test Results](docs/TEST_RESULTS.md) | Actual test results against Qwen 2.5 3B |
 | [Model Comparison](docs/MODEL_COMPARISON.md) | Security comparison: 3B vs 1.5B models |
+| [Defense Effectiveness](docs/DEFENSE_EFFECTIVENESS.md) | Which defenses actually work (with data) |
 
 ---
 
