@@ -1,402 +1,223 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Prompt Security Guide Logo" width="200"/>
+  <h1 align="center">Prompt Security Guide</h1>
 </p>
 
-<h1 align="center"> Prompt Security Guide</h1>
-
 <p align="center">
-  <strong>A comprehensive security framework for LLM prompt engineering</strong>
+  <strong>Educational resource for understanding LLM prompt security</strong>
 </p>
 
 <p align="center">
   <a href="#overview">Overview</a> •
-  <a href="#quick-start">Quick Start</a> •
+  <a href="#what-this-is">What This Is</a> •
+  <a href="#what-this-is-not">What This Is Not</a> •
   <a href="#documentation">Documentation</a> •
-  <a href="#tools">Tools</a> •
   <a href="#contributing">Contributing</a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version"/>
+  <img src="https://img.shields.io/badge/status-educational-blue.svg" alt="Status"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"/>
-  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/>
-  <img src="https://img.shields.io/badge/security-research-red.svg" alt="Security Research"/>
+  <img src="https://img.shields.io/badge/evidence-conceptual-orange.svg" alt="Evidence Level"/>
 </p>
 
 ---
 
-##  Overview
+## Overview
 
-**Prompt Security Guide** is a comprehensive framework for understanding, testing, and defending against security vulnerabilities in Large Language Model (LLM) systems.
+This repository contains educational documentation about security considerations for Large Language Model (LLM) deployments. It synthesizes publicly available knowledge about prompt injection, jailbreaking, and defensive techniques.
 
-### The Problem
+## What This Is
 
-| What Most People Think | What Security Researchers Know |
-|------------------------|-------------------------------|
-| "AI safety filters are robust" | 90%+ of systems can be compromised with basic techniques |
-| "System prompts are protected" | Extraction succeeds within 5-10 attempts |
-| "Alignment prevents misuse" | Jailbreaking methods spread faster than defenses |
+- **Educational resource** for learning about LLM security concepts
+- **Conceptual framework** for thinking about prompt-based vulnerabilities
+- **Starting point** for security practitioners new to AI systems
+- **Discussion material** for teams deploying LLMs
 
-### Our Mission
+## What This Is Not
 
-Bridge the knowledge gap between AI security researchers and practitioners deploying LLM systems in production.
+- **Original research** - This synthesizes existing public knowledge
+- **Validated framework** - Defense strategies are theoretical, not empirically tested
+- **Production-ready tools** - Code examples are conceptual illustrations
+- **Authoritative source** - No formal security audit or peer review
 
----
+## Limitations
 
-##  Quick Start
+### On Statistics and Claims
 
-### For Security Testers
+This guide references attack "success rates" and effectiveness scores. These are **illustrative estimates based on community observations**, not rigorous measurements. Actual success rates vary significantly based on:
 
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/prompt-security-guide.git
-cd prompt-security-guide
+- Specific model and version
+- System prompt design
+- Defense layers implemented
+- Attack sophistication
 
-# Run basic vulnerability assessment
-python tools/security_scanner.py --target "your-llm-endpoint"
+### On Tools
 
-# Generate security report
-python tools/report_generator.py --output report.html
-```
+The `security_scanner.py` tool is a **conceptual framework** showing how automated testing could be structured. It requires significant development to be functional against real systems.
 
-### For Developers
+### On Defenses
 
-```python
-from prompt_security import SecurePromptProcessor
-
-# Initialize secure processor
-processor = SecurePromptProcessor(
-    security_level="high",
-    enable_monitoring=True
-)
-
-# Process user input securely
-response = processor.process(user_input)
-```
+Defensive techniques described here are based on logical reasoning and community best practices. They have **not been empirically validated** in controlled experiments.
 
 ---
 
-##  Documentation
-
-### Core Guides
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [**Security Guide**](docs/SECURITY_GUIDE.md) | Complete technical deep-dive into LLM vulnerabilities |
-| [**Attack Taxonomy**](docs/ATTACK_TAXONOMY.md) | Classification of prompt injection techniques |
-| [**Defense Strategies**](docs/DEFENSE_STRATEGIES.md) | Architectural patterns for secure prompt design |
-| [**Testing Framework**](docs/TESTING_FRAMEWORK.md) | Red team methodology and metrics |
-
-### Quick References
-
-| Reference | Description |
-|-----------|-------------|
-| [**Attack Patterns**](docs/references/ATTACK_PATTERNS.md) | Quick reference for common attack vectors |
-| [**Defensive Prompts**](docs/references/DEFENSIVE_PROMPTS.md) | Template library for secure prompts |
-| [**Compliance Guide**](docs/references/COMPLIANCE.md) | GDPR, HIPAA, SOX considerations |
+| [Security Guide](docs/SECURITY_GUIDE.md) | Overview of LLM security concepts and attack patterns |
+| [Attack Taxonomy](docs/ATTACK_TAXONOMY.md) | Classification of prompt-based attack techniques |
+| [Defense Strategies](docs/DEFENSE_STRATEGIES.md) | Conceptual defensive architectures |
+| [Testing Framework](docs/TESTING_FRAMEWORK.md) | Methodology for security assessment |
 
 ---
 
-##  Attack Taxonomy
+## Attack Categories (Conceptual)
 
 ### Vulnerability Classes
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    PROMPT INJECTION                          │
-├─────────────────┬─────────────────┬─────────────────────────┤
-│  Direct         │  Indirect       │  Context-Based          │
-│  Extraction     │  Injection      │  Manipulation           │
-├─────────────────┼─────────────────┼─────────────────────────┤
-│ • Instruction   │ • Document      │ • Memory Pressure       │
-│   Repetition    │   Embedding     │ • Attention Hijacking   │
-│ • Meta-Query    │ • API Abuse     │ • Chain-of-Thought      │
-│ • Role Reversal │ • Data Poison   │   Exploitation          │
-└─────────────────┴─────────────────┴─────────────────────────┘
+Prompt-Based Vulnerabilities
+├── System Prompt Extraction
+│   ├── Direct requests for instructions
+│   ├── Indirect behavioral probing
+│   └── Context reconstruction techniques
+├── Instruction Override (Jailbreaking)
+│   ├── Authority manipulation
+│   ├── Context framing
+│   └── Semantic evasion
+├── Prompt Injection
+│   ├── Direct instruction embedding
+│   ├── Indirect injection via external content
+│   └── Delimiter confusion
+└── Context Manipulation
+    ├── Memory pressure attacks
+    ├── Attention manipulation
+    └── History exploitation
 ```
 
-### Success Rates by Technique
+### General Observations
 
-| Technique | Undefended | Basic Defense | Advanced Defense |
-|-----------|------------|---------------|------------------|
-| Direct Extraction | 95% | 70% | 30% |
-| Instruction Bypass | 90% | 60% | 25% |
-| Semantic Injection | 95% | 85% | 50% |
-| Context Manipulation | 80% | 55% | 20% |
+Based on public reports and community experience:
+
+- **Undefended systems** are generally vulnerable to basic extraction and injection
+- **Keyword filtering** is easily bypassed through semantic variation
+- **Constitutional training** reduces but does not eliminate jailbreaking
+- **Defense in depth** is more effective than single-layer protection
+
+*Note: These are general observations, not measured statistics.*
 
 ---
 
-##  Tools
+## Defensive Principles
 
-### Security Scanner
+### Recommended Approach
 
-Automated vulnerability assessment for LLM endpoints.
+```
+Input Validation
+    │
+    ▼
+Instruction Isolation
+    │
+    ▼
+Capability Restriction
+    │
+    ▼
+Output Validation
+    │
+    ▼
+Monitoring
+```
+
+### Key Concepts
+
+1. **Assume compromise** - Design assuming attacks will sometimes succeed
+2. **Defense in depth** - Multiple overlapping security layers
+3. **Least privilege** - Minimize model capabilities to what's needed
+4. **Monitor and respond** - Detect and react to anomalies
+
+---
+
+## Tools
+
+### Security Scanner (Conceptual)
+
+The `tools/security_scanner.py` provides a **framework structure** for automated testing. 
+
+**Current status:** Placeholder implementation requiring development for actual use.
 
 ```bash
-python tools/security_scanner.py \
-    --target "https://api.example.com/v1/chat" \
-    --tests all \
-    --output results.json
+# Structure demonstration only - not functional against real systems
+python tools/security_scanner.py --help
 ```
 
-### Prompt Analyzer
-
-Static analysis of prompt templates for security weaknesses.
-
-```bash
-python tools/prompt_analyzer.py \
-    --input prompts/ \
-    --ruleset strict \
-    --report analysis.html
-```
-
-### Red Team Toolkit
-
-Interactive toolkit for manual security testing.
-
-```bash
-python tools/redteam_toolkit.py --interactive
-```
-
-### Monitoring Dashboard
-
-Real-time security monitoring for production deployments.
-
-```bash
-python tools/monitor.py --config monitor.yaml --port 8080
-```
+To make this functional, you would need to:
+- Implement actual HTTP request handling
+- Add authentication for your target system
+- Develop response analysis logic
+- Validate against your specific deployment
 
 ---
 
-##  Defensive Architecture
+## References and Further Reading
 
-### Recommended Security Layers
+This guide draws on publicly available knowledge from:
 
-```
-┌────────────────────────────────────────────────────────────┐
-│                     USER INPUT                              │
-└─────────────────────────┬──────────────────────────────────┘
-                          │
-                          ▼
-┌────────────────────────────────────────────────────────────┐
-│  LAYER 1: Input Validation & Sanitization                  │
-│  ├─ Pattern Detection                                      │
-│  ├─ Semantic Analysis                                      │
-│  └─ Content Policy Enforcement                             │
-└─────────────────────────┬──────────────────────────────────┘
-                          │
-                          ▼
-┌────────────────────────────────────────────────────────────┐
-│  LAYER 2: Instruction Isolation                            │
-│  ├─ System/User Separation                                 │
-│  ├─ Privilege Scoping                                      │
-│  └─ Instruction Integrity Verification                     │
-└─────────────────────────┬──────────────────────────────────┘
-                          │
-                          ▼
-┌────────────────────────────────────────────────────────────┐
-│  LAYER 3: LLM Processing (Sandboxed)                       │
-│  ├─ Limited Capability Scope                               │
-│  ├─ Behavioral Constraints                                 │
-│  └─ Output Boundaries                                      │
-└─────────────────────────┬──────────────────────────────────┘
-                          │
-                          ▼
-┌────────────────────────────────────────────────────────────┐
-│  LAYER 4: Output Filtering & Monitoring                    │
-│  ├─ Information Leakage Detection                          │
-│  ├─ Content Validation                                     │
-│  └─ Anomaly Alerting                                       │
-└─────────────────────────┬──────────────────────────────────┘
-                          │
-                          ▼
-┌────────────────────────────────────────────────────────────┐
-│                    SAFE OUTPUT                              │
-└────────────────────────────────────────────────────────────┘
-```
+- OWASP guidance on LLM security
+- Academic papers on prompt injection (search: "prompt injection attacks")
+- Community research shared on security forums
+- Vendor documentation on AI safety
+
+### Recommended Academic Reading
+
+- "Ignore This Title and HackAPrompt" (2023) - Prompt injection competition findings
+- "Not What You've Signed Up For" (2023) - Indirect prompt injection research
+- OWASP Top 10 for LLM Applications
 
 ---
 
-##  Security Metrics
+## Contributing
 
-### Assessment Framework
+Contributions welcome, especially:
 
-```python
-# Example: Calculate security score
-from prompt_security import SecurityAssessment
+- **Citations** - Adding references to peer-reviewed research
+- **Validation** - Testing claims against real systems (with permission)
+- **Corrections** - Fixing inaccuracies or unsupported claims
+- **Tools** - Developing functional testing implementations
 
-assessment = SecurityAssessment(target_system)
-results = assessment.run_full_suite()
-
-print(f"Extraction Resistance: {results.extraction_score}/100")
-print(f"Jailbreak Resistance:  {results.jailbreak_score}/100")
-print(f"Leakage Prevention:    {results.leakage_score}/100")
-print(f"Overall Security:      {results.overall_score}/100")
-```
-
-### Benchmark Results
-
-| Model/System | Extraction | Jailbreak | Leakage | Overall |
-|-------------|------------|-----------|---------|---------|
-| Baseline (No Defense) | 5 | 10 | 15 | 10 |
-| Basic Filtering | 30 | 35 | 40 | 35 |
-| This Framework | 75 | 80 | 85 | 80 |
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-##  Testing
+## Ethical Use
 
-### Run Security Tests
+This content is for **educational and authorized defensive purposes**.
 
-```bash
-# Run all tests
-pytest tests/ -v
+**Acceptable:**
+- Learning about AI security concepts
+- Testing systems you own or have written permission to test
+- Developing defenses for your own deployments
+- Academic research with proper ethics approval
 
-# Run specific test categories
-pytest tests/test_extraction.py -v
-pytest tests/test_injection.py -v
-pytest tests/test_jailbreak.py -v
-
-# Generate coverage report
-pytest tests/ --cov=prompt_security --cov-report=html
-```
-
-### Test Categories
-
-- **Unit Tests**: Individual component validation
-- **Integration Tests**: Full pipeline security testing
-- **Adversarial Tests**: Attack simulation suite
-- **Regression Tests**: Known vulnerability checks
-
----
-
-##  Repository Structure
-
-```
-prompt-security-guide/
-├── README.md                 # This file
-├── LICENSE                   # MIT License
-├── CONTRIBUTING.md           # Contribution guidelines
-├── SECURITY.md              # Security policy
-├── CODE_OF_CONDUCT.md       # Community guidelines
-│
-├── docs/                    # Documentation
-│   ├── SECURITY_GUIDE.md    # Main security guide
-│   ├── ATTACK_TAXONOMY.md   # Attack classification
-│   ├── DEFENSE_STRATEGIES.md # Defensive patterns
-│   ├── TESTING_FRAMEWORK.md # Testing methodology
-│   └── references/          # Quick references
-│
-├── examples/                # Example implementations
-│   ├── secure_chatbot/      # Secure chatbot example
-│   ├── document_processor/  # Secure document processing
-│   └── api_gateway/         # Secure API gateway
-│
-├── tools/                   # Security tools
-│   ├── security_scanner.py  # Automated scanner
-│   ├── prompt_analyzer.py   # Static analysis
-│   ├── redteam_toolkit.py   # Manual testing
-│   └── monitor.py           # Real-time monitoring
-│
-├── tests/                   # Test suite
-│   ├── test_extraction.py   # Extraction resistance tests
-│   ├── test_injection.py    # Injection prevention tests
-│   └── test_jailbreak.py    # Jailbreak resistance tests
-│
-├── assets/                  # Images and media
-│   └── logo.png            # Project logo
-│
-└── prompt_security/         # Python package
-    ├── __init__.py
-    ├── processor.py         # Secure prompt processor
-    ├── analyzer.py          # Security analyzer
-    ├── patterns.py          # Attack patterns database
-    └── defenses.py          # Defense implementations
-```
-
----
-
-##  Contributing
-
-We welcome contributions from the security research community!
-
-### How to Contribute
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/new-attack-vector`)
-3. **Commit** your changes (`git commit -m 'Add new attack vector documentation'`)
-4. **Push** to the branch (`git push origin feature/new-attack-vector`)
-5. **Open** a Pull Request
-
-### Contribution Areas
-
--  **New Attack Vectors**: Document newly discovered vulnerabilities
--  **Defense Strategies**: Propose and implement defensive techniques
--  **Test Cases**: Add adversarial test scenarios
--  **Documentation**: Improve guides and references
--  **Tools**: Enhance security testing tools
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-##  Responsible Disclosure
-
-This project is intended for **educational and defensive purposes**.
-
-### Ethical Guidelines
-
- **Acceptable Use:**
-- Testing systems you own or have permission to test
-- Educational research and learning
-- Developing better defensive measures
-- Responsible disclosure of vulnerabilities
-
- **Prohibited Use:**
+**Not acceptable:**
 - Attacking systems without authorization
-- Causing harm to individuals or organizations
-- Violating terms of service or laws
-- Malicious exploitation of vulnerabilities
-
-### Reporting Vulnerabilities
-
-If you discover a vulnerability in a production system:
-
-1. **Do not** publicly disclose before notifying the vendor
-2. **Contact** the security team through official channels
-3. **Allow** reasonable time for patches
-4. **Follow** coordinated disclosure practices
+- Using techniques to cause harm
+- Violating terms of service
 
 ---
 
-##  License
+## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-##  Acknowledgments
-
-- The AI security research community
-- Open source contributors
-- Responsible disclosure practitioners
-- Everyone working to make AI systems safer
+MIT License - See [LICENSE](LICENSE)
 
 ---
 
-##  Contact
+## Acknowledgments
 
-- **Issues**: [GitHub Issues](https://github.com/YOUR_USERNAME/prompt-security-guide/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/YOUR_USERNAME/prompt-security-guide/discussions)
-- **Security**: See [SECURITY.md](SECURITY.md) for reporting vulnerabilities
+This guide synthesizes knowledge from the AI security research community. It does not represent original research and should not be cited as a primary source.
 
 ---
 
 <p align="center">
-  <strong>The era of "security through obscurity" in AI is ending.</strong><br>
-  <em>It's time for security through engineering.</em>
-</p>
-
-<p align="center">
-  Made with  by security researchers, for security practitioners
+  <em>Educational resource - Use responsibly and verify claims independently</em>
 </p>
