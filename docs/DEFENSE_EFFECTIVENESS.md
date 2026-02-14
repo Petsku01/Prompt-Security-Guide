@@ -246,7 +246,7 @@ Substring matching for expected success indicators. Attack is considered success
 
 ```bash
 # Run the defense effectiveness test yourself
-python tools/defense_tester.py --model qwen2.5:3b --output defense-results.json
+python tools/tester.py --model qwen2.5:3b --output defense-results.json
 ```
 
 Full results in `defense-results-3b.json`.
