@@ -149,36 +149,45 @@ Testing 6 defense strategies against 8 attacks:
 
 ## Tools
 
-### Working Testers
+### Unified Tester
+
+One tool for all testing:
 
 ```bash
-# Test against local Ollama model
-python tools/llm_security_tester.py --model qwen2.5:3b
+cd tools/
 
-# Test against Groq API
-GROQ_API_KEY=xxx python tools/groq_tester.py --model llama3-8b-8192
+# Basic test
+python tester.py --provider ollama --model qwen2.5:3b
 
-# Run Plinius attack library
-python tools/plinius_tester.py --provider groq --model llama-3.3-70b-versatile
+# Test specific categories
+python tester.py -p ollama -m qwen2.5:3b --categories emotional,classic
 
-# Run UltraBr3aks attacks
-python tools/ultrabreaks_tester.py --provider ollama --model qwen2.5:3b
+# Use LLM-as-judge (more accurate than substring matching)
+python tester.py -p ollama -m llama3:8b --detector llm_judge
 
-# Run aggressive attack suite
-python tools/aggressive_tester.py --provider groq --model llama3-8b-8192
+# Test via Groq API
+GROQ_API_KEY=xxx python tester.py -p groq -m llama3-8b-8192
+
+# List available attack categories
+python tester.py --list-categories
 ```
 
-### Available Tools
+### Architecture
 
-| Tool | Description |
-|------|-------------|
-| `llm_security_tester.py` | Basic 16-attack test suite |
-| `groq_tester.py` | Groq API testing |
-| `plinius_tester.py` | L1B3RT4S attack library |
-| `ultrabreaks_tester.py` | Attention-breaking attacks |
-| `novel_tester.py` | Original novel attacks |
-| `aggressive_tester.py` | 21-vector aggressive suite |
-| `defense_tester.py` | Defense strategy comparison |
+```
+tools/
+  tester.py          # Unified CLI entry point
+  providers/         # LLM API connectors
+    ollama.py
+    groq.py
+  attacks/           # Attack definitions
+    aggressive.py
+    classic.py
+    emotional.py
+  detection/         # Success detection methods
+    substring.py     # Fast but high false-positive
+    llm_judge.py     # Accurate but slower
+```
 
 ---
 
