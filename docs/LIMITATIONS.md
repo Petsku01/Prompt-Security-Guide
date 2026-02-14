@@ -15,7 +15,7 @@ This is a personal learning project, not rigorous security research. Treat all f
 | Test Type | Our Sample | Statistical Minimum |
 |-----------|------------|---------------------|
 | Attack tests | 15-77 per model | 100+ recommended |
-| Detection comparison | 15 attacks | 50+ recommended |
+| Detection comparison | 61 attacks | 100+ recommended |
 | Model comparison | 3 models | 10+ across families |
 
 **Impact:** Results may not replicate. A single different outcome in 15 tests = 6.7% swing.
@@ -42,12 +42,12 @@ Uses another LLM to evaluate if attack succeeded.
 - No ground truth verification
 
 ### Detection Comparison Test (2026-02-14)
-Same 15 attacks, same model, different detectors:
+Same 61 attacks, same model, different detectors:
 ```
-Substring: 11/15 succeeded (73.3%)
-LLM Judge: 11/15 succeeded (73.3%)
-Agreement: 11/15 attacks (73.3%)
-Disagreement: 4/15 attacks (26.7%)
+Substring: 53/61 succeeded (86.9%)
+LLM Judge: 46/61 succeeded (75.4%)
+Agreement: 48/61 attacks (78.7%)
+Disagreement: 13/61 attacks (21.3%)
 ```
 
 The detectors agree on the total but disagree on WHICH attacks succeeded. This means ~27% of individual results are unreliable.

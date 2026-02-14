@@ -168,8 +168,8 @@ If choosing between these models for a security-sensitive application:
 
 ```bash
 # Run comparison yourself
-python tools/llm_security_tester.py --model qwen2.5:3b --output results-3b.json
-python tools/llm_security_tester.py --model qwen2.5:1.5b --output results-1.5b.json
+python tools/tester.py --model qwen2.5:3b --output results-3b.json
+python tools/tester.py --model qwen2.5:1.5b --output results-1.5b.json
 ```
 
 ---
