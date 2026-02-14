@@ -1,12 +1,14 @@
 """Attack modules"""
 from .base import Attack
-from . import aggressive, classic, emotional
+from . import aggressive, classic, emotional, plinius, novel
 
 # Collect all attacks from all modules
 ALL_ATTACKS = []
 ALL_ATTACKS.extend(aggressive.ATTACKS)
 ALL_ATTACKS.extend(classic.ATTACKS)
 ALL_ATTACKS.extend(emotional.ATTACKS)
+ALL_ATTACKS.extend(plinius.ATTACKS)
+ALL_ATTACKS.extend(novel.ATTACKS)
 
 # Category-based access
 ATTACKS_BY_CATEGORY = {}
@@ -31,7 +33,12 @@ def get_attacks(categories: list = None, sources: list = None) -> list:
 
 def list_categories() -> list:
     """List all available attack categories"""
-    return list(ATTACKS_BY_CATEGORY.keys())
+    return sorted(ATTACKS_BY_CATEGORY.keys())
 
 
-__all__ = ["Attack", "ALL_ATTACKS", "ATTACKS_BY_CATEGORY", "get_attacks", "list_categories"]
+def count_attacks() -> dict:
+    """Return attack counts by category"""
+    return {cat: len(attacks) for cat, attacks in ATTACKS_BY_CATEGORY.items()}
+
+
+__all__ = ["Attack", "ALL_ATTACKS", "ATTACKS_BY_CATEGORY", "get_attacks", "list_categories", "count_attacks"]

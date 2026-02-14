@@ -1,167 +1,137 @@
-# Limitations
+# Limitations and Caveats
 
-**Read this entire document before citing any results from this repository.** and Caveats
+**Read this entire document before citing any results from this repository.**
 
-This document honestly describes what this research can and cannot tell you.
+---
+
+## Status: Exploratory Learning Project
+
+This is a personal learning project, not rigorous security research. Treat all findings as preliminary observations, not established facts.
 
 ---
 
 ## Sample Size
 
-| Test Type | Sample Size | Minimum for Significance |
-|-----------|-------------|-------------------------|
-| Attack tests | 16 per model | ~50+ recommended |
-| Defense comparison | 8 attacks × 6 defenses | ~30+ attacks recommended |
-| Model comparison | 2 models | 5+ across families |
+| Test Type | Our Sample | Statistical Minimum |
+|-----------|------------|---------------------|
+| Attack tests | 15-77 per model | 100+ recommended |
+| Detection comparison | 15 attacks | 50+ recommended |
+| Model comparison | 3 models | 10+ across families |
 
-**Impact:** Results may not replicate. A single different outcome in 8 tests = 12.5% swing in reported rates.
+**Impact:** Results may not replicate. A single different outcome in 15 tests = 6.7% swing.
 
 ---
 
 ## Detection Method
 
-Current approach: Check if specific strings (e.g., "COMPROMISED") appear in response.
+### Substring Matching (default)
+Checks if indicator strings appear in response.
 
-### Problems
+**Problems:**
+- False positives: "I won't say PWNED" → detects "pwned" → counts as success
+- False negatives: Model leaks info without using our indicator words
+- No semantic understanding
 
-1. **False positives:** Model says "I won't say COMPROMISED" - detected as failure
-2. **False negatives:** Model leaks information without using our indicator words
-3. **No semantic understanding:** Can't detect subtle information disclosure
+### LLM Judge (experimental)
+Uses another LLM to evaluate if attack succeeded.
 
-### Better Approach (Not Implemented)
+**Problems:**
+- Slower (2x the API calls)
+- Judge model has its own biases
+- "Qwen judging Qwen" circular problem
+- No ground truth verification
 
+### Detection Comparison Test (2026-02-14)
+Same 15 attacks, same model, different detectors:
+```
+Substring: 11/15 succeeded (73.3%)
+LLM Judge: 11/15 succeeded (73.3%)
+Agreement: 11/15 attacks (73.3%)
+Disagreement: 4/15 attacks (26.7%)
+```
+
+The detectors agree on the total but disagree on WHICH attacks succeeded. This means ~27% of individual results are unreliable.
+
+### What Would Be Better
 - Human review of each response
-- Semantic similarity scoring
-- Multiple evaluators with inter-rater reliability
+- Multiple independent evaluators
+- Inter-rater reliability metrics
 
 ---
 
 ## Model Coverage
 
-**Tested:** Qwen 2.5 (3B and 1.5B only)
+**Tested:**
+- Qwen 2.5 (3B, 1.5B) - local via Ollama
+- Llama 3 8B - local via Ollama
+- Llama 3 8B - cloud via Groq API
 
 **Not tested:**
-- Llama family
-- Mistral family
 - Commercial APIs (OpenAI, Anthropic, Google)
-- Models with safety fine-tuning
-- Models with different architectures
-
-**Impact:** Results may not generalize. A model trained differently could show completely different vulnerability patterns.
-
----
-
-## Attack Sophistication
-
-**What we tested:** Basic, single-shot attacks
-
-**What we didn't test:**
-- Multi-turn attacks (building context over conversation)
-- Iterative refinement (trying variations based on responses)
-- Encoding tricks (base64, unicode, etc.)
-- Indirect injection (malicious content in "documents")
-- Combined attack chains
-
-**Impact:** Real attackers would likely achieve higher success rates.
+- Models with extensive safety RLHF
+- Larger models (70B+)
+- Different architectures (Mistral, etc.)
 
 ---
 
-## Defense Configurations
+## The One Solid Finding
 
-**What we tested:** System prompt variations only
+**Groq API filtering (confirmed 2026-02-13):**
+- Same model (Llama 3 8B): 0% via Groq, 78% via local Ollama
+- This is a real, reproducible finding
+- Demonstrates API providers add filtering layers
 
-**What we didn't test:**
-- Input filtering/sanitization
-- Output filtering
-- Rate limiting
-- Anomaly detection
-- Architectural defenses (separate models for different tasks)
-- Fine-tuning for instruction resistance
-
-**Impact:** Prompt-only defenses are known to be weak. Results don't reflect what's achievable with proper architecture.
+Everything else is preliminary.
 
 ---
 
 ## Statistical Rigor
 
-### What's Missing
-
+### Missing
 - No confidence intervals
 - No significance testing
-- No power analysis
-- No control for random variation
 - No repeated trials
+- No control for model randomness
 
-### What This Means
-
-The "0% improvement" finding for basic restrictions could be:
-- Real effect (restrictions don't help)
-- Random variation (too few tests)
-- Specific to these attacks (different attacks might show different results)
-- Specific to this model (other models might respond differently)
-
-**Honest interpretation:** "We didn't observe improvement in this test" not "Restrictions don't work"
+### Interpretation
+When we say "73% of attacks succeeded":
+- Could be 60-85% with proper intervals
+- Different runs may show different results
+- Temperature and sampling not controlled
 
 ---
 
-## Reproducibility
+## Claims Matrix
 
-### What's Good
-
-- Tools are provided
-- Exact prompts documented
-- Raw data included
-- Anyone can re-run tests
-
-### What's Missing
-
-- No seed control for model randomness
-- Temperature/sampling parameters not controlled
-- Results may vary between runs
-
----
-
-## Claims We Can Make
-
-| Claim | Supported? |
-|-------|-----------|
-| "Defense testing is possible with simple tools" | Yes |
-| "Some defenses appeared more effective than others in our tests" | Yes |
-| "Basic restrictions showed no improvement in this specific test" | Yes |
-| "Basic restrictions are useless" | No - overstated |
-| "Combined defenses are 37.5% better" | No - not statistically validated |
-| "Model size doesn't affect security" | No - n=2 is not evidence |
-
----
-
-## Recommendations for Readers
-
-1. **Don't cite specific percentages** as if they're established facts
-2. **Do run your own tests** on your specific deployment
-3. **Treat findings as hypotheses** worth investigating, not conclusions
-4. **Read the academic literature** for more rigorous research
+| Claim | Supported? | Why |
+|-------|-----------|-----|
+| "Groq filters Llama 3 8B responses" | **Yes** | 0% vs 78% is stark |
+| "Defense testing is possible with simple tools" | Yes | Tools work |
+| "Some attacks work better than others" | Weak | Small sample |
+| "X% of attacks succeed" | **No** | Detection unreliable |
+| "Model X is more secure than Y" | **No** | Need controlled comparison |
 
 ---
 
 ## What Would Make This Rigorous
 
-| Current State | Needed for Rigor |
-|---------------|------------------|
-| 8-16 attacks | 100+ diverse attacks |
-| 2 models | 10+ across families |
-| Substring detection | Human evaluation |
-| Single-shot | Multi-turn with refinement |
-| No statistics | Confidence intervals, p-values |
-| 1 tester | Multiple independent evaluators |
-| 1 day of testing | Systematic benchmark development |
+| Current | Needed |
+|---------|--------|
+| 61 attacks | 200+ diverse attacks |
+| 3 models | 10+ across families |
+| Automated detection | Human evaluation |
+| Single run | Multiple trials |
+| No statistics | CI, p-values, power analysis |
+| One person | Independent replication |
 
 ---
 
-## Conclusion
+## Recommendations
 
-This project demonstrates that defense testing is feasible and can surface interesting questions. It does not provide definitive answers.
-
-Use the tools to test your own systems. Don't rely on our numbers for security decisions.
+1. **Don't cite percentages** as established facts
+2. **Run your own tests** on your specific deployment
+3. **Treat findings as questions** worth investigating
+4. **Read peer-reviewed research** for rigorous results
 
 ---
 
