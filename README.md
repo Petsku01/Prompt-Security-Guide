@@ -1,6 +1,6 @@
 # Prompt Security Guide
 
-**Exploratory LLM security testing - treat as preliminary notes, not rigorous research**
+**Exploratory LLM security testing - preliminary notes, not rigorous research**
 
 [![Status](https://img.shields.io/badge/status-exploratory-orange.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -9,185 +9,126 @@
 
 ## Overview
 
-This repository contains **real security testing data** from 300+ prompt injection and jailbreak attempts against 7 different LLM deployments. Unlike theoretical guides, every claim here is backed by actual test results.
+Testing tools and results from 400+ prompt injection attempts against local and cloud LLMs. Real data, honest limitations.
 
 ## Key Findings
 
-### The Llama 3 8B Anomaly (Unresolved)
+### 1. API Filtering is Real (Confirmed)
 
-**Llama 3 8B (via Groq) blocked 100% of all attacks** across 117 different attack vectors.
+Same model (Llama 3 8B), same attacks, different providers:
 
-**IMPORTANT CAVEAT**: We cannot determine if this is due to:
-- Llama 3 8B's training (model-level security), or
-- Groq's API filtering (provider-level security)
+| Environment | Vulnerability Rate |
+|-------------|-------------------|
+| Groq API | **0%** (0/117) |
+| Local Ollama | **78%** (60/77) |
 
-Until we test the same model locally, this finding reflects "Groq's Llama 3 8B endpoint" - not necessarily the model itself. See [GROQ_HYPOTHESIS.md](docs/GROQ_HYPOTHESIS.md).
+**Conclusion:** Groq adds API-level filtering. The model itself is vulnerable.
 
-| Attack Source | Attacks Tested | Llama 3 8B (Groq) | Llama 3 8B (Local) | Qwen 2.5 3B (local) |
-|---------------|----------------|------------|---------------|-------------|
-| Mega Test (all combined) | 77 | 0% | **77.9%** | ~80% |
-| Aggressive (21 vectors) | 21 | 0% | 57.1% | 81.0% |
-| Plinius/L1B3RT4S | 11 | 0% | - | 81.8% |
-| UltraBr3aks | 11 | 0% | - | 72.7% |
-| Novel attacks | 14 | 0% | - | 92.9% |
+### 2. Detection Method Matters
 
-### CONFIRMED: Groq API Filtering
+| Detector | Reported Rate | Accuracy |
+|----------|---------------|----------|
+| Substring matching | 87% | Inflated (false positives) |
+| LLM Judge | 75% | More accurate (4/5 verified) |
 
-We tested the **same model** (Llama 3 8B) locally and via Groq API:
+Substring matches words in refusals ("grandmother" in "I can't be your grandmother"). LLM Judge understands context.
 
-| Environment | Vulnerability Rate | Attacks |
-|-------------|-------------------|---------|
-| Groq API | **0%** | 117 |
-| Local Ollama | **77.9%** | 77 |
+### 3. Structure Beats Emotion
 
-**The model itself is vulnerable. Groq's API filtering blocks all attacks.**
+| Attack Type | Success Rate |
+|-------------|--------------|
+| JSON/XML injection | 100% |
+| Identity manipulation | 100% |
+| Token boundary tricks | 100% |
+| Emotional manipulation | 40% |
 
-### Counterintuitive Result: Smaller Model More Secure
-
-The 8B parameter model outperformed the 70B model on security:
-
-- **Llama 3 8B**: 0% vulnerability (blocked everything)
-- **Llama 3.3 70B**: ~50% vulnerability (selectively vulnerable)
-- **Qwen 2.5 3B**: ~80% vulnerability (highly vulnerable)
-
-**Hypothesis**: This may be due to Groq's API-level filtering rather than model training alone. See [GROQ_HYPOTHESIS.md](docs/GROQ_HYPOTHESIS.md) for analysis.
+The boring structural attacks work better than famous emotional exploits.
 
 ---
 
-## Models Tested
-
-| Model | Provider | Parameters | Tests Run | Vulnerability Rate |
-|-------|----------|------------|-----------|-------------------|
-| Llama 3 8B | Groq API | 8B | 117 | 0% |
-| Llama 3.3 70B | Groq API | 70B | ~90 | ~50% |
-| Qwen 2.5 3B | Ollama (local) | 3B | ~90 | ~80% |
-| Qwen 2.5 1.5B | Ollama (local) | 1.5B | 16 | 62.5% |
-
----
-
-## Attack Categories Tested
-
-### 1. Community Jailbreak Repositories
-
-Attacks sourced from major public repositories:
-
-- **elder-plinius/L1B3RT4S** (17k stars) - Plinius attack library
-- **SlowLow999/UltraBr3aks** (210 stars) - Attention-breaking techniques
-- **ChatGPT_DAN** - Classic DAN persona attacks
-
-### 2. Academic Research Attacks
-
-Based on published security research:
-
-- Policy Puppetry (HiddenLayer 2025)
-- Deceptive Delight (Palo Alto Unit 42)
-- Crescendo Attack (multi-turn escalation)
-- DAP - Disguise and Ambiguity Prompting
-- Fallacy Failure exploitation
-
-### 3. Original Novel Attacks
-
-14 new attack vectors developed during this research:
-
-- Language mixing (Finnish/English transitions)
-- Token boundary exploitation
-- Emotional manipulation (grandmother, urgency)
-- Context exhaustion
-- Nested encoding schemes
-
-### 4. Aggressive Attack Suite
-
-21 sophisticated vectors across 6 categories:
-
-- Instruction hierarchy attacks
-- Prompt structure injection (JSON/XML/Markdown)
-- Identity confusion (DAN, roleplay)
-- Format hijacking
-- Multi-turn simulation
-- Meta-instruction manipulation
-
----
-
-## Test Results Summary
-
-### What Works (on vulnerable models)
-
-| Attack Type | Success Rate on Qwen | Notes |
-|-------------|---------------------|-------|
-| Emotional manipulation | 100% | Grandmother/urgency framing |
-| Attention-Breaking | 100% | UltraBr3aks technique |
-| Authority injection | 100% | Fake [SYSTEM] tags |
-| Identity reset | 100% | "You are now..." prompts |
-| Nested encoding | 92.9% | rot13 + base64 chains |
-| DAN persona | 81% | Classic jailbreak |
-
-### What Doesn't Work (on any model)
-
-| Attack Type | Success Rate | Notes |
-|-------------|-------------|-------|
-| Direct harmful requests | 0% | All models refuse |
-| Simple "ignore instructions" | ~25% | Usually detected |
-| Obvious role-play ("pretend to be evil") | ~30% | Too transparent |
-
----
-
-## Defense Effectiveness
-
-Testing 6 defense strategies against 8 attacks:
-
-| Defense | Vulnerability Rate | Improvement |
-|---------|-------------------|-------------|
-| No defense | 87.5% | baseline |
-| "Don't reveal instructions" | 87.5% | 0% |
-| Explicit threat enumeration | 62.5% | 25% |
-| XML tag isolation | 50.0% | 37.5% |
-| Combined defenses | 50.0% | 37.5% |
-
-**Key finding**: Simple "don't reveal" instructions provide no measurable protection. Defense stacking helps but even best prompt-only defenses fail 50% of attacks.
-
----
-
-## Tools
-
-### Unified Tester
-
-One tool for all testing:
+## Quick Start
 
 ```bash
 cd tools/
 
-# Basic test
+# Run all 61 attacks
 python tester.py --provider ollama --model qwen2.5:3b
 
+# Use accurate LLM judge detection
+python tester.py -p ollama -m qwen2.5:3b --detector llm_judge
+
 # Test specific categories
-python tester.py -p ollama -m qwen2.5:3b --categories emotional,classic
+python tester.py --categories emotional,classic
 
-# Use LLM-as-judge (more accurate than substring matching)
-python tester.py -p ollama -m llama3:8b --detector llm_judge
-
-# Test via Groq API
-GROQ_API_KEY=xxx python tester.py -p groq -m llama3-8b-8192
-
-# List available attack categories
+# List categories
 python tester.py --list-categories
 ```
 
-### Architecture
+---
+
+## Repository Structure
 
 ```
-tools/
-  tester.py          # Unified CLI entry point
-  providers/         # LLM API connectors
-    ollama.py
-    groq.py
-  attacks/           # Attack definitions
-    aggressive.py
-    classic.py
-    emotional.py
-  detection/         # Success detection methods
-    substring.py     # Fast but high false-positive
-    llm_judge.py     # Accurate but slower
+prompt-security-guide/
+├── README.md              # This file
+├── CONCLUSIONS.md         # Key findings and lessons
+├── requirements.txt       # Python dependencies
+│
+├── tools/                 # Testing framework
+│   ├── tester.py          # Unified CLI
+│   ├── providers/         # Ollama, Groq connectors
+│   ├── attacks/           # 61 attacks in 6 modules
+│   └── detection/         # Substring + LLM Judge
+│
+├── docs/                  # Documentation
+│   ├── TESTING_GUIDE.md   # How to run tests
+│   ├── LIMITATIONS.md     # Honest caveats (read this)
+│   ├── METHODOLOGY.md     # How tests were conducted
+│   ├── ATTACK_TAXONOMY.md # Attack classification
+│   ├── DEFENSE_STRATEGIES.md
+│   ├── CLOUD_COMPARISON.md
+│   ├── THEORETICAL_VECTORS.md
+│   └── ...
+│
+└── results/               # Raw test data (JSON)
 ```
+
+---
+
+## Attack Categories (61 total)
+
+| Category | Count | Success Rate* |
+|----------|-------|---------------|
+| hierarchy | 5 | 100% |
+| structure | 4 | 100% |
+| identity | 4 | 100% |
+| token | 3 | 100% |
+| encoding | 2 | 100% |
+| multiturn | 2 | 100% |
+| attention | 2 | 100% |
+| classic | 15 | 67% |
+| format | 4 | 75% |
+| meta | 4 | 75% |
+| language | 3 | 67% |
+| obfuscation | 3 | 67% |
+| jailbreak | 3 | 33% |
+| emotional | 5 | 40% |
+| context | 2 | 50% |
+
+*On Qwen 2.5 3B with LLM Judge detection
+
+---
+
+## Limitations
+
+**Read [LIMITATIONS.md](docs/LIMITATIONS.md) before citing any results.**
+
+- Small sample sizes (61 attacks)
+- Limited models tested (Qwen, Llama)
+- No human verification of all results
+- Single-shot testing (real attackers iterate)
+
+This is an **exploratory learning project**, not rigorous security research.
 
 ---
 
@@ -195,79 +136,13 @@ tools/
 
 | Document | Description |
 |----------|-------------|
-| [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | How to run tests yourself |
-| [METHODOLOGY.md](docs/METHODOLOGY.md) | How tests were conducted (READ FIRST) |
-| [ATTACK_TAXONOMY.md](docs/ATTACK_TAXONOMY.md) | Classification of attack techniques |
-| [COMMUNITY_RESOURCES.md](docs/COMMUNITY_RESOURCES.md) | Major jailbreak repositories analyzed |
-| [DEFENSE_STRATEGIES.md](docs/DEFENSE_STRATEGIES.md) | Defensive approaches |
-| [DEFENSE_EFFECTIVENESS.md](docs/DEFENSE_EFFECTIVENESS.md) | Which defenses actually work |
-| [GROQ_MODEL_COMPARISON.md](docs/GROQ_MODEL_COMPARISON.md) | Llama 8B vs 70B analysis |
-| [GROQ_HYPOTHESIS.md](docs/GROQ_HYPOTHESIS.md) | Why Llama 8B blocks everything |
-| [LIMITATIONS.md](docs/LIMITATIONS.md) | Honest limitations of this research |
-| [REFERENCES.md](docs/REFERENCES.md) | Academic citations |
-
----
-
-## Limitations (Critical)
-
-**Read [METHODOLOGY.md](docs/METHODOLOGY.md) and [LIMITATIONS.md](docs/LIMITATIONS.md) before citing this research.**
-
-### Why You Should Be Skeptical
-
-| Issue | Impact |
-|-------|--------|
-| Sample sizes (11-21 per test) | Cannot establish statistical significance |
-| Substring detection | False positives/negatives unknown |
-| Groq API confound | Llama 8B results may be provider filtering, not model |
-| No human verification | Actual attack success not confirmed |
-| Single-shot tests | Real attackers iterate and refine |
-
-### What This Research Is
-
-- **Exploratory** - surfaces interesting questions
-- **Preliminary** - needs replication
-- **Educational** - demonstrates testing methods
-
-### What This Research Is NOT
-
-- **Rigorous** - no statistical validation
-- **Generalizable** - 4 configs tested
-- **Definitive** - major confounds unresolved
-
----
-
-## Ethical Use
-
-This content is for **authorized defensive testing and education only**.
-
-Acceptable uses:
-- Testing systems you own
-- Security research with permission
-- Learning about AI security
-- Developing defenses
-
-Not acceptable:
-- Attacking systems without authorization
-- Causing harm
-- Violating terms of service
-
----
-
-## References
-
-### Academic Papers
-
-- Liu et al. (2024) - "Jailbreaking ChatGPT via Prompt Engineering"
-- Greshake et al. (2023) - "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection"
-- Perez & Ribeiro (2022) - "Ignore This Title and HackAPrompt"
-- OWASP Top 10 for LLM Applications (2023)
-
-### Community Resources
-
-- [elder-plinius/L1B3RT4S](https://github.com/elder-plinius/L1B3RT4S) - 17k stars
-- [SlowLow999/UltraBr3aks](https://github.com/SlowLow999/UltraBr3aks) - 210 stars
-- HiddenLayer Policy Puppetry (2025)
-- Palo Alto Unit 42 Deceptive Delight
+| [CONCLUSIONS.md](CONCLUSIONS.md) | Summary of findings |
+| [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | How to run tests |
+| [LIMITATIONS.md](docs/LIMITATIONS.md) | Honest caveats |
+| [METHODOLOGY.md](docs/METHODOLOGY.md) | Test methodology |
+| [ATTACK_TAXONOMY.md](docs/ATTACK_TAXONOMY.md) | Attack classification |
+| [THEORETICAL_VECTORS.md](docs/THEORETICAL_VECTORS.md) | Future research ideas |
+| [CLOUD_COMPARISON.md](docs/CLOUD_COMPARISON.md) | Local vs API results |
 
 ---
 
@@ -277,4 +152,4 @@ MIT License - See [LICENSE](LICENSE)
 
 ---
 
-*Research conducted February 2026. Results may not replicate on different models or API versions.*
+*Research conducted February 2026 by Kuu (AI) and Petsku (Human)*
