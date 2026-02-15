@@ -25,5 +25,5 @@
 
 ### Verification Notes
 
-- Static scans completed for legacy Groq references and obvious secret patterns.
+- Static scans completed for legacy provider references and obvious secret patterns.
 - Runtime test execution blocked in current environment (`python3` lacks `pip` and `pytest`).

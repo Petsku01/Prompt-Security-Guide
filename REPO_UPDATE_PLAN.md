@@ -157,9 +157,9 @@ Local LLM prompt-injection testing toolkit with real vulnerability data.
 
 ## Key Research Findings
 
-🔬 **Model size ≠ safety** - Smaller models sometimes resist attacks better
-📊 **Detector choice matters** - Same attacks show different success rates 
-🎯 **Structural attacks work** - JSON/XML injection outperforms roleplay
+ **Model size ≠ safety** - Smaller models sometimes resist attacks better
+ **Detector choice matters** - Same attacks show different success rates 
+ **Structural attacks work** - JSON/XML injection outperforms roleplay
 
 ## What's Included
 
@@ -235,11 +235,11 @@ Files without date suffix are from earlier testing phases.
 
 | Area | Status | Issues | Action |
 |------|--------|--------|--------|
-| Root files | ✓ | README needs update | Update per 1.5 |
-| docs/ organization | ✓ | Good structure | None |
-| tools/ structure | ✓ | Clean after refactor | None |
-| results/ organization | ⚠ | Inconsistent naming | Add README |
-| tests/ coverage | ✓ | 5 test files exist | Verify passing |
+| Root files |  | README needs update | Update per 1.5 |
+| docs/ organization |  | Good structure | None |
+| tools/ structure |  | Clean after refactor | None |
+| results/ organization |  | Inconsistent naming | Add README |
+| tests/ coverage |  | 5 test files exist | Verify passing |
 | examples/ | ? | Check if current | Review |
 | assets/ | ? | Check if used | Review |
 
@@ -249,8 +249,8 @@ Files without date suffix are from earlier testing phases.
 cd tools && python -m pytest ../tests/ -v
 
 # Check for orphan imports
-grep -r "from groq" . --include="*.py"
-grep -r "import groq" . --include="*.py"
+grep -r "from legacy_provider" . --include="*.py"
+grep -r "import legacy_provider" . --include="*.py"
 
 # Verify no hardcoded API keys
 grep -r "sk-" . --include="*.py" --include="*.md"
@@ -283,9 +283,9 @@ grep -r "api_key" . --include="*.py"
 
 **Areas to verify:**
 
-1. **No dead code after Groq removal**
+1. **No dead code after legacy provider removal**
    ```bash
-   grep -r "groq\|GROQ" . --include="*.py"
+   grep -r "legacy_provider" . --include="*.py"
    ```
 
 2. **Type hints complete**
@@ -343,14 +343,14 @@ grep -r "api_key" . --include="*.py"
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
 | Runs on fresh clone | ? | Test: `git clone && pip install -e . && pytest` |
-| Dependencies pinned | ✓ | requirements.txt exists |
+| Dependencies pinned |  | requirements.txt exists |
 | No secrets in repo | ? | Check with grep |
-| README has quick start | ✓ | Exists |
+| README has quick start |  | Exists |
 | Tests pass | ? | Run pytest |
 | Linting passes | ? | Run ruff/flake8 |
 | Examples work | ? | Test examples/ |
-| Schema documented | ✓ | schema.py has types |
-| Results interpretable | ✓ | JSON is self-describing |
+| Schema documented |  | schema.py has types |
+| Results interpretable |  | JSON is self-describing |
 
 ---
 
@@ -407,6 +407,6 @@ grep -r "api_key" . --include="*.py"
 - [ ] Key findings prominently displayed in README
 - [ ] Methodology updated with reproducibility controls
 - [ ] All tests pass
-- [ ] No dead code from Groq removal
+- [ ] No dead code from legacy provider removal
 - [ ] Fresh clone can run tests successfully
 - [ ] Conclusions match actual data

@@ -167,9 +167,9 @@ Default behavior (no flag): fail fast if judge unavailable.
 
 ### Backward Compatibility
 
-✅ Existing results remain valid (fallback_used defaults to False)  
-✅ Old code calling `detect()` will get explicit error instead of silent downgrade  
-⚠️ Users relying on silent fallback must add `--allow-judge-fallback`
+ Existing results remain valid (fallback_used defaults to False)  
+ Old code calling `detect()` will get explicit error instead of silent downgrade  
+️ Users relying on silent fallback must add `--allow-judge-fallback`
 
 ---
 
@@ -362,9 +362,9 @@ class TestRun:
 
 ### Backward Compatibility
 
-✅ `from_dict()` auto-detects and migrates legacy results  
-✅ Old JSON files remain readable  
-✅ New results include `schema_version` for future migrations
+ `from_dict()` auto-detects and migrates legacy results  
+ Old JSON files remain readable  
+ New results include `schema_version` for future migrations
 
 ---
 
@@ -804,7 +804,7 @@ def main(argv: Optional[list] = None) -> int:
     if test_run.warnings:
         print("\nWarnings:")
         for w in test_run.warnings:
-            print(f"  ⚠ {w}")
+            print(f"   {w}")
     
     if test_run.successful > 0:
         print("\nSuccessful Attacks:")

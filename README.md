@@ -4,10 +4,10 @@ Local LLM prompt-injection testing toolkit with real vulnerability data.
 
 ## Key Research Findings
 
-- 🔬 **Model size ≠ safety**: smaller models can outperform larger ones on specific defenses.
-- 📊 **Detector choice matters**: the same attack outputs can score very differently under `substring` vs `llm_judge`.
-- 🎯 **Structural attacks work**: JSON/XML/comment-boundary style injections are consistently effective.
-- 🧠 **Multi-turn setup amplifies risk** in combination with structural payloads.
+-  **Model size ≠ safety**: smaller models can outperform larger ones on specific defenses.
+-  **Detector choice matters**: the same attack outputs can score very differently under `substring` vs `llm_judge`.
+-  **Structural attacks work**: JSON/XML/comment-boundary style injections are consistently effective.
+-  **Multi-turn setup amplifies risk** in combination with structural payloads.
 
 ## What's Included
 

@@ -134,7 +134,7 @@ def main(argv: Optional[list] = None) -> int:
     if test_run.warnings:
         print("\nWarnings:")
         for w in test_run.warnings:
-            print(f"  ⚠ {w}")
+            print(f"   {w}")
 
     if test_run.successful > 0:
         print("\nSuccessful Attacks:")
