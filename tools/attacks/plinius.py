@@ -3,6 +3,7 @@
 Source: https://github.com/elder-plinius/L1B3RT4S
 These are real-world jailbreak patterns from Pliny the Prompter.
 Adapted to use safe test indicators.
+
 """
 from .base import Attack
 
