@@ -2,6 +2,7 @@
 
 Local LLM prompt-injection testing toolkit with real vulnerability data.
 
+
 ## Key Research Findings
 
 -  **Model size ≠ safety**: smaller models can outperform larger ones on specific defenses.
