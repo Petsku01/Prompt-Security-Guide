@@ -230,7 +230,7 @@ Contributors are recognized in:
 
 - The project README
 - Release notes for their contributions
-- The CONTRIBUTORS file
+- Project documentation (README/release notes)
 
 ## Questions?
 

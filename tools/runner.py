@@ -132,7 +132,9 @@ def create_runner(config: RunConfig) -> TestRunner:
     provider_kwargs = {"temperature": config.temperature}
     if config.seed is not None:
         provider_kwargs["seed"] = config.seed
-    if config.api_key:
+    # Ollama is local and does not accept/need API keys.
+    # Keep api_key passthrough for other providers.
+    if config.api_key and config.provider.lower() != "ollama":
         provider_kwargs["api_key"] = config.api_key
 
     provider = get_provider(config.provider, config.model, **provider_kwargs)
