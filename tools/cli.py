@@ -5,6 +5,7 @@ CLI entrypoint for security testing.
 This module handles:
 - Argument parsing
 - Console output/progress
+
 - JSON file writing
 
 All business logic lives in runner.py.
