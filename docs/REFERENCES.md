@@ -114,7 +114,7 @@ If referencing this guide:
 
 ```
 Prompt Security Guide: Empirical Testing of LLM Defenses (2026)
-https://github.com/[your-repo]
+https://github.com/Petsku01/prompt-security-guide
 Tests conducted: February 2026
 Models: Qwen 2.5 (3B, 1.5B)
 ```

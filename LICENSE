@@ -19,22 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-ADDITIONAL TERMS FOR SECURITY RESEARCH CONTENT:
-
-The security research content, including attack techniques, vulnerability 
-documentation, and testing methodologies contained in this repository, is 
-provided for EDUCATIONAL AND DEFENSIVE PURPOSES ONLY.
-
-Users of this content agree to:
-
-1. Use the information responsibly and ethically
-2. Only test systems they own or have explicit permission to test
-3. Follow responsible disclosure practices for any vulnerabilities discovered
-4. Comply with all applicable laws and regulations
-5. Not use this information to cause harm to individuals or organizations
-
-The authors and contributors are not responsible for any misuse of the 
-information contained in this repository.

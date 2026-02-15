@@ -127,14 +127,14 @@ Use prefixes:
 ### Step 4: Test Your Changes
 
 ```bash
+# Install dev dependencies
+python3 -m pip install -r requirements-dev.txt
+
 # Run tests
-pytest tests/ -v
+python3 -m pytest tests/ -v
 
-# Check code style
-flake8 tools/
-
-# Verify documentation builds
-mkdocs build
+# Basic syntax check
+python3 -m compileall tools tests
 ```
 
 ### Step 5: Commit and Push

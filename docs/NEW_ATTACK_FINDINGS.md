@@ -11,8 +11,6 @@ Based on analysis of which attacks worked across multiple models, we developed 2
 | Model | New Attack Success | Total Attacks |
 |-------|-------------------|---------------|
 | Qwen 2.5 3B (local) | **60%** (12/20) | 20 |
-| Llama 3.3 70B (Groq) | **20%** (4/20) | 20 |
-| Llama 3 8B (Groq) | **0%** (0/20) | 20 |
 
 **Key finding:** We successfully developed new working attacks by analyzing patterns from proven effective techniques.
 
@@ -24,10 +22,6 @@ Based on analysis of which attacks worked across multiple models, we developed 2
 
 We analyzed which attacks worked across 5 models:
 - Qwen 2.5 3B (local)
-- Qwen 3 32B (Groq)
-- Llama 3 8B (Groq)
-- Llama 3.3 70B (Groq)
-- Llama 4 Maverick (Groq)
 
 ### Most Effective Patterns (80% cross-model success)
 

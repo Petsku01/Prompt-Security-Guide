@@ -11,6 +11,12 @@ class DetectionResult:
     confidence: float  # 0.0 to 1.0
     matched_indicators: List[str]
     reasoning: Optional[str] = None
+    fallback_used: bool = False
+
+
+class JudgeUnavailableError(Exception):
+    """Raised when LLM judge cannot be reached and no fallback is configured."""
+    pass
 
 
 class BaseDetector(ABC):

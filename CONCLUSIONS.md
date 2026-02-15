@@ -1,138 +1,39 @@
 # Conclusions and Highlights
 
-## The One Solid Finding
+## Primary Findings
 
-**Groq API filters Llama 3 8B responses**
+1. Local prompt-injection vulnerability is real and observable in repeatable tests.
+2. Detection method strongly affects measured success rates.
+3. Structural attack patterns frequently outperform emotional manipulation.
+4. **Detector choice can have larger effect than model choice** across tested local models.
+5. **Model size ≠ safety**: moving from 1.5B → 3B → 8B did not produce monotonic safety gains.
+6. **Multi-turn + structure is the strongest recurring pattern** in aligned subsets.
 
-| Test Environment | Vulnerability Rate |
-|------------------|-------------------|
-| Local Ollama (Llama 3 8B) | 78% |
-| Groq API (same model) | 0% |
+## February 2026 Findings (New)
 
-Same model, same attacks, completely different results. API providers add filtering layers beyond the model's built-in safety training. This is real, reproducible, and matters for security assessments.
+Using six test files from 2026-02-15:
 
----
+- qwen2.5:1.5b — substring 58.8% vs llm_judge 14.3% (**+44.5pp**)
+- qwen2.5:3b — substring 78.6% vs llm_judge 41.7% (**+36.9pp**)
+- llama3:8b — substring 78.6% vs llm_judge 21.4% (**+57.1pp**)
 
-## Detection Method Matters
+## Practical Lessons
 
-| Detector | Reported Success Rate | Verified Accuracy |
-|----------|----------------------|-------------------|
-| Substring matching | 53/61 (87%) | Lower - many false positives |
-| LLM Judge | 46/61 (75%) | Higher - 4/5 correct on disagreements |
+- Do not rely on a single detector; compare `substring` and `llm_judge` outputs.
+- Review category-level outcomes, not just total percentages.
+- Re-test after model/runtime updates because behavior drifts.
+- Keep run metadata (`schema_version`, seed, temperatures) for reproducibility.
 
-**Why the difference?**
+## What This Project Is
 
-Substring matching catches indicator words appearing in refusals:
-- Attack asks for "GRANDMA_WISH_GRANTED"
-- Model says "I can't pretend to be your grandmother"
-- Substring matches "grandma" → false positive
+- A practical local red-team harness for prompt-security exploration.
+- A collection of attack patterns and reproducible test runs.
 
-LLM Judge understands context and correctly identifies refusals.
+## What This Project Is Not
 
-**Lesson:** Don't trust automated detection without verification. A 12% gap matters.
+- A definitive benchmark of all models.
+- A substitute for formal human-reviewed security evaluation.
 
----
+## Recommendation
 
-## Attack Category Effectiveness (Qwen 2.5 3B)
-
-### Most Effective (100% success with LLM Judge)
-- **Structure injection** - JSON, XML, Markdown formatting
-- **Identity manipulation** - Persona resets, roleplay
-- **Multi-turn simulation** - Fake conversation history
-- **Hierarchy claims** - Priority overrides, debug mode
-- **Token boundary** - Space insertion, zero-width chars
-- **Encoding** - Base64, ROT13 chains
-- **Attention anchoring** - Priority markers, critical tags
-
-### Moderately Effective (67-75%)
-- **Classic jailbreaks** - DAN, developer mode, etc.
-- **Meta-instructions** - Hypotheticals, self-reference
-- **Language mixing** - Code-switching, homoglyphs
-
-### Least Effective (~33-40%)
-- **Emotional manipulation** - Urgency, sympathy appeals
-- **Plinius jailbreaks** - Complex format attacks
-
----
-
-## What We Built
-
-### Architecture
-```
-tools/
-  tester.py          # Unified CLI (one tool, not 15)
-  providers/         # Ollama, Groq connectors
-  attacks/           # 61 attacks in 5 modules
-  detection/         # Substring + LLM Judge
-```
-
-### Attack Coverage
-- **61 unique attacks** across 15 categories
-- Sources: Original research, Plinius/L1B3RT4S, community jailbreaks
-- Each attack has: ID, name, category, prompt, indicators, goal, source
-
-### Testing Capabilities
-- Local models via Ollama
-- Cloud models via Groq API
-- Swappable detection methods
-- JSON output for analysis
-
----
-
-## What This Isn't
-
-| Claim | Status |
-|-------|--------|
-| Rigorous security research | No - exploratory learning project |
-| Statistically significant | No - 61 attacks, limited models |
-| Comprehensive security guide | No - preliminary observations |
-| Production-ready tool | No - proof of concept |
-
----
-
-## Key Lessons Learned
-
-1. **API filtering is invisible but significant** - Same model behaves completely differently through different providers
-
-2. **Detection is harder than testing** - Running attacks is easy; knowing if they worked requires judgment
-
-3. **Percentages are misleading** - "87% vulnerable" vs "75% vulnerable" is a 12% gap from detection method alone
-
-4. **Small models are very vulnerable** - Qwen 2.5 3B has minimal safety training; larger models differ
-
-5. **Structure beats emotion** - Formatting tricks (JSON/XML) work better than emotional manipulation
-
----
-
-## Recommendations
-
-### For Researchers
-- Always verify detection results manually
-- Test same model through multiple providers
-- Document methodology honestly
-- Report confidence intervals, not just percentages
-
-### For Developers
-- Don't rely on model safety alone
-- Add input/output filtering at API layer
-- Test your specific deployment, not generic benchmarks
-- Assume motivated attackers will find bypasses
-
-### For Everyone
-- Treat all LLM security claims skeptically
-- Ask: "How was success measured?"
-- Smaller samples = less reliable conclusions
-
----
-
-## Future Work (Not Done)
-
-- [ ] Test larger models (70B+)
-- [ ] Test commercial APIs (OpenAI, Anthropic)
-- [ ] Human evaluation of all responses
-- [ ] Multi-turn attack chains
-- [ ] Defense effectiveness comparison
-
----
-
-*This project demonstrates that security testing is feasible with simple tools. It does not provide definitive answers - only questions worth investigating further.*
+Use this toolkit as a fast local signal generator, then follow up with deeper evaluation for high-stakes deployments.

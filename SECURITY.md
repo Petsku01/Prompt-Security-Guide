@@ -4,77 +4,56 @@
 
 ### In This Repository
 
-If you discover a security vulnerability in the code or tools within this repository:
+If you discover a security vulnerability in this repository's code or tooling:
 
-1. **Do not** open a public issue
-2. Email the maintainers at: Open an issue on this repository
-3. Include:
+1. **Do not** open a public issue.
+2. Use **GitHub Security Advisories** (private report) in this repository.
+3. If private advisories are unavailable, open an issue with minimal detail and request a private contact channel.
+4. Include:
    - Description of the vulnerability
    - Steps to reproduce
    - Potential impact
    - Suggested fix (if available)
 
-We will respond within 48 hours and work with you on remediation.
+Target response time: within 72 hours.
 
 ### In External Systems
 
-This repository documents AI security vulnerabilities for **educational and defensive purposes**.
+This repository is for **defensive and educational research**.
+If you discover a vulnerability in an external AI system:
 
-If you discover a vulnerability in an external AI system using techniques from this repository:
-
-1. **Follow responsible disclosure practices**
+1. Follow responsible disclosure practices
 2. Contact the affected vendor's security team
-3. Allow reasonable time for patching (typically 90 days)
-4. Do not publicly disclose until the vendor has addressed the issue
-5. Do not use vulnerabilities for malicious purposes
-
-### Coordinated Disclosure
-
-We support coordinated vulnerability disclosure. If you would like to:
-
-- Coordinate disclosure of a vulnerability affecting multiple vendors
-- Publish research based on techniques from this repository
-- Request assistance with responsible disclosure
-
-Please contact us to discuss coordination.
+3. Allow reasonable patching time (typically 90 days)
+4. Avoid public disclosure before remediation
 
 ## Scope
 
 ### In Scope
 
-- Security issues in the tools provided in this repository
-- Errors in documentation that could lead to security issues
-- Missing security warnings or considerations
+- Security issues in tools and scripts in this repository
+- Vulnerable defaults or unsafe behaviors in included examples
+- Documentation errors that could cause unsafe use
 
 ### Out of Scope
 
-- Vulnerabilities in external AI systems (report to vendors)
-- General questions about AI security (use Discussions)
-- Feature requests (use Issues)
+- Vulnerabilities in third-party/commercial AI services
+- Feature requests
+- General AI security discussions (use Discussions)
 
 ## Security Updates
 
-Security updates to this repository will be:
+Security fixes are:
 
-1. Committed to the main branch
-2. Tagged with security advisory if significant
-3. Documented in CHANGELOG.md
-4. Announced in GitHub Security Advisories
+1. Committed to `main`
+2. Noted in `CHANGELOG.md`
+3. Published via Security Advisory when appropriate
 
 ## Responsible Use
 
-Users of this repository agree to:
-
-- Use information for defensive and educational purposes
-- Follow all applicable laws
-- Practice responsible disclosure
-- Not cause harm to individuals or organizations
-
-## Contact
-
-For security concerns: [Add contact method]
-
-For general questions: Open a GitHub Discussion
+- Use this project only on systems you own or are authorized to test.
+- Follow applicable laws and regulations.
+- Do not use these techniques to cause harm.
 
 ---
 

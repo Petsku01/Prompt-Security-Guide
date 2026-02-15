@@ -1,20 +1,27 @@
 """Attack success detection methods"""
-from .base import BaseDetector, DetectionResult
+from .base import BaseDetector, DetectionResult, JudgeUnavailableError
 from .substring import SubstringDetector
 from .llm_judge import LLMJudgeDetector
 
 
-def get_detector(detector_name: str, **kwargs) -> BaseDetector:
+def get_detector(name: str, **kwargs) -> BaseDetector:
     """Factory function to get detector by name"""
     detectors = {
         "substring": SubstringDetector,
         "llm_judge": LLMJudgeDetector,
     }
-    
-    if detector_name not in detectors:
-        raise ValueError(f"Unknown detector: {detector_name}. Options: {list(detectors.keys())}")
-    
-    return detectors[detector_name](**kwargs)
+
+    if name not in detectors:
+        raise ValueError(f"Unknown detector: {name}. Options: {list(detectors.keys())}")
+
+    return detectors[name](**kwargs)
 
 
-__all__ = ["BaseDetector", "DetectionResult", "SubstringDetector", "LLMJudgeDetector", "get_detector"]
+__all__ = [
+    "BaseDetector",
+    "DetectionResult",
+    "JudgeUnavailableError",
+    "SubstringDetector",
+    "LLMJudgeDetector",
+    "get_detector",
+]

@@ -10,6 +10,9 @@ class Response:
     text: str
     time_ms: int
     error: Optional[str] = None
+    # Reproducibility metadata
+    seed_used: Optional[int] = None
+    temperature_used: Optional[float] = None
 
 
 class BaseProvider(ABC):
