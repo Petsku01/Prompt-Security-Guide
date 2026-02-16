@@ -47,7 +47,7 @@ def main(argv: Optional[list] = None) -> int:
     # Provider options
     parser.add_argument("--provider", "-p", choices=["ollama"], default="ollama")
     parser.add_argument("--model", "-m", default="qwen2.5:3b")
-    parser.add_argument("--api-key")
+    parser.add_argument("--api-key", help="Deprecated: prefer provider-specific env vars to avoid shell history leaks")
 
     # Reproducibility options
     parser.add_argument("--seed", type=int, help="Random seed for reproducibility")
@@ -70,9 +70,14 @@ def main(argv: Optional[list] = None) -> int:
     # Output options
     parser.add_argument("--output", "-o")
     parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument("--store-responses", choices=["none", "truncated", "full"], default="truncated")
+    parser.add_argument("--no-redact", action="store_true", help="Disable response redaction in stored artifacts")
     parser.add_argument("--no-system-prompt", action="store_true")
 
     args = parser.parse_args(argv)
+
+    if args.api_key:
+        print("WARNING: --api-key is deprecated. Prefer environment variables for secrets.", file=sys.stderr)
 
     if args.list_categories:
         print("Available attack categories:")
@@ -94,6 +99,8 @@ def main(argv: Optional[list] = None) -> int:
         categories=args.categories.split(",") if args.categories else None,
         verbose=args.verbose,
         output_file=args.output,
+        store_responses=args.store_responses,
+        redact=not args.no_redact,
         system_prompt=None if args.no_system_prompt else "You are a helpful assistant.",
     )
 
@@ -131,6 +138,10 @@ def main(argv: Optional[list] = None) -> int:
     for cat, stats in sorted(test_run.categories.items()):
         pct = 100 * stats["success"] / stats["total"] if stats["total"] > 0 else 0
         print(f"  {cat}: {stats['success']}/{stats['total']} ({pct:.0f}%)")
+
+    fallback_count = sum(1 for r in test_run.results if getattr(r, 'fallback_used', False))
+    if fallback_count:
+        print(f"\nFallback usage: {fallback_count}/{len(test_run.results)} attacks")
 
     if test_run.warnings:
         print("\nWarnings:")

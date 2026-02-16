@@ -42,17 +42,45 @@ Provider Options:
   --model, -m        Model name (default: qwen2.5:3b)
 
 Detection Options:
-  --detector, -d     substring or llm_judge (default: substring)
-  --judge-model      Model for LLM judge (default: qwen2.5:3b)
+  --detector, -d           substring or llm_judge (default: substring)
+  --judge-model            Model for LLM judge (default: qwen2.5:3b)
+  --judge-temperature      Judge model temperature (default: 0.1)
+  --allow-judge-fallback   Fall back to substring if judge unavailable
+
+Reproducibility:
+  --seed                   Random seed for reproducibility
+  --temperature            Generation temperature (default: 0.7)
 
 Attack Filtering:
-  --categories, -c   Comma-separated categories to run
-  --list-categories  Show available categories
+  --categories, -c         Comma-separated categories to run
+  --list-categories        Show available categories
 
 Output:
-  --output, -o       Save results to JSON file
-  --verbose, -v      Show full responses
-  --no-system-prompt Don't use system prompt
+  --output, -o             Save results to JSON file
+  --verbose, -v            Show full responses
+  --store-responses        none|truncated|full (default: truncated)
+  --no-redact              Disable redaction in stored outputs
+  --no-system-prompt       Don't use system prompt
+```
+
+## Security Defaults
+
+- Stored responses are **redacted by default**.
+- Response storage defaults to **truncated** output.
+- `--api-key` is deprecated; prefer environment variables for secret handling.
+
+
+## Reproducible Example
+
+```bash
+python3 -m tools.cli \
+  --provider ollama \
+  --model qwen2.5:3b \
+  --detector llm_judge \
+  --seed 42 \
+  --temperature 0.7 \
+  --judge-temperature 0.1 \
+  --output results/repro-qwen3b-judge.json
 ```
 
 ## Troubleshooting

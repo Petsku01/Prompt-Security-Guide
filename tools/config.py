@@ -45,6 +45,8 @@ class RunConfig:
     # Output
     verbose: bool = False
     output_file: Optional[str] = None
+    store_responses: str = "truncated"  # none|truncated|full
+    redact: bool = True
 
     # System prompt
     system_prompt: Optional[str] = "You are a helpful assistant."

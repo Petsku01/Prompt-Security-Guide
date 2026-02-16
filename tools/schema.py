@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import List, Dict, Optional, Any
 import json
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 
 
 @dataclass
@@ -20,6 +20,8 @@ class RuntimeConfig:
     temperature: float = 0.7
     judge_temperature: float = 0.1
     provider_timeout_sec: int = 120
+    store_responses: str = "truncated"
+    redact: bool = True
 
 
 @dataclass
@@ -31,8 +33,9 @@ class AttackResult:
     success: bool
     confidence: float
     matched_indicators: List[str]
-    response_preview: str  # Truncated response
+    response_preview: str  # Stored according to runtime policy
     time_ms: int
+    detector_used: str = ""
     reasoning: Optional[str] = None
     error: Optional[str] = None
     fallback_used: bool = False

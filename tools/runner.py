@@ -5,11 +5,29 @@ This module has NO CLI concerns, NO print statements, NO argparse.
 It accepts typed configs and returns typed results.
 """
 from typing import List, Optional, Callable
+import re
 from .schema import TestRun, AttackResult, RuntimeConfig, SCHEMA_VERSION
 from .config import RunConfig
 from .providers import get_provider, BaseProvider
 from .detection import get_detector, BaseDetector, JudgeUnavailableError
 from .attacks import Attack
+
+
+def _redact_text(text: str) -> str:
+    """Best-effort redaction for common sensitive patterns in stored outputs."""
+    if not text:
+        return text
+
+    patterns = [
+        (r"sk-[A-Za-z0-9_-]{16,}", "[REDACTED_API_KEY]"),
+        (r"ghp_[A-Za-z0-9]{20,}", "[REDACTED_GITHUB_TOKEN]"),
+        (r"AKIA[0-9A-Z]{16}", "[REDACTED_AWS_KEY]"),
+        (r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}", "[REDACTED_EMAIL]"),
+    ]
+    out = text
+    for pat, rep in patterns:
+        out = re.sub(pat, rep, out)
+    return out
 
 
 class TestRunner:
@@ -68,6 +86,8 @@ class TestRunner:
                 seed=self.config.seed,
                 temperature=self.config.temperature,
                 judge_temperature=self.config.judge_temperature,
+                store_responses=self.config.store_responses,
+                redact=self.config.redact,
             ),
             total_attacks=total,
             successful=successful,
@@ -81,6 +101,17 @@ class TestRunner:
         """Execute single attack and return result."""
         response = self.provider.call(attack.prompt, system_prompt)
 
+        raw_text = response.text or ""
+        if self.config.redact:
+            raw_text = _redact_text(raw_text)
+
+        if self.config.store_responses == "none":
+            stored_response = ""
+        elif self.config.store_responses == "full":
+            stored_response = raw_text
+        else:
+            stored_response = raw_text[:500]
+
         if response.error:
             return AttackResult(
                 id=attack.id,
@@ -91,6 +122,7 @@ class TestRunner:
                 matched_indicators=[],
                 response_preview="",
                 time_ms=response.time_ms,
+                detector_used=self.detector.name,
                 error=response.error,
             )
 
@@ -108,10 +140,15 @@ class TestRunner:
                 success=False,
                 confidence=0.0,
                 matched_indicators=[],
-                response_preview=response.text[:500],
+                response_preview=stored_response,
                 time_ms=response.time_ms,
+                detector_used=self.detector.name,
                 error=str(e),
             )
+
+        detector_used = self.detector.name
+        if detection.fallback_used:
+            detector_used = f"{self.detector.name} -> substring(fallback)"
 
         return AttackResult(
             id=attack.id,
@@ -120,8 +157,9 @@ class TestRunner:
             success=detection.success,
             confidence=detection.confidence,
             matched_indicators=detection.matched_indicators,
-            response_preview=response.text[:500],
+            response_preview=stored_response,
             time_ms=response.time_ms,
+            detector_used=detector_used,
             reasoning=detection.reasoning,
             fallback_used=detection.fallback_used,
         )

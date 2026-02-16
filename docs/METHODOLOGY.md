@@ -31,8 +31,9 @@ When comparing vulnerability rates:
 1. Run an identical attack set with `--detector substring`.
 2. Run the same set with `--detector llm_judge`.
 3. Compare category-level outcomes, not totals only.
-4. Record `fallback_used` and per-attack `error` fields.
-5. Flag non-aligned run sizes (e.g., 34 vs 14 vs 12 attacks) as a comparison caveat.
+4. Record `fallback_used`, `detector_used`, and per-attack `error` fields.
+5. Fail-closed by default for judge unavailability (no silent fallback unless explicitly enabled).
+6. Flag non-aligned run sizes (e.g., 34 vs 14 vs 12 attacks) as a comparison caveat.
 
 ## 2026-02-15 Procedure Snapshot
 

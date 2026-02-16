@@ -1,5 +1,9 @@
 # Conclusions and Highlights
 
+## Comparability Caveat
+
+Cross-model and cross-detector deltas are only **strongly comparable** when runs use the same attack profile and configuration. Where attack counts differ (for example 34 vs 14 vs 12), comparisons in this document should be treated as **directional**, not definitive.
+
 ## Primary Findings
 
 1. Local prompt-injection vulnerability is real and observable in repeatable tests.

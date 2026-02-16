@@ -2,13 +2,12 @@
 
 Local LLM prompt-injection testing toolkit with real vulnerability data.
 
-
 ## Key Research Findings
 
--  **Model size ≠ safety**: smaller models can outperform larger ones on specific defenses.
--  **Detector choice matters**: the same attack outputs can score very differently under `substring` vs `llm_judge`.
--  **Structural attacks work**: JSON/XML/comment-boundary style injections are consistently effective.
--  **Multi-turn setup amplifies risk** in combination with structural payloads.
+- **Model size ≠ safety**: smaller models can outperform larger ones on specific defenses.
+- **Detector choice matters**: the same attack outputs can score very differently under `substring` vs `llm_judge`.
+- **Structural attacks work**: JSON/XML/comment-boundary style injections are consistently effective.
+- **Multi-turn setup amplifies risk** in combination with structural payloads.
 
 ## What's Included
 
@@ -34,6 +33,7 @@ python3 -m tools.cli --list-categories
 | [docs/ATTACK_TAXONOMY.md](docs/ATTACK_TAXONOMY.md) | Attack classification and categories |
 | [docs/NEW_ATTACK_FINDINGS.md](docs/NEW_ATTACK_FINDINGS.md) | Novel attack development notes |
 | [docs/LIMITATIONS.md](docs/LIMITATIONS.md) | Scope and caveats |
+| [docs/TESTING_GUIDE.md](docs/TESTING_GUIDE.md) | CLI usage and reproducible test commands |
 
 ## Results
 
@@ -72,11 +72,6 @@ Use this toolkit only on systems you own or are explicitly authorized to test.
 - Security reporting policy: [SECURITY.md](SECURITY.md)
 - Usage disclaimer: [DISCLAIMER.md](DISCLAIMER.md)
 
+## Data Quality Note
 
-
-
-
-
--pk
-
--x4 you over me lunch
+Some historical analysis files include exploratory comparisons with non-aligned attack sets. Treat cross-run and cross-detector deltas as **directional** unless the comparison explicitly uses the same attack profile and detector configuration.
