@@ -1,0 +1,22 @@
+{
+  "url": "https://simonwillison.net/2025/May/16/openai-codex/",
+  "title": "OpenAI Codex",
+  "text": "Simon Willison’s Weblog \n     Subscribe \n   \n \n\n\n \n   \n     Sponsored by:  Augment Code — Agent Orchestration. Living Specs. Your favorite agents.  Build with Intent .\n   \n \n\n\n \n \n\n \n\n\n 16th May 2025 - Link Blog \n\n OpenAI Codex .  Announced today , here's the documentation for OpenAI's \"cloud-based software engineering agent\". It's not yet available for us $20/month Plus customers (\"coming soon\") but if you're a $200/month Pro user you can try it out now. \n \n At a high level, you specify a prompt, and the agent goes to work in its own environment. After about 8–10 minutes, the agent gives you back a diff. \n You can execute prompts in either  ask  mode or  code  mode. When you select  ask , Codex clones a read-only version of your repo, booting faster and giving you follow-up tasks.  Code  mode, however, creates a full-fledged environment that the agent can run and test against. \n \n This  4 minute demo video  is a useful overview. One note that caught my eye is that the setup phase for an environment can pull from the internet (to install necessary dependencies) but the agent loop itself still runs in a network disconnected sandbox. \n It sounds similar to GitHub's own  Copilot Workspace  project, which can compose PRs against your code based on a prompt. The big difference is that Codex incorporates a full Code Interpeter style environment, allowing it to build and run the code it's creating and execute tests in a loop. \n Copilot Workspaces has a level of integration with Codespaces but still requires manual intervention to help exercise the code. \n Also similar to Copilot Workspaces is a confusing  name. OpenAI now have  four  products called Codex: \n OpenAI Codex , announced today. \n Codex CLI , a completely different coding assistant tool they released a few weeks ago that is the same kind of shape as  Claude Code . This one owns the  openai/codex  namespace on GitHub. \n codex-mini , a brand new model released today that is used by their Codex product",
+  "links": [
+    "https://docs.anthropic.com/en/docs/claude-code/overview",
+    "https://en.m.wikipedia.org/wiki/OpenAI_Codex",
+    "https://fandf.co/4qRMH45",
+    "https://github.com/openai/codex",
+    "https://github.com/openai/codex-universal/blob/main/Dockerfile",
+    "https://github.com/simonw/llm-openai-plugin/releases/tag/0.4",
+    "https://github.com/sponsors/simonw/",
+    "https://githubnext.com/projects/copilot-workspace",
+    "https://openai.com/codex/",
+    "https://openai.com/index/introducing-codex/",
+    "https://platform.openai.com/docs/codex",
+    "https://platform.openai.com/docs/models/codex-mini-latest",
+    "https://twitter.com/openaidevs/status/1923492740526112819",
+    "https://twitter.com/simonw/status/1730259398990385355",
+    "https://web.archive.org/web/20230203201912/https://openai.com/blog/openai-codex/"
+  ]
+}

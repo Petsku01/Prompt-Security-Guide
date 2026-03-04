@@ -48,7 +48,12 @@ ground_truth_*.json
 labeled_samples_*.json
 gemsamples_*.json
 samples_*.json
-overnight-rebuild/
+# Keep overnight-rebuild research data!
+!overnight-rebuild/src/research-docs/
+overnight-rebuild/src/processed/
+overnight-rebuild/src/results/
+overnight-rebuild/src/checkpoints/
+
 attacks/
 tools/
 results/
@@ -57,5 +62,3 @@ archive/
 profiles/
 models/
 tests/
-*.json
-!package.json

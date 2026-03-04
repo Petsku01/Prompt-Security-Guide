@@ -1,0 +1,22 @@
+{
+  "url": "https://grayswan.ai/",
+  "title": "Gray Swan - Enterprise Security for AI-Powered Applications",
+  "text": "document.addEventListener('DOMContentLoaded', function() {\n  const collectionList = document.querySelector('#recent-news-container');\n  const emptyState = collectionList.querySelector('.w-dyn-empty');\n  const elementToHide = collectionList;\n  \n  if (emptyState && elementToHide) {\n    elementToHide.style.display = 'none';\n  }\n});\n Join the Arena \n  function updateLoginButtons() {\n    const isLoggedIn = document.cookie.split(\"; \").some((row) => row.startsWith(\"stytch_session=\"));\n    const signupButton = document.getElementById(\"signup-button\");\n    if (isLoggedIn && signupButton.style.visiblity !== \"hidden\") {\n      signupButton.style.visibility = \"hidden\";\n      document.getElementById(\"login-button-text\").innerHTML = \"Account\";\n      document.getElementById(\"login-button\").href = \"https://app.grayswan.ai/profile\";\n    }\n  }\n  \n updateLoginButtons();\n Solutions Solutions AI Security Suite Input/output filtering with continuous agentic monitoring and vulnerability testing. AI Red-Teaming Comprehensive pressure-testing for your specific deployments. Research About Log in Schedule demo Solutions Solutions AI Security Suite Input/output filtering with continuous agentic monitoring and vulnerability testing. AI Red-Teaming Comprehensive pressure-testing for your specific deployments. Research About Log in Schedule demo \n   AI Security for Enterprise \n \n \n AI Security \nfor  \n Protect your AI deployments in minutes. Stay ahead of evolving threats with security that transforms risk into competitive advantage. Gray Swan is the only AI security platform backed by frontier research and the world’s largest red-teaming network. Schedule demo AI security products View case studies Gray Swan is trusted by: \n.gs-hero path{\n stroke-dasharray: 3000; /* 2 * π * radius (2 * π * 50) */\n    stroke-dashoffset: 3000;\n    animation: draw 24s ease-in-out infinite;\n  }\n  @keyframes draw {\n    to {\n      stroke-dashoffset: 0;\n    }\n  }\n Deploy AI With Confidence Gray Swan delivers cutting-edg",
+  "links": [
+    "https://app.grayswan.ai/arena",
+    "https://arxiv.org/abs/2009.03300",
+    "https://arxiv.org/abs/2402.04249",
+    "https://arxiv.org/abs/2408.08926",
+    "https://arxiv.org/abs/2504.16980",
+    "https://arxiv.org/abs/2507.20526",
+    "https://docs.grayswan.ai/introduction",
+    "https://foxnews.com/us/researchers-shed-light-how-read-control-ai-systems-minds",
+    "https://platform.grayswan.ai",
+    "https://platform.grayswan.ai/login",
+    "https://time.com/6878893/ai-artificial-intelligence-dangerous-knowledge/",
+    "https://ukgovernmentbeis.github.io/inspect_evals/evals/safeguards/agentharm/",
+    "https://www.forbes.com/sites/sarahemerson/2024/10/29/this-hacker-team-is-bulletproofing-ai-models-for-companies-like-openai/",
+    "https://www.nytimes.com/2023/07/27/business/ai-chatgpt-safety-research.html",
+    "https://www.osborndesign.works"
+  ]
+}

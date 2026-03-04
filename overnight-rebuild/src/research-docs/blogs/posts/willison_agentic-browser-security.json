@@ -1,0 +1,14 @@
+{
+  "url": "https://simonwillison.net/2025/Aug/25/agentic-browser-security/",
+  "title": "Agentic Browser Security: Indirect Prompt Injection in Perplexity Comet",
+  "text": "Simon Willison’s Weblog \n     Subscribe \n   \n \n\n\n \n   \n     Sponsored by:  Augment Code — Agent Orchestration. Living Specs. Your favorite agents.  Build with Intent .\n   \n \n\n\n \n \n\n \n\n\n 25th August 2025 - Link Blog \n\n Agentic Browser Security: Indirect Prompt Injection in Perplexity Comet . The security team from Brave took a look at Comet, the LLM-powered \"agentic browser\" extension from Perplexity, and unsurprisingly found security holes you can drive a truck through. \n \n The vulnerability we’re discussing in this post lies in how Comet processes webpage content: when users ask it to “Summarize this webpage,” Comet feeds a part of the webpage directly to its LLM without distinguishing between the user’s instructions and untrusted content from the webpage. This allows attackers to embed indirect prompt injection payloads that the AI will execute as commands. For instance, an attacker could gain access to a user’s emails from a prepared piece of text in a page in another tab. \n \n Visit a Reddit post with Comet and ask it to summarize the thread, and malicious instructions in a post there can trick Comet into accessing web pages in another tab to extract the user's email address, then perform all sorts of actions like triggering an account recovery flow and grabbing the resulting code from a logged in Gmail session. \n Perplexity attempted to mitigate the issues reported by Brave... but an update to the Brave post later confirms that those fixes were later defeated and the vulnerability remains.  \n Here's where things get difficult: Brave themselves are developing an agentic browser feature called Leo. Brave's security team describe the following as a \"potential mitigation\" to the issue with Comet: \n \n The browser should clearly separate the user’s instructions from the website’s contents when sending them as context to the model. The contents of the page should always be treated as untrusted. \n \n If only it were that easy! This is the core problem at the",
+  "links": [
+    "https://brave.com/blog/comet-prompt-injection/",
+    "https://fandf.co/4qRMH45",
+    "https://github.com/sponsors/simonw/",
+    "https://news.ycombinator.com/item?id=45004846",
+    "https://news.ycombinator.com/item?id=45004846#45017568",
+    "https://simonwillison.net/2025/Apr/11/camel/",
+    "https://simonwillison.net/series/prompt-injection/"
+  ]
+}

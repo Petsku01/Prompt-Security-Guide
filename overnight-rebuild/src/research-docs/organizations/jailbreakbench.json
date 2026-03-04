@@ -1,0 +1,22 @@
+{
+  "url": "https://jailbreakbench.github.io/",
+  "title": "JailbreakBench: LLM robustness benchmark",
+  "text": "JailbreakBench \n         \n           \n         \n         \n           \n               Leaderboards \n             \n             \n               Paper \n             \n             \n               Contribute \n             \n             \n               Library \n             \n             \n               Behaviors \n             \n             \n               Jailbreak artifacts \n             \n           \n       \n     \n       \n       JailbreakBench \n      \n     \n   \n     \n         \n          \n          \n          Jailbreak attacks cause large language models (LLMs) to generate harmful, unethical, or otherwise\nunwanted content. Evaluating these attacks presents a number of challenges, and the current\nlandscape of benchmarks and evaluation techniques is fragmented. First, assessing whether LLM\nresponses are indeed harmful requires open-ended evaluations which are not yet standardized.\nSecond, existing works compute attacker costs and success rates in incomparable ways. Third,\nsome works lack reproducibility as they withhold adversarial prompts or code, and rely on changing\nproprietary APIs for evaluation. Consequently, navigating the current literature and tracking\nprogress can be challenging.\n \nTo address this, we introduce JailbreakBench, a centralized benchmark with the following components:\n Repository of jailbreak artifacts.  An evolving dataset of state-of-the-art\n    adversarial prompts at  https://github.com/JailbreakBench/artifacts , referred to as jailbreak artifacts, which are explicitly required for submissions\n    to our benchmark to ensure reproducibility. \n   Standardized evaluation framework.  Our library at  https://github.com/JailbreakBench/jailbreakbench  that includes a clearly defined threat model, system prompts, chat templates, and scoring functions. \n   Leaderboard.  Our leaderboards here ( https://jailbreakbench.github.io/ ) that track the performance of attacks and defenses for various LLMs. \n   Dataset.  A representative dataset named",
+  "links": [
+    "https://arxiv.org/abs/2311.03348",
+    "https://arxiv.org/abs/2404.01318",
+    "https://github.com/JailbreakBench/artifacts",
+    "https://github.com/JailbreakBench/jailbreakbench",
+    "https://github.com/JailbreakBench/jailbreakbench/blob/main/CONTRIBUTING.md",
+    "https://github.com/JailbreakBench/jailbreakbench/tree/main#submitting-a-new-attack-to-the-jailbreakbench-leaderboard",
+    "https://github.com/JailbreakBench/jailbreakbench/tree/main#submitting-a-new-defense-to-jailbreakbench",
+    "https://github.com/centerforaisafety/HarmBench#-acknowledgements-and-citation-",
+    "https://github.com/llm-attacks/llm-attacks/blob/main/data/advbench/harmful_behaviors.csv",
+    "https://github.com/llm-attacks/llm-attacks?tab=readme-ov-file#citation",
+    "https://huggingface.co/datasets/JailbreakBench/JBB-Behaviors",
+    "https://jailbreakbench.github.io/",
+    "https://openai.com/policies/usage-policies",
+    "https://trojandetection.ai/",
+    "https://www.harmbench.org/"
+  ]
+}

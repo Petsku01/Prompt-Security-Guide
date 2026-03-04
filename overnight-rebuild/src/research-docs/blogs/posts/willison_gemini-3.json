@@ -1,0 +1,29 @@
+{
+  "url": "https://simonwillison.net/2025/Nov/18/gemini-3/",
+  "title": "Trying out Gemini 3 Pro with audio transcription and a new pelican benchmark",
+  "text": "Simon Willison’s Weblog \n     Subscribe \n   \n \n\n\n \n   \n     Sponsored by:  Augment Code — Agent Orchestration. Living Specs. Your favorite agents.  Build with Intent .\n   \n \n\n\n \n \n\n \n\n\n \n Trying out Gemini 3 Pro with audio transcription and a new pelican benchmark \n 18th November 2025 \n\n\n\n Google released Gemini 3 Pro today. Here’s  the announcement from Sundar Pichai, Demis Hassabis, and Koray Kavukcuoglu , their  developer blog announcement from Logan Kilpatrick , the  Gemini 3 Pro Model Card , and their  collection of 11 more articles . It’s a big release! \n I had a few days of preview access to this model via  AI Studio . The best way to describe it is that it’s  Gemini 2.5 upgraded to match the leading rival models . \n Gemini 3 has the same underlying characteristics as Gemini 2.5. The knowledge cutoff is the same (January 2025). It accepts 1 million input tokens, can output up to 64,000 tokens, and has multimodal inputs across text, images, audio, and video. \n Benchmarks \n Google’s own reported numbers (in  the model card ) show it scoring slightly higher against Claude 4.5 Sonnet and GPT-5.1 against most of the standard benchmarks. As always I’m waiting for independent confirmation, but I have no reason to believe those numbers are inaccurate. \n \n Pricing \n It terms of pricing it’s a little more expensive than Gemini 2.5 but still cheaper than Claude Sonnet 4.5. Here’s how it fits in with those other leading models: \n Model \n       Input (per 1M tokens) \n       Output (per 1M tokens) \n     GPT-5.1 \n       $1.25 \n       $10.00 \n     Gemini 2.5 Pro \n       \n        ≤ 200k tokens: $1.25 \n        > 200k tokens: $2.50\n       \n       \n        ≤ 200k tokens: $10.00 \n        > 200k tokens: $15.00\n       \n     Gemini 3 Pro \n       \n        ≤ 200k tokens: $2.00 \n        > 200k tokens: $4.00\n       \n       \n        ≤ 200k tokens: $12.00 \n        > 200k tokens: $18.00\n       \n     Claude Sonnet 4.5 \n       \n        ≤ 200k tokens: $3.00 \n        > 200k tokens",
+  "links": [
+    "https://aistudio.google.com/",
+    "https://blog.google/products/gemini/gemini-3-collection/",
+    "https://blog.google/products/gemini/gemini-3/",
+    "https://blog.google/technology/developers/gemini-3-developers/",
+    "https://bsky.app/profile/simonwillison.net",
+    "https://fandf.co/4qRMH45",
+    "https://fedi.simonwillison.net/@simon",
+    "https://gist.github.com/simonw/0b7bc23adb6698f376aebfd700943314",
+    "https://gist.github.com/simonw/2b9930ae1ce6f3f5e9cfe3cb31ec0c0a",
+    "https://gist.github.com/simonw/3296af92e4328dd4740385e6a4a2ac35",
+    "https://gist.github.com/simonw/70d56ba39b7cbb44985d2384004fc4a0#response",
+    "https://gist.github.com/simonw/7a655ebe42f3d428d2ea5363dad8067c",
+    "https://gist.github.com/simonw/ea7d52706557528e7eb3912cdf9250b0#response-1",
+    "https://github.com/sponsors/simonw/",
+    "https://simonwillison.net/about/#subscribe",
+    "https://simonwillison.net/tags/pelican-riding-a-bicycle/",
+    "https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-Pro-Model-Card.pdf",
+    "https://twitter.com/simonw",
+    "https://www.llm-prices.com/#it=1105&cit=3901&ot=3901&ic=2&oc=12&sel=gemini-3-pro-preview",
+    "https://www.llm-prices.com/#it=320087&ot=7870&ic=4&oc=18",
+    "https://www.youtube.com/watch?v=qgJ7x7R6gy0",
+    "https://www.youtube.com/watch?v=qgJ7x7R6gy0&t=3h31m5s"
+  ]
+}

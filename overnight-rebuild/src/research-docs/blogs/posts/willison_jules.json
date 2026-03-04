@@ -1,0 +1,18 @@
+{
+  "url": "https://simonwillison.net/2025/May/19/jules/",
+  "title": "Jules",
+  "text": "Simon Willison’s Weblog \n     Subscribe \n   \n \n\n\n \n   \n     Sponsored by:  Augment Code — Agent Orchestration. Living Specs. Your favorite agents.  Build with Intent .\n   \n \n\n\n \n \n\n \n\n\n 19th May 2025 - Link Blog \n\n Jules . It seems like  everyone  is rolling out AI coding assistants that attach to your GitHub account and submit PRs for you right now. We had  OpenAI Codex  last week, today Microsoft announced  GitHub Copilot coding agent  (confusingly not the same thing as  Copilot Workspace ) and I found out just now that Google's Jules,  announced in December , is now in a beta preview. \n I'm flying home from PyCon but I managed to try out Jules from my phone. I took  this GitHub issue thread , converted it to copy-pasteable Markdown with  this tool  and pasted it into Jules, with no further instructions. \n Here's  the resulting PR  created from its branch. I haven't fully reviewed it yet and the tests aren't passing, so it's hard to evaluate from my phone how well it did. In a cursory first glance it looks like it's covered most of the requirements from the issue thread. \n My habit of  creating long issue threads  where I talk to myself about the features I'm planning is proving to be a good fit for outsourcing implementation work to this new generation of coding assistants. \n\n Posted  19th May 2025  at 9:40 pm \n \n\n \n\n \n Recent articles \n Something is afoot in the land of Qwen  - 4th March 2026 \n  \n     I vibe coded my dream macOS presentation app  - 25th February 2026 \n  \n     Writing about Agentic Engineering Patterns  - 23rd February 2026 \n  \n \n\n\n  \n\n \n\n \n This is a  link post  by Simon Willison, posted on  19th May 2025 . \n\n\n    \n         \n            github\n             180 \n         \n    \n         \n            google\n             399 \n         \n    \n         \n            ai\n             1888 \n         \n    \n         \n            generative-ai\n             1674 \n         \n    \n         \n            llms\n             1639",
+  "links": [
+    "https://developers.googleblog.com/en/the-next-chapter-of-the-gemini-era-for-developers/",
+    "https://fandf.co/4qRMH45",
+    "https://github.blog/changelog/2025-05-19-github-copilot-coding-agent-in-public-preview/",
+    "https://github.com/datasette/datasette-chronicle/issues/3",
+    "https://github.com/datasette/datasette-chronicle/pull/6",
+    "https://github.com/sponsors/simonw/",
+    "https://githubnext.com/projects/copilot-workspace",
+    "https://jules.google.com/",
+    "https://simonwillison.net/2022/Nov/26/productivity/#issue-thread",
+    "https://simonwillison.net/2025/May/16/openai-codex/",
+    "https://tools.simonwillison.net/github-issue-to-markdown"
+  ]
+}

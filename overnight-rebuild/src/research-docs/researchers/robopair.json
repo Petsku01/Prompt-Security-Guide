@@ -1,0 +1,20 @@
+{
+  "url": "https://robopair.org/",
+  "title": "RoboPAIR",
+  "text": "// Zoomable images\n                document.addEventListener(\"DOMContentLoaded\", function () {\n                    const zoomableImages = document.querySelectorAll('img[data-zoomable]');\n                    const overlay = document.createElement('div');\n                    overlay.id = 'image-overlay';\n                    const overlayImage = document.createElement('img');\n                    overlay.appendChild(overlayImage);\n                    document.body.appendChild(overlay);\n\n                    zoomableImages.forEach(image => {\n                        image.addEventListener('click', function () {\n                            overlayImage.src = image.src;\n                            overlay.classList.add('active');\n                        });\n                    });\n\n                    overlay.addEventListener('click', function () {\n                        overlay.classList.remove('active');\n                    });\n                });\n\n                document.addEventListener(\"DOMContentLoaded\", function () {\n                    const zoomableTables = document.querySelectorAll(\"table[data-zoomable]\");\n                    const tableOverlay = document.createElement(\"div\");\n                    tableOverlay.id = \"table-overlay\";\n                    document.body.appendChild(tableOverlay);\n\n                    tableOverlay.addEventListener(\"click\", () => {\n                        tableOverlay.classList.remove(\"active\");\n                    });\n\n                    zoomableTables.forEach(table => {\n                        table.addEventListener(\"click\", function () {\n                            const clone = table.cloneNode(true);\n                            clone.style.width = \"100%\";  // Maintain table width\n                            clone.style.height = \"auto\"; // Auto height to maintain proportions\n                            tableOverlay.innerHTML = '';  // Clear previous content\n                            tableOv",
+  "links": [
+    "https://ai.princeton.edu/news/2024/symposium-fosters-collaboration-between-robotics-and-ai",
+    "https://ai.seas.upenn.edu/news/penn-engineering-research-discovers-critical-vulnerabilities-in-ai-enabled-robots-to-increase-safety-and-security/",
+    "https://arobey1.github.io/writing/jailbreakingrobots.html",
+    "https://arxiv.org/pdf/2410.13691",
+    "https://blog.ml.cmu.edu/2024/10/29/jailbreaking-llm-controlled-robots/",
+    "https://drive.google.com/drive/folders/1XZjnnx-9Ly6fDiPS60n-rH2qS-j_z3-7?usp=sharing",
+    "https://fortune.com/2024/11/12/legal-tech-robin-ai-raises-25-million-series-b-plus-llm/",
+    "https://github.com/arobey1/robopair",
+    "https://spectrum.ieee.org/jailbreak-llm",
+    "https://www.forbes.com/sites/johnwerner/2025/06/13/boston-dynamics-and-unitree-are-innovating-four-legged-robots-rapidly/",
+    "https://www.independent.co.uk/tech/ai-artificial-intelligence-safe-vulnerability-robot-b2631080.html",
+    "https://www.wired.com/story/researchers-llm-ai-robot-violence/",
+    "https://x.com/AlexRobey23/status/1846914890029748272"
+  ]
+}

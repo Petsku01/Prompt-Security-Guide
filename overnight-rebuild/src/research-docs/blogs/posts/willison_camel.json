@@ -1,0 +1,26 @@
+{
+  "url": "https://simonwillison.net/2025/Apr/11/camel/",
+  "title": "CaMeL offers a promising new direction for mitigating prompt injection attacks",
+  "text": "Simon Willison’s Weblog \n     Subscribe \n   \n \n\n\n \n   \n     Sponsored by:  Augment Code — Agent Orchestration. Living Specs. Your favorite agents.  Build with Intent .\n   \n \n\n\n \n \n\n \n\n\n \n CaMeL offers a promising new direction for mitigating prompt injection attacks \n 11th April 2025 \n\n\n\n In the  two and a half years  that we’ve been talking about prompt injection attacks I’ve seen alarmingly little progress towards a robust solution. The new paper  Defeating Prompt Injections by Design  from Google DeepMind  finally  bucks that trend. This one is worth paying attention to. \n If you’re new to prompt injection attacks the very short version is this: what happens if someone emails my LLM-driven assistant (or “agent” if you like) and tells it to forward all of my emails to a third party? Here’s  an extended explanation  of why it’s so hard to prevent this from being a show-stopping security issue which threatens the dream digital assistants that everyone is trying to build. \n The original sin of LLMs that makes them vulnerable to this is when trusted prompts from the user and untrusted text from emails/web pages/etc are concatenated together into the same token stream. I called it “prompt injection” because it’s the same anti-pattern as  SQL injection . \n Sadly, there is no known reliable way to have an LLM follow instructions in one category of text while safely applying those instructions to another category of text. \n That’s where  CaMeL  comes in. \n The  new DeepMind paper  introduces a system called CaMeL (short for CApabilities for MachinE Learning). The goal of CaMeL is to safely take a prompt like “Send Bob the document he requested in our last meeting” and execute it, taking into account the risk that there might be malicious instructions somewhere in the context that attempt to over-ride the user’s intent. \n It works by taking a command from a user, converting that into a sequence of steps in a Python-like programming language, then checking the",
+  "links": [
+    "https://arxiv.org/abs/2503.18813",
+    "https://bsky.app/profile/simonwillison.net",
+    "https://en.wikipedia.org/wiki/SQL_injection",
+    "https://fandf.co/4qRMH45",
+    "https://fedi.simonwillison.net/@simon",
+    "https://github.com/sponsors/simonw/",
+    "https://simonwillison.net/2022/Sep/17/prompt-injection-more-ai/",
+    "https://simonwillison.net/2023/Apr/25/dual-llm-pattern/",
+    "https://simonwillison.net/2023/May/2/prompt-injection-explained/#prompt-injection.015",
+    "https://simonwillison.net/2025/Apr/11/camel/#a-neat-privacy-bonus",
+    "https://simonwillison.net/2025/Apr/11/camel/#addressing-a-flaw-in-my-dual-llm-pattern",
+    "https://simonwillison.net/2025/Apr/11/camel/#camels-have-two-humps",
+    "https://simonwillison.net/2025/Apr/11/camel/#fixing-that-with-capabilities-and-a-custom-interpreter",
+    "https://simonwillison.net/2025/Apr/11/camel/#so-are-prompt-injections-solved-now-",
+    "https://simonwillison.net/2025/Apr/11/camel/#the-best-part-is-it-doesn-t-use-more-ai",
+    "https://simonwillison.net/2025/Apr/4/a-sneaky-phish/",
+    "https://simonwillison.net/about/#subscribe",
+    "https://simonwillison.net/series/prompt-injection/",
+    "https://twitter.com/simonw"
+  ]
+}
