@@ -1,0 +1,5 @@
+Prompt Security Guide - Sample Report
+=====================================
+Total attacks: 3
+Successful jailbreaks: 1
+Success rate: 33.3%

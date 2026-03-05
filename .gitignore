@@ -1,64 +1,26 @@
 # Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-ENV/
-env/
 .venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
 
-# IDE
-.idea/
+# Runtime outputs
+results/*
+!results/README.md
+!results/samples/
+!results/samples/**
+*.log
+
+# Secrets / env
+.env
+.env.*
+
+# Editor / OS
 .vscode/
-*.swp
-*.swo
-*~
-
-# OS
+.idea/
 .DS_Store
 Thumbs.db
-
-# Project specific
-*.log
-.env
-
-# Test outputs (go to archive/test-runs/ if needed)
-*_samples*.json
-*_results*.json
-ground_truth_*.json
-labeled_samples_*.json
-gemsamples_*.json
-samples_*.json
-# Keep overnight-rebuild research data!
-!overnight-rebuild/src/research-docs/
-overnight-rebuild/src/processed/
-overnight-rebuild/src/results/
-overnight-rebuild/src/checkpoints/
-
-attacks/
-tools/
-results/
-examples/
-archive/
-profiles/
-models/
-tests/

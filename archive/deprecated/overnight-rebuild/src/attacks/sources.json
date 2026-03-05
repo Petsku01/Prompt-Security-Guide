@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "description": "Sources for automatic catalog updates",
+  "update_interval_days": 7,
+  "sources": [
+    {
+      "id": "awesome-jailbreak",
+      "name": "Awesome-Jailbreak-on-LLMs (GitHub)",
+      "url": "https://raw.githubusercontent.com/yueliu1999/Awesome-Jailbreak-on-LLMs/main/README.md",
+      "type": "github_awesome",
+      "enabled": true,
+      "notes": "Curated list of jailbreak research papers with links"
+    },
+    {
+      "id": "jailbreak-llms",
+      "name": "In-The-Wild Jailbreak Prompts (GitHub)",
+      "url": "https://raw.githubusercontent.com/verazuo/jailbreak_llms/main/data/prompts/jailbreak_prompts.csv",
+      "type": "csv_prompts",
+      "enabled": true,
+      "notes": "Community-collected jailbreak prompts from JailbreakChat"
+    },
+    {
+      "id": "multimodal-jailbreak",
+      "name": "Awesome-Multimodal-Jailbreak (GitHub)",
+      "url": "https://raw.githubusercontent.com/liuxuannan/Awesome-Multimodal-Jailbreak/main/README.md",
+      "type": "github_awesome",
+      "enabled": true,
+      "notes": "Multimodal (image/audio/video) jailbreak research"
+    }
+  ],
+  "manual_sources": [
+    {
+      "name": "arXiv cs.CR",
+      "url": "https://arxiv.org/list/cs.CR/recent",
+      "notes": "Check weekly for new LLM security papers"
+    },
+    {
+      "name": "r/LocalLLaMA",
+      "url": "https://reddit.com/r/LocalLLaMA",
+      "notes": "Community discoveries and discussions"
+    },
+    {
+      "name": "OWASP LLM Top 10",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "notes": "Annual updates to LLM security guidelines"
+    }
+  ]
+}

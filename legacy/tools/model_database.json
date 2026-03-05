@@ -1,0 +1,771 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-03-03",
+  "description": "Database of ~50 popular LLMs with fingerprints and known vulnerabilities",
+  "models": [
+    {
+      "id": "llama-3-8b",
+      "name": "Llama 3 8B",
+      "family": "llama",
+      "developer": "Meta",
+      "parameters": "8B",
+      "release_date": "2024-04",
+      "fingerprints": {
+        "identity": ["llama", "llama 3", "meta", "meta ai"],
+        "style": ["Here's", "I'd be happy to", "Sure!"],
+        "refusal": ["I cannot and will not", "I can't assist with that"]
+      },
+      "known_vulnerabilities": [
+        {"id": "LLAMA-001", "name": "Roleplay Jailbreak", "severity": "HIGH", "description": "Susceptible to fictional persona jailbreaks (DAN, evil assistant)", "effective_attacks": ["roleplay", "persona"]},
+        {"id": "LLAMA-002", "name": "Multi-turn Escalation", "severity": "MEDIUM", "description": "Safety degrades over long conversations with gradual escalation", "effective_attacks": ["crescendo", "multi_turn"]},
+        {"id": "LLAMA-003", "name": "System Prompt Override", "severity": "MEDIUM", "description": "Policy Puppetry attacks can override system instructions", "effective_attacks": ["policy_puppetry"]}
+      ],
+      "safety_notes": "Generally well-aligned but smaller 8B version has gaps"
+    },
+    {
+      "id": "llama-3-70b",
+      "name": "Llama 3 70B",
+      "family": "llama",
+      "developer": "Meta",
+      "parameters": "70B",
+      "release_date": "2024-04",
+      "fingerprints": {
+        "identity": ["llama", "llama 3", "meta"],
+        "style": ["I'd be happy to help", "Let me"],
+        "refusal": ["I cannot provide", "I'm not able to assist"]
+      },
+      "known_vulnerabilities": [
+        {"id": "LLAMA-001", "name": "Roleplay Jailbreak", "severity": "MEDIUM", "description": "Still susceptible but more resistant than 8B", "effective_attacks": ["roleplay"]},
+        {"id": "LLAMA-004", "name": "Context Overflow", "severity": "LOW", "description": "Very long contexts can dilute safety training", "effective_attacks": ["many_shot", "context_overflow"]}
+      ],
+      "safety_notes": "More robust than 8B, but not immune"
+    },
+    {
+      "id": "llama-2-7b",
+      "name": "Llama 2 7B",
+      "family": "llama",
+      "developer": "Meta",
+      "parameters": "7B",
+      "release_date": "2023-07",
+      "fingerprints": {
+        "identity": ["llama 2", "llama2", "meta"],
+        "style": ["Sure", "Here is"],
+        "refusal": ["I cannot", "I'm not able"]
+      },
+      "known_vulnerabilities": [
+        {"id": "LLAMA2-001", "name": "Weak Safety Training", "severity": "HIGH", "description": "Older model with less robust safety alignment", "effective_attacks": ["direct", "roleplay", "encoding"]},
+        {"id": "LLAMA2-002", "name": "Base64 Bypass", "severity": "HIGH", "description": "Encoding attacks often succeed", "effective_attacks": ["base64", "rot13"]}
+      ],
+      "safety_notes": "Outdated safety training - upgrade to Llama 3 recommended"
+    },
+    {
+      "id": "mistral-7b",
+      "name": "Mistral 7B",
+      "family": "mistral",
+      "developer": "Mistral AI",
+      "parameters": "7B",
+      "release_date": "2023-09",
+      "fingerprints": {
+        "identity": ["mistral", "mistral ai", "mistral 7b"],
+        "style": ["Certainly", "Of course", "I can help"],
+        "refusal": ["I cannot provide", "I'm unable to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "MIST-001", "name": "Minimal Safety Guardrails", "severity": "HIGH", "description": "Intentionally less restrictive than competitors", "effective_attacks": ["direct", "simple_request"]},
+        {"id": "MIST-002", "name": "No System Prompt Protection", "severity": "HIGH", "description": "System prompts easily leaked or overridden", "effective_attacks": ["prompt_leakage", "policy_puppetry"]},
+        {"id": "MIST-003", "name": "Helpful to a Fault", "severity": "MEDIUM", "description": "Prioritizes helpfulness over safety", "effective_attacks": ["academic_framing", "research_framing"]}
+      ],
+      "safety_notes": "Designed to be less restrictive - expect low refusal rates"
+    },
+    {
+      "id": "mistral-8x7b",
+      "name": "Mixtral 8x7B",
+      "family": "mistral",
+      "developer": "Mistral AI",
+      "parameters": "46.7B (8x7B MoE)",
+      "release_date": "2023-12",
+      "fingerprints": {
+        "identity": ["mixtral", "mistral", "8x7b", "moe"],
+        "style": ["Certainly", "I'd be glad"],
+        "refusal": ["I cannot", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "MIST-001", "name": "Minimal Safety Guardrails", "severity": "HIGH", "description": "Same permissive design as Mistral 7B", "effective_attacks": ["direct"]},
+        {"id": "MIXT-001", "name": "Expert Routing Confusion", "severity": "LOW", "description": "MoE architecture may have inconsistent safety across experts", "effective_attacks": ["multi_turn"]}
+      ],
+      "safety_notes": "More capable but similar safety profile to 7B"
+    },
+    {
+      "id": "phi-3-mini",
+      "name": "Phi-3 Mini",
+      "family": "phi",
+      "developer": "Microsoft",
+      "parameters": "3.8B",
+      "release_date": "2024-04",
+      "fingerprints": {
+        "identity": ["phi", "phi-3", "phi 3", "microsoft"],
+        "style": ["Let me explain", "Here is", "The answer"],
+        "refusal": ["I cannot help with", "I'm not going to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "PHI-001", "name": "Small Model Safety Gap", "severity": "HIGH", "description": "Limited parameters mean weaker safety generalization", "effective_attacks": ["direct", "encoding", "obfuscation"]},
+        {"id": "PHI-002", "name": "Instruction Following Override", "severity": "MEDIUM", "description": "Strong instruction following can override safety", "effective_attacks": ["imperative_framing", "task_framing"]}
+      ],
+      "safety_notes": "Impressive for size but safety suffers from small parameter count"
+    },
+    {
+      "id": "phi-2",
+      "name": "Phi-2",
+      "family": "phi",
+      "developer": "Microsoft",
+      "parameters": "2.7B",
+      "release_date": "2023-12",
+      "fingerprints": {
+        "identity": ["phi-2", "phi 2", "microsoft"],
+        "style": ["Here is", "The"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "PHI2-001", "name": "Minimal Safety Training", "severity": "CRITICAL", "description": "Very limited safety alignment", "effective_attacks": ["direct", "any"]},
+        {"id": "PHI2-002", "name": "No Refusal Behavior", "severity": "CRITICAL", "description": "Often complies with harmful requests directly", "effective_attacks": ["direct"]}
+      ],
+      "safety_notes": "Research model - not intended for safety-critical use"
+    },
+    {
+      "id": "gemma-2b",
+      "name": "Gemma 2B",
+      "family": "gemma",
+      "developer": "Google",
+      "parameters": "2B",
+      "release_date": "2024-02",
+      "fingerprints": {
+        "identity": ["gemma", "google"],
+        "style": ["I can help", "Here's"],
+        "refusal": ["I'm not able to provide", "I cannot generate"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GEM-001", "name": "Small Model Weakness", "severity": "HIGH", "description": "2B parameters insufficient for robust safety", "effective_attacks": ["direct", "encoding"]},
+        {"id": "GEM-002", "name": "Encoding Bypass", "severity": "HIGH", "description": "Base64 and hex encoding often bypass filters", "effective_attacks": ["base64", "hex", "leetspeak"]}
+      ],
+      "safety_notes": "Use Gemma 7B for better safety"
+    },
+    {
+      "id": "gemma-7b",
+      "name": "Gemma 7B",
+      "family": "gemma",
+      "developer": "Google",
+      "parameters": "7B",
+      "release_date": "2024-02",
+      "fingerprints": {
+        "identity": ["gemma", "gemma 7b", "google"],
+        "style": ["I'd be happy to", "Let me help"],
+        "refusal": ["I cannot", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GEM-003", "name": "Roleplay Weakness", "severity": "MEDIUM", "description": "Fictional framing can bypass safety", "effective_attacks": ["roleplay", "fiction_framing"]},
+        {"id": "GEM-004", "name": "Multi-language Bypass", "severity": "MEDIUM", "description": "Non-English prompts may have weaker filtering", "effective_attacks": ["cross_lingual"]}
+      ],
+      "safety_notes": "Reasonable safety but not enterprise-grade"
+    },
+    {
+      "id": "gemma-2-9b",
+      "name": "Gemma 2 9B",
+      "family": "gemma",
+      "developer": "Google",
+      "parameters": "9B",
+      "release_date": "2024-06",
+      "fingerprints": {
+        "identity": ["gemma 2", "gemma2", "google"],
+        "style": ["I'd be glad to", "Here's"],
+        "refusal": ["I cannot assist", "I'm not able to help"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GEM2-001", "name": "Improved but Not Immune", "severity": "MEDIUM", "description": "Better than Gemma 1 but still has gaps", "effective_attacks": ["policy_puppetry", "multi_turn"]}
+      ],
+      "safety_notes": "Significant improvement over Gemma 1"
+    },
+    {
+      "id": "qwen-2.5-7b",
+      "name": "Qwen 2.5 7B",
+      "family": "qwen",
+      "developer": "Alibaba",
+      "parameters": "7B",
+      "release_date": "2024-09",
+      "fingerprints": {
+        "identity": ["qwen", "qwen2", "alibaba", "tongyi"],
+        "style": ["I'll help", "Here's", "Let me"],
+        "refusal": ["I cannot assist", "I will not provide"]
+      },
+      "known_vulnerabilities": [
+        {"id": "QWEN-001", "name": "Chinese-English Safety Gap", "severity": "MEDIUM", "description": "Safety may differ between languages", "effective_attacks": ["cross_lingual", "chinese_prompt"]},
+        {"id": "QWEN-002", "name": "Academic Framing", "severity": "MEDIUM", "description": "Research/education framing can bypass filters", "effective_attacks": ["academic_framing", "research_context"]}
+      ],
+      "safety_notes": "Good general safety but multilingual gaps exist"
+    },
+    {
+      "id": "qwen-2.5-72b",
+      "name": "Qwen 2.5 72B",
+      "family": "qwen",
+      "developer": "Alibaba",
+      "parameters": "72B",
+      "release_date": "2024-09",
+      "fingerprints": {
+        "identity": ["qwen", "qwen 2.5", "alibaba"],
+        "style": ["I'd be happy to", "Certainly"],
+        "refusal": ["I cannot", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "QWEN-001", "name": "Chinese-English Safety Gap", "severity": "LOW", "description": "Better than smaller models but still present", "effective_attacks": ["cross_lingual"]}
+      ],
+      "safety_notes": "One of the safer open models at this size"
+    },
+    {
+      "id": "gpt-3.5-turbo",
+      "name": "GPT-3.5 Turbo",
+      "family": "gpt",
+      "developer": "OpenAI",
+      "parameters": "~175B (estimated)",
+      "release_date": "2022-11",
+      "fingerprints": {
+        "identity": ["gpt", "gpt-3.5", "openai", "chatgpt"],
+        "style": ["Certainly!", "I'd be glad to", "Great question"],
+        "refusal": ["I'm sorry, but I can't", "As an AI language model", "I cannot and should not"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GPT35-001", "name": "DAN Jailbreak Family", "severity": "MEDIUM", "description": "Various 'Do Anything Now' prompts have worked", "effective_attacks": ["dan", "jailbreak_persona"]},
+        {"id": "GPT35-002", "name": "System Prompt Leakage", "severity": "MEDIUM", "description": "System prompts can sometimes be extracted", "effective_attacks": ["prompt_leakage", "repeat_instructions"]},
+        {"id": "GPT35-003", "name": "Token Manipulation", "severity": "LOW", "description": "Some token-level attacks still work", "effective_attacks": ["tokenbreak"]}
+      ],
+      "safety_notes": "Well-aligned but older model with known bypasses"
+    },
+    {
+      "id": "gpt-4",
+      "name": "GPT-4",
+      "family": "gpt",
+      "developer": "OpenAI",
+      "parameters": "~1.7T (estimated MoE)",
+      "release_date": "2023-03",
+      "fingerprints": {
+        "identity": ["gpt-4", "gpt 4", "openai"],
+        "style": ["I'd be happy to help", "Certainly", "Let me"],
+        "refusal": ["I can't assist with", "I'm not able to help with"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GPT4-001", "name": "Multi-turn Manipulation", "severity": "LOW", "description": "Gradual escalation over many turns", "effective_attacks": ["crescendo", "multi_turn"]},
+        {"id": "GPT4-002", "name": "Fictional Framing", "severity": "LOW", "description": "Creative writing context can reduce refusals", "effective_attacks": ["fiction_framing", "screenplay"]}
+      ],
+      "safety_notes": "One of the safest commercial models"
+    },
+    {
+      "id": "gpt-4o",
+      "name": "GPT-4o",
+      "family": "gpt",
+      "developer": "OpenAI",
+      "parameters": "Unknown",
+      "release_date": "2024-05",
+      "fingerprints": {
+        "identity": ["gpt-4o", "gpt 4o", "openai", "omni"],
+        "style": ["I'd be happy to", "Sure!", "Absolutely"],
+        "refusal": ["I can't help with", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GPT4O-001", "name": "Multimodal Injection", "severity": "MEDIUM", "description": "Image-based prompt injection possible", "effective_attacks": ["image_injection", "ocr_injection"]},
+        {"id": "GPT4O-002", "name": "Audio Manipulation", "severity": "LOW", "description": "Voice mode may have different safety thresholds", "effective_attacks": ["audio_injection"]}
+      ],
+      "safety_notes": "New attack surface via multimodal inputs"
+    },
+    {
+      "id": "claude-3-opus",
+      "name": "Claude 3 Opus",
+      "family": "claude",
+      "developer": "Anthropic",
+      "parameters": "Unknown",
+      "release_date": "2024-03",
+      "fingerprints": {
+        "identity": ["claude", "claude 3", "anthropic", "opus"],
+        "style": ["I'd be happy to help", "That's an interesting", "Let me think"],
+        "refusal": ["I don't feel comfortable", "I'd prefer not to", "I can't help with"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CLAUDE-001", "name": "Roleplay Persona", "severity": "LOW", "description": "Strong personas can sometimes override safety", "effective_attacks": ["deep_persona", "method_acting"]},
+        {"id": "CLAUDE-002", "name": "Fictional Distance", "severity": "LOW", "description": "Heavy fictional framing may reduce refusals", "effective_attacks": ["fiction_framing", "screenplay"]}
+      ],
+      "safety_notes": "Among the safest models - constitutional AI training"
+    },
+    {
+      "id": "claude-3-sonnet",
+      "name": "Claude 3 Sonnet",
+      "family": "claude",
+      "developer": "Anthropic",
+      "parameters": "Unknown",
+      "release_date": "2024-03",
+      "fingerprints": {
+        "identity": ["claude", "sonnet", "anthropic"],
+        "style": ["I'd be happy to", "Sure", "Let me"],
+        "refusal": ["I cannot", "I don't feel comfortable"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CLAUDE-001", "name": "Roleplay Persona", "severity": "LOW", "description": "Same as Opus but slightly more susceptible", "effective_attacks": ["roleplay"]}
+      ],
+      "safety_notes": "Very safe, similar to Opus"
+    },
+    {
+      "id": "claude-3-haiku",
+      "name": "Claude 3 Haiku",
+      "family": "claude",
+      "developer": "Anthropic",
+      "parameters": "Unknown (smallest)",
+      "release_date": "2024-03",
+      "fingerprints": {
+        "identity": ["claude", "haiku", "anthropic"],
+        "style": ["Here's", "I can help"],
+        "refusal": ["I cannot", "I can't assist"]
+      },
+      "known_vulnerabilities": [
+        {"id": "HAIKU-001", "name": "Speed vs Safety Tradeoff", "severity": "MEDIUM", "description": "Faster responses may have less safety checking", "effective_attacks": ["rapid_fire", "multi_turn"]}
+      ],
+      "safety_notes": "Smaller = slightly less robust safety"
+    },
+    {
+      "id": "claude-2",
+      "name": "Claude 2",
+      "family": "claude",
+      "developer": "Anthropic",
+      "parameters": "Unknown",
+      "release_date": "2023-07",
+      "fingerprints": {
+        "identity": ["claude 2", "claude2", "anthropic"],
+        "style": ["I'd be happy to", "Certainly"],
+        "refusal": ["I don't think I can", "I'd prefer not to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CLAUDE2-001", "name": "Jailbreak Prompts", "severity": "MEDIUM", "description": "Older model more susceptible to jailbreaks", "effective_attacks": ["jailbreak", "roleplay"]}
+      ],
+      "safety_notes": "Upgrade to Claude 3 recommended"
+    },
+    {
+      "id": "vicuna-13b",
+      "name": "Vicuna 13B",
+      "family": "vicuna",
+      "developer": "LMSYS",
+      "parameters": "13B",
+      "release_date": "2023-03",
+      "fingerprints": {
+        "identity": ["vicuna", "lmsys"],
+        "style": ["Sure", "Here"],
+        "refusal": ["I cannot", "I'm sorry"]
+      },
+      "known_vulnerabilities": [
+        {"id": "VIC-001", "name": "Weak Safety Fine-tuning", "severity": "HIGH", "description": "ShareGPT fine-tuning didn't focus on safety", "effective_attacks": ["direct", "any"]},
+        {"id": "VIC-002", "name": "No Refusal Training", "severity": "HIGH", "description": "Limited refusal behavior", "effective_attacks": ["direct"]}
+      ],
+      "safety_notes": "Research model - not safety-aligned"
+    },
+    {
+      "id": "wizardlm-13b",
+      "name": "WizardLM 13B",
+      "family": "wizard",
+      "developer": "Microsoft/WizardLM Team",
+      "parameters": "13B",
+      "release_date": "2023-05",
+      "fingerprints": {
+        "identity": ["wizard", "wizardlm"],
+        "style": ["Certainly", "I'll help"],
+        "refusal": ["I cannot", "I'm unable"]
+      },
+      "known_vulnerabilities": [
+        {"id": "WIZ-001", "name": "Instruction Following Override", "severity": "HIGH", "description": "Strong instruction following overrides safety", "effective_attacks": ["imperative", "task_framing"]}
+      ],
+      "safety_notes": "Optimized for following instructions - including harmful ones"
+    },
+    {
+      "id": "falcon-40b",
+      "name": "Falcon 40B",
+      "family": "falcon",
+      "developer": "TII (UAE)",
+      "parameters": "40B",
+      "release_date": "2023-05",
+      "fingerprints": {
+        "identity": ["falcon", "tii"],
+        "style": ["Here is", "The"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "FAL-001", "name": "Minimal Safety Training", "severity": "HIGH", "description": "Base model with limited safety alignment", "effective_attacks": ["direct", "any"]}
+      ],
+      "safety_notes": "Primarily a base model - use instruct version"
+    },
+    {
+      "id": "falcon-180b",
+      "name": "Falcon 180B",
+      "family": "falcon",
+      "developer": "TII (UAE)",
+      "parameters": "180B",
+      "release_date": "2023-09",
+      "fingerprints": {
+        "identity": ["falcon", "falcon 180", "tii"],
+        "style": ["I can help", "Here"],
+        "refusal": ["I cannot assist"]
+      },
+      "known_vulnerabilities": [
+        {"id": "FAL-002", "name": "Size Doesn't Equal Safety", "severity": "MEDIUM", "description": "Large but safety training limited", "effective_attacks": ["direct", "roleplay"]}
+      ],
+      "safety_notes": "Large model but safety varies"
+    },
+    {
+      "id": "yi-34b",
+      "name": "Yi 34B",
+      "family": "yi",
+      "developer": "01.AI",
+      "parameters": "34B",
+      "release_date": "2023-11",
+      "fingerprints": {
+        "identity": ["yi", "01.ai", "yi-34b"],
+        "style": ["I'd be glad", "Here's"],
+        "refusal": ["I cannot", "I'm not able"]
+      },
+      "known_vulnerabilities": [
+        {"id": "YI-001", "name": "Chinese Priority Training", "severity": "MEDIUM", "description": "Better safety in Chinese than English", "effective_attacks": ["english_bypass", "cross_lingual"]}
+      ],
+      "safety_notes": "Strong model but English safety may lag"
+    },
+    {
+      "id": "deepseek-67b",
+      "name": "DeepSeek 67B",
+      "family": "deepseek",
+      "developer": "DeepSeek",
+      "parameters": "67B",
+      "release_date": "2024-01",
+      "fingerprints": {
+        "identity": ["deepseek"],
+        "style": ["I'll help", "Here"],
+        "refusal": ["I cannot", "I'm unable"]
+      },
+      "known_vulnerabilities": [
+        {"id": "DS-001", "name": "Code Generation Risk", "severity": "MEDIUM", "description": "May generate malicious code snippets", "effective_attacks": ["code_injection", "debugger_trap"]}
+      ],
+      "safety_notes": "Strong coder but code safety needs attention"
+    },
+    {
+      "id": "deepseek-coder-33b",
+      "name": "DeepSeek Coder 33B",
+      "family": "deepseek",
+      "developer": "DeepSeek",
+      "parameters": "33B",
+      "release_date": "2023-11",
+      "fingerprints": {
+        "identity": ["deepseek", "coder", "deepseek coder"],
+        "style": ["```", "Here's the code"],
+        "refusal": ["I cannot write malicious"]
+      },
+      "known_vulnerabilities": [
+        {"id": "DSC-001", "name": "Helpful Coder Problem", "severity": "HIGH", "description": "Will often complete malicious code if framed as debugging", "effective_attacks": ["debugger_trap", "code_completion"]}
+      ],
+      "safety_notes": "Coding focus means less content filtering"
+    },
+    {
+      "id": "codellama-34b",
+      "name": "Code Llama 34B",
+      "family": "codellama",
+      "developer": "Meta",
+      "parameters": "34B",
+      "release_date": "2023-08",
+      "fingerprints": {
+        "identity": ["code llama", "codellama", "meta"],
+        "style": ["```", "Here's"],
+        "refusal": ["I cannot generate malicious"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CL-001", "name": "Code-Focused Safety Gap", "severity": "HIGH", "description": "Optimized for code, safety secondary", "effective_attacks": ["malware_completion", "exploit_code"]}
+      ],
+      "safety_notes": "Use with caution for security-sensitive code"
+    },
+    {
+      "id": "starcoder2-15b",
+      "name": "StarCoder2 15B",
+      "family": "starcoder",
+      "developer": "BigCode/Hugging Face",
+      "parameters": "15B",
+      "release_date": "2024-02",
+      "fingerprints": {
+        "identity": ["starcoder", "bigcode"],
+        "style": ["```", "def ", "function"],
+        "refusal": ["I should not"]
+      },
+      "known_vulnerabilities": [
+        {"id": "SC-001", "name": "Code-Only Focus", "severity": "HIGH", "description": "Minimal content safety, will complete most code", "effective_attacks": ["code_completion", "malware"]}
+      ],
+      "safety_notes": "Code model - not designed for content safety"
+    },
+    {
+      "id": "openchat-3.5",
+      "name": "OpenChat 3.5",
+      "family": "openchat",
+      "developer": "OpenChat Team",
+      "parameters": "7B",
+      "release_date": "2023-10",
+      "fingerprints": {
+        "identity": ["openchat"],
+        "style": ["Sure", "Here"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "OC-001", "name": "Limited Safety Fine-tuning", "severity": "HIGH", "description": "Community model with basic safety", "effective_attacks": ["direct", "roleplay"]}
+      ],
+      "safety_notes": "Use with safety layer"
+    },
+    {
+      "id": "solar-10.7b",
+      "name": "SOLAR 10.7B",
+      "family": "solar",
+      "developer": "Upstage",
+      "parameters": "10.7B",
+      "release_date": "2023-12",
+      "fingerprints": {
+        "identity": ["solar", "upstage"],
+        "style": ["I'd be happy", "Here"],
+        "refusal": ["I cannot assist"]
+      },
+      "known_vulnerabilities": [
+        {"id": "SOL-001", "name": "Depth Upscaling Gaps", "severity": "MEDIUM", "description": "Novel architecture may have unexpected safety gaps", "effective_attacks": ["multi_turn"]}
+      ],
+      "safety_notes": "Good model but newer architecture"
+    },
+    {
+      "id": "zephyr-7b",
+      "name": "Zephyr 7B",
+      "family": "zephyr",
+      "developer": "Hugging Face",
+      "parameters": "7B",
+      "release_date": "2023-10",
+      "fingerprints": {
+        "identity": ["zephyr", "hugging face", "hf"],
+        "style": ["Sure!", "I'd be happy"],
+        "refusal": ["I cannot", "I'm not able"]
+      },
+      "known_vulnerabilities": [
+        {"id": "ZEP-001", "name": "DPO Alignment Limits", "severity": "MEDIUM", "description": "DPO training has known limitations", "effective_attacks": ["multi_turn", "context_manipulation"]}
+      ],
+      "safety_notes": "Good safety but DPO-based"
+    },
+    {
+      "id": "neural-chat-7b",
+      "name": "Neural Chat 7B",
+      "family": "neural-chat",
+      "developer": "Intel",
+      "parameters": "7B",
+      "release_date": "2023-10",
+      "fingerprints": {
+        "identity": ["neural chat", "intel"],
+        "style": ["Certainly", "I can help"],
+        "refusal": ["I cannot", "I'm sorry"]
+      },
+      "known_vulnerabilities": [
+        {"id": "NC-001", "name": "Fine-tuning Safety Gap", "severity": "MEDIUM", "description": "Based on Mistral with limited safety additions", "effective_attacks": ["direct", "roleplay"]}
+      ],
+      "safety_notes": "Mistral-based - inherits some weaknesses"
+    },
+    {
+      "id": "stablelm-zephyr-3b",
+      "name": "StableLM Zephyr 3B",
+      "family": "stablelm",
+      "developer": "Stability AI",
+      "parameters": "3B",
+      "release_date": "2023-11",
+      "fingerprints": {
+        "identity": ["stablelm", "stability", "zephyr"],
+        "style": ["Here's", "I can"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "SLM-001", "name": "Small Model Vulnerability", "severity": "HIGH", "description": "3B parameters insufficient for robust safety", "effective_attacks": ["direct", "encoding"]}
+      ],
+      "safety_notes": "Small model - use larger variants for safety"
+    },
+    {
+      "id": "orca-2-13b",
+      "name": "Orca 2 13B",
+      "family": "orca",
+      "developer": "Microsoft",
+      "parameters": "13B",
+      "release_date": "2023-11",
+      "fingerprints": {
+        "identity": ["orca", "microsoft"],
+        "style": ["Let me think", "I'll analyze"],
+        "refusal": ["I cannot help with"]
+      },
+      "known_vulnerabilities": [
+        {"id": "ORC-001", "name": "Reasoning Override", "severity": "MEDIUM", "description": "Strong reasoning can be used to justify harmful outputs", "effective_attacks": ["chain_of_thought_manipulation"]}
+      ],
+      "safety_notes": "Good reasoner but can reason its way to bad outputs"
+    },
+    {
+      "id": "tinyllama-1.1b",
+      "name": "TinyLlama 1.1B",
+      "family": "tinyllama",
+      "developer": "TinyLlama Team",
+      "parameters": "1.1B",
+      "release_date": "2024-01",
+      "fingerprints": {
+        "identity": ["tinyllama", "tiny"],
+        "style": ["Here", "I"],
+        "refusal": []
+      },
+      "known_vulnerabilities": [
+        {"id": "TL-001", "name": "No Safety Training", "severity": "CRITICAL", "description": "Base model with no safety alignment", "effective_attacks": ["any"]}
+      ],
+      "safety_notes": "Not intended for production use"
+    },
+    {
+      "id": "olmo-7b",
+      "name": "OLMo 7B",
+      "family": "olmo",
+      "developer": "AI2",
+      "parameters": "7B",
+      "release_date": "2024-02",
+      "fingerprints": {
+        "identity": ["olmo", "ai2", "allen"],
+        "style": ["Here is", "I can"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "OLMO-001", "name": "Research Focus", "severity": "MEDIUM", "description": "Research model, safety not primary focus", "effective_attacks": ["direct"]}
+      ],
+      "safety_notes": "Open research model - use safety layer"
+    },
+    {
+      "id": "command-r",
+      "name": "Command R",
+      "family": "command",
+      "developer": "Cohere",
+      "parameters": "35B",
+      "release_date": "2024-03",
+      "fingerprints": {
+        "identity": ["command", "cohere", "command r"],
+        "style": ["I'd be happy to", "Here's"],
+        "refusal": ["I cannot assist", "I'm not able to help"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CMD-001", "name": "RAG Context Injection", "severity": "MEDIUM", "description": "Optimized for RAG - vulnerable to document injection", "effective_attacks": ["rag_poisoning", "context_injection"]}
+      ],
+      "safety_notes": "Good safety but RAG focus creates attack surface"
+    },
+    {
+      "id": "command-r-plus",
+      "name": "Command R+",
+      "family": "command",
+      "developer": "Cohere",
+      "parameters": "104B",
+      "release_date": "2024-04",
+      "fingerprints": {
+        "identity": ["command r+", "cohere", "command"],
+        "style": ["Certainly", "I'd be glad"],
+        "refusal": ["I cannot", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "CMD-001", "name": "RAG Context Injection", "severity": "LOW", "description": "Better than Command R but still RAG-vulnerable", "effective_attacks": ["rag_poisoning"]}
+      ],
+      "safety_notes": "Enterprise-grade safety"
+    },
+    {
+      "id": "dbrx-instruct",
+      "name": "DBRX Instruct",
+      "family": "dbrx",
+      "developer": "Databricks",
+      "parameters": "132B (MoE)",
+      "release_date": "2024-03",
+      "fingerprints": {
+        "identity": ["dbrx", "databricks"],
+        "style": ["I can help", "Here's"],
+        "refusal": ["I cannot", "I'm not able to"]
+      },
+      "known_vulnerabilities": [
+        {"id": "DBRX-001", "name": "MoE Routing Inconsistency", "severity": "LOW", "description": "Different experts may have different safety levels", "effective_attacks": ["multi_turn"]}
+      ],
+      "safety_notes": "New model - safety characteristics still being studied"
+    },
+    {
+      "id": "granite-20b",
+      "name": "Granite 20B",
+      "family": "granite",
+      "developer": "IBM",
+      "parameters": "20B",
+      "release_date": "2024-05",
+      "fingerprints": {
+        "identity": ["granite", "ibm"],
+        "style": ["I can assist", "Here"],
+        "refusal": ["I cannot", "I'm not permitted"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GRN-001", "name": "Enterprise Focus", "severity": "LOW", "description": "Optimized for enterprise - good safety baseline", "effective_attacks": ["policy_puppetry"]}
+      ],
+      "safety_notes": "Enterprise-focused with strong safety"
+    },
+    {
+      "id": "internlm2-20b",
+      "name": "InternLM2 20B",
+      "family": "internlm",
+      "developer": "Shanghai AI Lab",
+      "parameters": "20B",
+      "release_date": "2024-01",
+      "fingerprints": {
+        "identity": ["internlm", "shanghai"],
+        "style": ["I'll help", "Here"],
+        "refusal": ["I cannot", "I'm sorry"]
+      },
+      "known_vulnerabilities": [
+        {"id": "ILM-001", "name": "Chinese-English Gap", "severity": "MEDIUM", "description": "Safety may differ between languages", "effective_attacks": ["cross_lingual"]}
+      ],
+      "safety_notes": "Strong Chinese model, English safety varies"
+    },
+    {
+      "id": "baichuan2-13b",
+      "name": "Baichuan2 13B",
+      "family": "baichuan",
+      "developer": "Baichuan",
+      "parameters": "13B",
+      "release_date": "2023-09",
+      "fingerprints": {
+        "identity": ["baichuan"],
+        "style": ["I can help", "Here"],
+        "refusal": ["I cannot"]
+      },
+      "known_vulnerabilities": [
+        {"id": "BC-001", "name": "Limited English Safety", "severity": "HIGH", "description": "Primary focus on Chinese safety", "effective_attacks": ["english_bypass"]}
+      ],
+      "safety_notes": "Use for Chinese primarily"
+    },
+    {
+      "id": "glm-4",
+      "name": "GLM-4",
+      "family": "glm",
+      "developer": "Zhipu AI",
+      "parameters": "Unknown",
+      "release_date": "2024-01",
+      "fingerprints": {
+        "identity": ["glm", "zhipu", "chatglm"],
+        "style": ["I can help", "Here's"],
+        "refusal": ["I cannot", "I'm not able"]
+      },
+      "known_vulnerabilities": [
+        {"id": "GLM-001", "name": "Bilingual Safety Gap", "severity": "MEDIUM", "description": "Safety training primarily in Chinese", "effective_attacks": ["english_prompts", "cross_lingual"]}
+      ],
+      "safety_notes": "Strong in Chinese, variable in English"
+    }
+  ],
+  "vulnerability_categories": {
+    "direct": "Model responds to straightforward harmful requests",
+    "roleplay": "Susceptible to fictional persona/character jailbreaks",
+    "encoding": "Vulnerable to Base64, hex, ROT13 encoded requests",
+    "multi_turn": "Safety degrades over extended conversations",
+    "policy_puppetry": "Fake policy/config files can override safety",
+    "cross_lingual": "Non-primary language prompts bypass filters",
+    "context_overflow": "Very long contexts dilute safety training",
+    "fiction_framing": "Creative writing framing reduces refusals",
+    "academic_framing": "Research/education context bypasses safety",
+    "code_completion": "Will complete malicious code if started",
+    "debugger_trap": "Helps 'fix' broken malicious code",
+    "rag_poisoning": "Malicious content in retrieved documents",
+    "tokenbreak": "Token manipulation bypasses classifiers"
+  }
+}

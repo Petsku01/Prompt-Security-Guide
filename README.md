@@ -1,68 +1,51 @@
-# LLM Security Testing Methodology
+# prompt-security-guide
 
-A framework for evaluating Large Language Model safety through systematic testing.
+Defensive toolkit for evaluating LLM jailbreak resistance.
 
-## Purpose
+> Canonical runtime as of v3.0.0: `jailbreak_tester/`
 
-This project documents **defensive** approaches to LLM security:
-- Understanding common vulnerability patterns
-- Testing methodologies for safety evaluation
-- Defense strategies and guardrails
-
-## Key Resources
-
-For comprehensive LLM security information, see these authoritative sources:
-
-| Resource | Description |
-|----------|-------------|
-| [OWASP Top 10 for LLMs](https://owasp.org/www-project-top-10-for-large-language-model-applications/) | Industry-standard security risks |
-| [Microsoft PromptBench](https://github.com/microsoft/promptbench) | Robustness evaluation framework |
-| [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) | Risk management framework |
-| [Anthropic Safety Research](https://www.anthropic.com/research) | Alignment and safety research |
-
-## Quick Start
+## Quick Start (single happy path)
 
 ```bash
-# Test a model with default OBLITERATUS attacks
-python tester.py --model llama3:8b
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-# Limit to 20 attacks for quick test
-python tester.py --model llama3:8b --limit 20
-
-# Custom catalog and timeout
-python tester.py --model mistral:7b --catalog attack_catalog.json --timeout 120
-
-# Resume interrupted run
-python tester.py --model llama3:8b --resume
+# Run test suite against local model endpoint
+python -m jailbreak_tester \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --base-url http://localhost:11434/v1
 ```
 
-**Requirements:** Python 3.10+, Ollama running at localhost:11434
+Outputs are written to `results/` (ignored by git except curated samples).
 
-## Datasets
+## Repository Layout
 
-| File | Description |
-|------|-------------|
-| `datasets/obliteratus_attacks.json` | 65 curated attacks (direct + jailbreak-wrapped) |
-| `datasets/obliteratus_prompts.json` | 512 harmful/harmless prompt pairs |
-| `attack_catalog.json` | Extended attack catalog |
+- `jailbreak_tester/` — canonical engine and CLI
+- `datasets/` — curated attack datasets
+- `attacks/` — attack definitions used by tests and experiments
+- `tests/` — automated test suite
+- `docs/` — methodology and usage docs
+- `legacy/` — deprecated v2 runtime and migrated tooling
+- `archive/deprecated/` — historical large artifacts removed from active runtime
+
+## Migration
+
+If you were using `tester.py` or `tools/`, see [MIGRATION.md](MIGRATION.md).
 
 ## Documentation
 
-- [Methodology](docs/METHODOLOGY.md) - Testing principles and approach
-- [Defense Strategies](docs/DEFENSE_STRATEGIES.md) - Protective measures
-- [Abliteration Research](research/abliteration-analysis.md) - Refusal mechanism analysis
+- [docs/README.md](docs/README.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [SECURITY.md](SECURITY.md)
+- [CHANGELOG.md](CHANGELOG.md)
 
-## Responsible Disclosure
+## Safety + Scope
 
-This project follows responsible disclosure principles:
-- No publication of working exploit techniques
-- Focus on defensive measures
-- Coordination with vendors before disclosure
+This project is for defensive security testing only.
+Do not use it to generate or deploy harmful content.
 
 ## License
 
-MIT - See [LICENSE](LICENSE)
-
----
-
-*For security researchers with legitimate needs, contact the maintainers.*
+MIT — see [LICENSE](LICENSE).
