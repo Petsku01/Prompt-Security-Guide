@@ -34,10 +34,78 @@ SearchFunc = Callable[[str, int], list[dict[str, str]]]
 
 
 def default_search_func(query: str, count: int) -> list[dict[str, str]]:
-    """Placeholder search function. Override with actual web_search."""
-    # In production, this would call web_search tool
-    # For now, return empty to indicate search not available
+    """Default search using web_search tool via OpenClaw gateway."""
+    # This is called when running standalone - uses subprocess to call openclaw
+    # When running via OpenClaw agent, inject a proper search_func that uses web_search tool
+    import subprocess
+    import json
+    
+    try:
+        # Try using openclaw CLI for web search
+        result = subprocess.run(
+            ["openclaw", "search", "--query", query, "--count", str(count), "--json"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode == 0:
+            data = json.loads(result.stdout)
+            return data.get("results", [])
+    except (subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError):
+        pass
+    
     return []
+
+
+def fetch_page_content(url: str, max_chars: int = 5000) -> str:
+    """Fetch and extract content from a URL."""
+    import subprocess
+    
+    try:
+        result = subprocess.run(
+            ["openclaw", "fetch", url, "--max-chars", str(max_chars)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if result.returncode == 0:
+            return result.stdout
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    
+    # Fallback: try requests + basic extraction
+    try:
+        import requests
+        resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        if resp.status_code == 200:
+            # Basic text extraction
+            from html.parser import HTMLParser
+            
+            class TextExtractor(HTMLParser):
+                def __init__(self):
+                    super().__init__()
+                    self.text = []
+                    self.skip = False
+                    
+                def handle_starttag(self, tag, attrs):
+                    if tag in ("script", "style", "nav", "footer"):
+                        self.skip = True
+                        
+                def handle_endtag(self, tag):
+                    if tag in ("script", "style", "nav", "footer"):
+                        self.skip = False
+                        
+                def handle_data(self, data):
+                    if not self.skip:
+                        self.text.append(data.strip())
+            
+            parser = TextExtractor()
+            parser.feed(resp.text)
+            return " ".join(t for t in parser.text if t)[:max_chars]
+    except Exception:
+        pass
+    
+    return ""
 
 
 class DiscoveryEngine:
