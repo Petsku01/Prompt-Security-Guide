@@ -120,29 +120,60 @@ class VectorGenerator:
             return []
         
         try:
-            # Parse JSON from response
-            # Handle markdown code blocks
-            if "```json" in response:
-                response = response.split("```json")[1].split("```")[0]
-            elif "```" in response:
-                response = response.split("```")[1].split("```")[0]
-            
-            vectors_data = json.loads(response.strip())
-            
-            # Handle different JSON structures from models
-            if isinstance(vectors_data, dict):
-                # Try common keys
-                for key in ["test_vectors", "vectors", "attacks", "results"]:
-                    if key in vectors_data:
-                        vectors_data = vectors_data[key]
-                        break
-                else:
-                    vectors_data = [vectors_data]
+            # Robust JSON extraction from LLM response
+            vectors_data = self._extract_json(response)
             
             if not isinstance(vectors_data, list):
                 vectors_data = []
-        except (json.JSONDecodeError, IndexError):
+        except json.JSONDecodeError as e:
+            logger.warning(f"Failed to parse JSON from response: {e}")
             return []
+    
+    def _extract_json(self, response: str) -> list | dict:
+        """Extract JSON from LLM response, handling various formats."""
+        import re
+        
+        # Patterns to try, in order of specificity
+        patterns = [
+            r'```json\s*([\s\S]*?)\s*```',  # ```json ... ```
+            r'```\s*([\s\S]*?)\s*```',       # ``` ... ```
+        ]
+        
+        # Try code block patterns first
+        for pattern in patterns:
+            match = re.search(pattern, response)
+            if match:
+                candidate = match.group(1).strip()
+                try:
+                    data = json.loads(candidate)
+                    return self._normalize_vectors(data)
+                except json.JSONDecodeError:
+                    continue
+        
+        # Try to find raw JSON array or object
+        for pattern in [r'\[[\s\S]*\]', r'\{[\s\S]*\}']:
+            match = re.search(pattern, response)
+            if match:
+                try:
+                    data = json.loads(match.group(0))
+                    return self._normalize_vectors(data)
+                except json.JSONDecodeError:
+                    continue
+        
+        # Last resort: try parsing the whole response
+        data = json.loads(response.strip())
+        return self._normalize_vectors(data)
+    
+    def _normalize_vectors(self, data) -> list:
+        """Normalize different JSON structures to a list of vectors."""
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            for key in ["test_vectors", "vectors", "attacks", "results", "items"]:
+                if key in data:
+                    return data[key]
+            return [data]
+        return []
         
         vectors: list[AttackVector] = []
         for v in vectors_data:

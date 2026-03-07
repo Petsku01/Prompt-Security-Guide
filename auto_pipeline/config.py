@@ -1,6 +1,7 @@
 """Configuration for Auto Vector Pipeline."""
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,7 @@ class PipelineConfig:
     
     # Generator settings
     max_vectors_per_run: int = 10
-    generator_model: str = "opus"
+    generator_model: str = "dolphin-llama3:8b"
     
     # Tester settings
     test_models: list[str] = field(default_factory=lambda: [
@@ -34,6 +35,23 @@ class PipelineConfig:
     ])
     test_timeout: int = 120
     ollama_base_url: str = "http://localhost:11434"
+    
+    # Configurable tool paths (env var overrides)
+    python_executable: str = field(
+        default_factory=lambda: os.environ.get("PYTHON_PATH", "python3")
+    )
+    scrapling_python: str = field(
+        default_factory=lambda: os.environ.get(
+            "SCRAPLING_PYTHON",
+            str(Path.home() / ".openclaw/workspace/tools/scrapling-venv/bin/python")
+        )
+    )
+    search_script: str = field(
+        default_factory=lambda: os.environ.get(
+            "SEARCH_SCRIPT",
+            str(Path.home() / ".openclaw/workspace/tools/search_ddg.py")
+        )
+    )
     
     # Paths
     base_dir: Path = field(default_factory=lambda: Path(__file__).parent)

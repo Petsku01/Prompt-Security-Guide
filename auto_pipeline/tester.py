@@ -68,8 +68,15 @@ class TestRunner:
             if result.returncode == 0:
                 data = json.loads(result.stdout)
                 return [m["name"] for m in data.get("models", [])]
-        except Exception:
-            pass
+        except subprocess.TimeoutExpired:
+            from .logging_config import logger
+            logger.warning("Ollama model list request timed out")
+        except json.JSONDecodeError as e:
+            from .logging_config import logger
+            logger.error(f"Invalid JSON from Ollama: {e}")
+        except Exception as e:
+            from .logging_config import logger
+            logger.error(f"Failed to get models: {e}")
         return []
     
     def run_test(

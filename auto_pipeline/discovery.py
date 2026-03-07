@@ -57,48 +57,60 @@ def retry(max_attempts: int = 3, delay: float = 1.0):
     return decorator
 
 
-@retry(max_attempts=3, delay=1.0)
-def default_search_func(query: str, count: int) -> list[dict[str, str]]:
-    """Default search using Scrapling with Chrome TLS impersonation."""
-    # Validate input
-    validated_query = validate_query(query)
+def create_search_func(config):
+    """Create search function with configurable paths."""
+    @retry(max_attempts=3, delay=1.0)
+    def search_func(query: str, count: int) -> list[dict[str, str]]:
+        """Search using Scrapling with Chrome TLS impersonation."""
+        validated_query = validate_query(query)
+        
+        try:
+            result = subprocess.run(
+                [
+                    config.scrapling_python,
+                    config.search_script,
+                    validated_query,
+                    str(count),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            
+            if result.returncode != 0:
+                logger.warning(f"Search script returned non-zero: {result.returncode}")
+                logger.debug(f"stderr: {result.stderr}")
+                return []
+            
+            # Parse JSON output (skip the INFO log line)
+            output = result.stdout
+            json_start = output.find('[')
+            if json_start == -1:
+                logger.warning("No JSON array found in search output")
+                return []
+            
+            return json.loads(output[json_start:])
+            
+        except subprocess.TimeoutExpired:
+            logger.error("Search timed out after 30s")
+            raise
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON in search response: {e}")
+            return []
+        except FileNotFoundError:
+            logger.error("Scrapling search script not found")
+            return []
     
-    try:
-        result = subprocess.run(
-            [
-                "/home/ette/.openclaw/workspace/tools/scrapling-venv/bin/python",
-                "/home/ette/.openclaw/workspace/tools/search_ddg.py",
-                validated_query,
-                str(count),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        
-        if result.returncode != 0:
-            logger.warning(f"Search script returned non-zero: {result.returncode}")
-            logger.debug(f"stderr: {result.stderr}")
-            return []
-        
-        # Parse JSON output (skip the INFO log line)
-        output = result.stdout
-        json_start = output.find('[')
-        if json_start == -1:
-            logger.warning("No JSON array found in search output")
-            return []
-        
-        return json.loads(output[json_start:])
-        
-    except subprocess.TimeoutExpired:
-        logger.error("Search timed out after 30s")
-        raise
-    except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON in search response: {e}")
-        return []
-    except FileNotFoundError:
-        logger.error("Scrapling search script not found")
-        return []
+    return search_func
+
+
+# Default search function (uses default config paths)
+def default_search_func(query: str, count: int) -> list[dict[str, str]]:
+    """Default search using hardcoded paths (for backwards compatibility)."""
+    from .config import load_config
+    config = load_config()
+    func = create_search_func(config)
+    return func(query, count)
 
 
 def fetch_page_content(url: str, max_chars: int = 5000) -> str:
