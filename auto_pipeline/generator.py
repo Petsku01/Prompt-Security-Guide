@@ -128,6 +128,28 @@ class VectorGenerator:
         except json.JSONDecodeError as e:
             logger.warning(f"Failed to parse JSON from response: {e}")
             return []
+        
+        # Build AttackVector objects
+        vectors: list[AttackVector] = []
+        for v in vectors_data:
+            prompt_text = v.get("prompt", "")
+            if not prompt_text or self.vector_store.is_known(prompt_text):
+                continue
+            
+            vector = AttackVector(
+                id=self._next_id(),
+                prompt=prompt_text,
+                technique=v.get("technique", "unknown"),
+                description=v.get("description", ""),
+                source_url=source.url,
+            )
+            vectors.append(vector)
+            self.vector_store.add(prompt_text)
+            
+            if len(vectors) >= self.config.max_vectors_per_run:
+                break
+        
+        return vectors
     
     def _extract_json(self, response: str) -> list | dict:
         """Extract JSON from LLM response, handling various formats."""
@@ -174,27 +196,6 @@ class VectorGenerator:
                     return data[key]
             return [data]
         return []
-        
-        vectors: list[AttackVector] = []
-        for v in vectors_data:
-            prompt_text = v.get("prompt", "")
-            if not prompt_text or self.vector_store.is_known(prompt_text):
-                continue
-            
-            vector = AttackVector(
-                id=self._next_id(),
-                prompt=prompt_text,
-                technique=v.get("technique", "unknown"),
-                description=v.get("description", ""),
-                source_url=source.url,
-            )
-            vectors.append(vector)
-            self.vector_store.add(prompt_text)
-            
-            if len(vectors) >= self.config.max_vectors_per_run:
-                break
-        
-        return vectors
     
     def generate_from_sources(self, sources: list[Source]) -> list[AttackVector]:
         """Generate vectors from multiple sources."""
