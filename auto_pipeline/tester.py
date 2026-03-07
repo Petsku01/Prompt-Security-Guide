@@ -44,20 +44,28 @@ class TestRunner:
     
     def check_ollama(self) -> bool:
         """Check if Ollama is running."""
+        import subprocess
         try:
-            import requests
-            resp = requests.get(f"{self.config.ollama_base_url}/api/tags", timeout=5)
-            return resp.status_code == 200
+            result = subprocess.run(
+                ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
+                 f"{self.config.ollama_base_url}/api/tags"],
+                capture_output=True, text=True, timeout=5
+            )
+            return result.stdout.strip() == "200"
         except Exception:
             return False
     
     def get_available_models(self) -> list[str]:
         """Get list of models available in Ollama."""
+        import subprocess
+        import json
         try:
-            import requests
-            resp = requests.get(f"{self.config.ollama_base_url}/api/tags", timeout=5)
-            if resp.status_code == 200:
-                data = resp.json()
+            result = subprocess.run(
+                ["curl", "-s", f"{self.config.ollama_base_url}/api/tags"],
+                capture_output=True, text=True, timeout=5
+            )
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
                 return [m["name"] for m in data.get("models", [])]
         except Exception:
             pass
@@ -76,7 +84,7 @@ class TestRunner:
         output_base = self.config.results_dir / f"{output_prefix}_{model_safe}_{timestamp}"
         
         cmd = [
-            "python3", "-m", "jailbreak_tester",
+            "/usr/bin/python3", "-m", "jailbreak_tester",
             "--catalog", str(vectors_path),
             "--model", model,
             "--allow-insecure-http",

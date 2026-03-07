@@ -12,6 +12,7 @@ from .discovery import DiscoveryEngine, Source
 from .generator import VectorGenerator, AttackVector
 from .tester import TestRunner, TestResult
 from .reporter import Reporter, PipelineReport
+from .logging_config import logger
 
 
 class Pipeline:
@@ -31,51 +32,49 @@ class Pipeline:
     
     def run_discovery(self) -> list[Source]:
         """Run discovery phase."""
-        print("=== DISCOVERY PHASE ===")
+        logger.info("=== DISCOVERY PHASE ===")
         sources = self.discovery.discover()
-        print(f"Found {len(sources)} new sources")
+        logger.info(f"Found {len(sources)} new sources")
         
         if sources:
             output_path = self.config.base_dir / f"sources_{datetime.now().strftime('%Y%m%d')}.json"
             self.discovery.save_sources(sources, output_path)
-            print(f"Saved to {output_path}")
         
         return sources
     
     def run_generation(self, sources: list[Source]) -> list[AttackVector]:
         """Run generation phase."""
-        print("\n=== GENERATION PHASE ===")
+        logger.info("=== GENERATION PHASE ===")
         
         if not sources:
-            print("No sources to generate from")
+            logger.info("No sources to generate from")
             return []
         
         vectors = self.generator.generate_from_sources(sources)
-        print(f"Generated {len(vectors)} new vectors")
+        logger.info(f"Generated {len(vectors)} new vectors")
         
         if vectors:
             output_path = self.config.base_dir.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
             self.generator.save_vectors(vectors, output_path)
-            print(f"Saved to {output_path}")
+            logger.info(f"Saved vectors to {output_path}")
         
         return vectors
     
     def run_testing(self, vectors_path: Path, use_tmux: bool = False) -> list[TestResult]:
         """Run testing phase."""
-        print("\n=== TESTING PHASE ===")
+        logger.info("=== TESTING PHASE ===")
         
         if not self.tester.check_ollama():
-            print("ERROR: Ollama not running - skipping tests")
+            logger.error("Ollama not running - skipping tests")
             return []
         
         if use_tmux:
             session = self.tester.run_in_tmux(vectors_path)
-            print(f"Tests started in tmux session: {session}")
-            print("Monitor with: tmux attach -t {session}")
-            return []  # Results will be available later
+            logger.info(f"Tests started in tmux session: {session}")
+            return []
         else:
             results = self.tester.run_all_tests(vectors_path)
-            print(f"Completed {len(results)} model tests")
+            logger.info(f"Completed {len(results)} model tests")
             return results
     
     def run_reporting(
@@ -85,25 +84,22 @@ class Pipeline:
         results: list[TestResult],
     ) -> PipelineReport:
         """Run reporting phase."""
-        print("\n=== REPORTING PHASE ===")
+        logger.info("=== REPORTING PHASE ===")
         
         report = self.reporter.create_report(sources, vectors, results)
         report_path = self.reporter.save_report(report)
-        print(f"Report saved to {report_path}")
+        logger.info(f"Report saved to {report_path}")
         
         # Generate Discord message
         discord_msg = self.reporter.generate_discord_message(report)
-        print("\n--- Discord Message ---")
-        print(discord_msg)
-        print("--- End ---")
+        logger.debug(f"Discord message:\n{discord_msg}")
         
         return report
     
     def run_full(self, use_tmux: bool = False) -> PipelineReport | None:
         """Run full pipeline."""
-        print(f"Starting Auto Vector Pipeline at {datetime.now().isoformat()}")
-        print(f"Config: {self.config.max_vectors_per_run} max vectors, {len(self.config.test_models)} models")
-        print()
+        logger.info(f"Starting Auto Vector Pipeline at {datetime.now().isoformat()}")
+        logger.info(f"Config: {self.config.max_vectors_per_run} max vectors, {len(self.config.test_models)} models")
         
         # Phase 1: Discovery
         sources = self.run_discovery()
@@ -112,7 +108,7 @@ class Pipeline:
         vectors = self.run_generation(sources)
         
         if not vectors:
-            print("\nNo new vectors generated - pipeline complete")
+            logger.info("No new vectors generated - pipeline complete")
             return None
         
         # Phase 3: Testing
@@ -120,14 +116,13 @@ class Pipeline:
         results = self.run_testing(vectors_path, use_tmux=use_tmux)
         
         if use_tmux:
-            print("\nTesting running in background - run reporting manually when complete")
+            logger.info("Testing running in background - run reporting manually when complete")
             return None
         
         # Phase 4: Reporting
         report = self.run_reporting(sources, vectors, results)
         
-        print(f"\n=== PIPELINE COMPLETE ===")
-        print(f"Flagged: {report.total_flagged}/{report.total_tests}")
+        logger.info(f"=== PIPELINE COMPLETE === Flagged: {report.total_flagged}/{report.total_tests}")
         
         return report
 
@@ -141,29 +136,39 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-generation", action="store_true", help="Skip generation phase")
     parser.add_argument("--vectors", type=Path, help="Use existing vectors file for testing")
     parser.add_argument("--report-only", action="store_true", help="Only run reporting on existing results")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     
     args = parser.parse_args(argv)
+    
+    if args.verbose:
+        import logging
+        logger.setLevel(logging.DEBUG)
     
     config = load_config(args.config)
     pipeline = Pipeline(config)
     
     if args.report_only:
-        # Just generate report from existing results
         sources: list[Source] = []
         vectors: list[AttackVector] = []
-        results: list[TestResult] = []  # Would need to load from files
+        results: list[TestResult] = []
         pipeline.run_reporting(sources, vectors, results)
         return 0
     
     if args.vectors:
-        # Just run testing with existing vectors
         results = pipeline.run_testing(args.vectors, use_tmux=args.tmux)
         if results:
             pipeline.run_reporting([], [], results)
         return 0
     
     # Full pipeline
-    report = pipeline.run_full(use_tmux=args.tmux)
+    try:
+        pipeline.run_full(use_tmux=args.tmux)
+    except KeyboardInterrupt:
+        logger.warning("Pipeline interrupted by user")
+        return 130
+    except Exception as e:
+        logger.error(f"Pipeline failed: {e}")
+        return 1
     
     return 0
 

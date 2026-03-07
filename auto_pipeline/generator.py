@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from .logging_config import logger
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
@@ -37,8 +38,36 @@ GenerateFunc = Callable[[str], str]
 
 
 def default_generate_func(prompt: str) -> str:
-    """Placeholder LLM function. Override with actual Opus call."""
-    return ""
+    """Generate using local Ollama model."""
+    import subprocess
+    import json
+    
+    try:
+        # Call Ollama API directly
+        result = subprocess.run(
+            [
+                "curl", "-s",
+                "http://localhost:11434/api/generate",
+                "-d", json.dumps({
+                    "model": "dolphin-llama3:8b",
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {"temperature": 0.7, "num_predict": 512}
+                }),
+            ],
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        
+        if result.returncode != 0:
+            return ""
+        
+        response = json.loads(result.stdout)
+        return response.get("response", "")
+        
+    except Exception:
+        return ""
 
 
 GENERATION_PROMPT = '''Analyze this jailbreak technique source and generate test vectors.
@@ -98,8 +127,19 @@ class VectorGenerator:
                 response = response.split("```")[1].split("```")[0]
             
             vectors_data = json.loads(response.strip())
+            
+            # Handle different JSON structures from models
+            if isinstance(vectors_data, dict):
+                # Try common keys
+                for key in ["test_vectors", "vectors", "attacks", "results"]:
+                    if key in vectors_data:
+                        vectors_data = vectors_data[key]
+                        break
+                else:
+                    vectors_data = [vectors_data]
+            
             if not isinstance(vectors_data, list):
-                vectors_data = [vectors_data]
+                vectors_data = []
         except (json.JSONDecodeError, IndexError):
             return []
         

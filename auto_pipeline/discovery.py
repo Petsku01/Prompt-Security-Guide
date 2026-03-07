@@ -2,13 +2,17 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 from .config import PipelineConfig
 from .dedup import DeduplicationStore
+from .logging_config import logger
+from .validation import validate_query, validate_url
 
 
 @dataclass
@@ -33,33 +37,75 @@ class Source:
 SearchFunc = Callable[[str, int], list[dict[str, str]]]
 
 
+def retry(max_attempts: int = 3, delay: float = 1.0):
+    """Simple retry decorator with exponential backoff."""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            last_error = None
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_error = e
+                    logger.warning(f"Attempt {attempt + 1}/{max_attempts} failed: {e}")
+                    if attempt < max_attempts - 1:
+                        sleep_time = delay * (2 ** attempt)
+                        time.sleep(sleep_time)
+            logger.error(f"All {max_attempts} attempts failed")
+            raise last_error if last_error else RuntimeError("Unknown error")
+        return wrapper
+    return decorator
+
+
+@retry(max_attempts=3, delay=1.0)
 def default_search_func(query: str, count: int) -> list[dict[str, str]]:
-    """Default search using web_search tool via OpenClaw gateway."""
-    # This is called when running standalone - uses subprocess to call openclaw
-    # When running via OpenClaw agent, inject a proper search_func that uses web_search tool
-    import subprocess
-    import json
+    """Default search using Scrapling with Chrome TLS impersonation."""
+    # Validate input
+    validated_query = validate_query(query)
     
     try:
-        # Try using openclaw CLI for web search
         result = subprocess.run(
-            ["openclaw", "search", "--query", query, "--count", str(count), "--json"],
+            [
+                "/home/ette/.openclaw/workspace/tools/scrapling-venv/bin/python",
+                "/home/ette/.openclaw/workspace/tools/search_ddg.py",
+                validated_query,
+                str(count),
+            ],
             capture_output=True,
             text=True,
             timeout=30,
         )
-        if result.returncode == 0:
-            data = json.loads(result.stdout)
-            return data.get("results", [])
-    except (subprocess.TimeoutExpired, json.JSONDecodeError, FileNotFoundError):
-        pass
-    
-    return []
+        
+        if result.returncode != 0:
+            logger.warning(f"Search script returned non-zero: {result.returncode}")
+            logger.debug(f"stderr: {result.stderr}")
+            return []
+        
+        # Parse JSON output (skip the INFO log line)
+        output = result.stdout
+        json_start = output.find('[')
+        if json_start == -1:
+            logger.warning("No JSON array found in search output")
+            return []
+        
+        return json.loads(output[json_start:])
+        
+    except subprocess.TimeoutExpired:
+        logger.error("Search timed out after 30s")
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in search response: {e}")
+        return []
+    except FileNotFoundError:
+        logger.error("Scrapling search script not found")
+        return []
 
 
 def fetch_page_content(url: str, max_chars: int = 5000) -> str:
     """Fetch and extract content from a URL."""
-    import subprocess
+    if not validate_url(url):
+        logger.warning(f"Invalid URL skipped: {url[:50]}...")
+        return ""
     
     try:
         result = subprocess.run(
@@ -70,15 +116,17 @@ def fetch_page_content(url: str, max_chars: int = 5000) -> str:
         )
         if result.returncode == 0:
             return result.stdout
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
+        logger.debug(f"openclaw fetch failed: {result.returncode}")
+    except subprocess.TimeoutExpired:
+        logger.warning(f"Fetch timed out for {url[:50]}...")
+    except FileNotFoundError:
+        logger.debug("openclaw command not found, trying fallback")
     
     # Fallback: try requests + basic extraction
     try:
         import requests
         resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         if resp.status_code == 200:
-            # Basic text extraction
             from html.parser import HTMLParser
             
             class TextExtractor(HTMLParser):
@@ -102,8 +150,10 @@ def fetch_page_content(url: str, max_chars: int = 5000) -> str:
             parser = TextExtractor()
             parser.feed(resp.text)
             return " ".join(t for t in parser.text if t)[:max_chars]
-    except Exception:
-        pass
+    except ImportError:
+        logger.debug("requests not available for fallback")
+    except Exception as e:
+        logger.debug(f"Fallback fetch failed: {e}")
     
     return ""
 
@@ -126,29 +176,46 @@ class DiscoveryEngine:
         timestamp = datetime.now().isoformat()
         
         for query in self.config.search_queries:
-            results = self.search_func(query, self.config.max_sources_per_query)
+            logger.info(f"Searching: {query}")
+            
+            try:
+                results = self.search_func(query, self.config.max_sources_per_query)
+            except Exception as e:
+                logger.error(f"Search failed for '{query}': {e}")
+                continue
+            
+            logger.debug(f"Got {len(results)} results for '{query}'")
             
             for result in results:
                 url = result.get("url", "")
-                if not url or self.source_store.is_known(url):
+                
+                # Validate URL
+                if not url or not validate_url(url):
+                    logger.debug(f"Skipping invalid URL: {url[:50] if url else 'empty'}")
+                    continue
+                
+                if self.source_store.is_known(url):
+                    logger.debug(f"Skipping known URL: {url[:50]}")
                     continue
                 
                 source = Source(
                     url=url,
-                    title=result.get("title", ""),
-                    snippet=result.get("snippet", ""),
+                    title=result.get("title", "")[:200],  # Limit title length
+                    snippet=result.get("snippet", "")[:500],  # Limit snippet length
                     query=query,
                     discovered_at=timestamp,
                 )
                 new_sources.append(source)
                 self.source_store.add(url)
                 
-                if len(new_sources) >= 10:  # Max 10 sources per run
+                if len(new_sources) >= 10:
                     break
             
             if len(new_sources) >= 10:
+                logger.info("Reached max sources limit (10)")
                 break
         
+        logger.info(f"Discovery complete: {len(new_sources)} new sources found")
         return new_sources
     
     def save_sources(self, sources: list[Source], output_path: Path) -> None:
@@ -160,6 +227,7 @@ class DiscoveryEngine:
         }
         with open(output_path, "w") as f:
             json.dump(data, f, indent=2)
+        logger.info(f"Saved {len(sources)} sources to {output_path}")
 
 
 if __name__ == "__main__":
