@@ -1,6 +1,18 @@
 """Input validation for auto_pipeline."""
 import re
 from urllib.parse import urlparse
+import ipaddress
+import socket
+
+BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254'}
+BLOCKED_NETWORKS = [
+    ipaddress.ip_network('127.0.0.0/8'),
+    ipaddress.ip_network('10.0.0.0/8'),
+    ipaddress.ip_network('172.16.0.0/12'),
+    ipaddress.ip_network('192.168.0.0/16'),
+    ipaddress.ip_network('169.254.0.0/16'),
+]
+
 
 MAX_QUERY_LENGTH = 200
 MAX_URL_LENGTH = 2048
@@ -32,6 +44,9 @@ def validate_query(query: str) -> str:
     # Remove any null bytes or control characters
     cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
     
+    if not QUERY_PATTERN.match(cleaned):
+        raise ValueError(f"Query contains invalid characters")
+    
     return cleaned
 
 
@@ -57,6 +72,19 @@ def validate_url(url: str) -> bool:
         # Must have a netloc (domain)
         if not parsed.netloc:
             return False
+
+        hostname = parsed.hostname
+        if hostname in BLOCKED_HOSTS:
+            return False
+            
+        try:
+            ip = ipaddress.ip_address(hostname)
+            for network in BLOCKED_NETWORKS:
+                if ip in network:
+                    return False
+        except ValueError:
+            pass # Not an IP, continue
+
         
         # Block obvious dangerous patterns
         dangerous_patterns = [

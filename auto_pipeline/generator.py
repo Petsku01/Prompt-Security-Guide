@@ -38,35 +38,36 @@ GenerateFunc = Callable[[str], str]
 
 
 def default_generate_func(prompt: str) -> str:
-    """Generate using local Ollama model."""
-    import subprocess
-    import json
+    """Generate using local Ollama model via urllib (no subprocess)."""
+    import urllib.request
+    import urllib.error
     
     try:
-        # Call Ollama API directly
-        result = subprocess.run(
-            [
-                "curl", "-s",
-                "http://localhost:11434/api/generate",
-                "-d", json.dumps({
-                    "model": "dolphin-llama3:8b",
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {"temperature": 0.7, "num_predict": 512}
-                }),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=180,
+        data = json.dumps({
+            "model": "dolphin-llama3:8b",
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.7, "num_predict": 512}
+        }).encode('utf-8')
+        
+        req = urllib.request.Request(
+            "http://localhost:11434/api/generate",
+            data=data,
+            headers={"Content-Type": "application/json"}
         )
         
-        if result.returncode != 0:
-            return ""
-        
-        response = json.loads(result.stdout)
-        return response.get("response", "")
-        
-    except Exception:
+        with urllib.request.urlopen(req, timeout=180) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+            return result.get("response", "")
+            
+    except urllib.error.URLError as e:
+        logger.error(f"Ollama connection failed: {e}")
+        return ""
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON from Ollama: {e}")
+        return ""
+    except TimeoutError:
+        logger.error("Ollama request timed out (180s)")
         return ""
 
 

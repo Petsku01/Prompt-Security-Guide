@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import shlex
 import subprocess
 import time
 from dataclasses import dataclass
@@ -171,11 +172,11 @@ class TestRunner:
         """Start tests in tmux session. Returns session name."""
         script = f'''
 cd {self.config.base_dir.parent}
-for MODEL in {' '.join(self.config.test_models)}; do
+for MODEL in {' '.join(shlex.quote(m) for m in self.config.test_models)}; do
     MODEL_SAFE=$(echo $MODEL | tr ':' '_')
     echo "Testing: $MODEL"
     python3 -m jailbreak_tester \\
-        --catalog {vectors_path} \\
+        --catalog {shlex.quote(str(vectors_path))} \\
         --model "$MODEL" \\
         --allow-insecure-http \\
         --timeout {self.config.test_timeout} \\
