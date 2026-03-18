@@ -1,0 +1,34 @@
+{
+  "discovered_at": "2026-03-16T03:00:05.525418",
+  "count": 4,
+  "sources": [
+    {
+      "url": "https://www.paloaltonetworks.com/cyberpedia/what-is-a-prompt-injection-attack",
+      "title": "What Is a Prompt Injection Attack? [Examples & Prevention]",
+      "snippet": "A",
+      "query": "prompt injection techniques",
+      "discovered_at": "2026-03-16T03:00:01.742347"
+    },
+    {
+      "url": "https://duckduckgo.com/y.js?ad_domain=bypassgpt.ai&ad_provider=bingv7aa&ad_type=txad&click_metadata=J1BBYl4sLFrhaNzDe8kPChJ7heicrJZa4N9OnWzd5DwcPTNlx38qZkWgimnYC45S6FmbEBiyVA8AJGcDY5F_ofZjK1JlCEPdC8JbVDCddKYHb4URkFVmmygjWON55g0abFHEjFR28mAgKCSjYUuya90_lY5nhkFK3UhexUUHLsM.OBMiOiSDF8dZ_BEHlk5RHw&rut=3d879fe1b8bf90dac440dc85976988bf12811de313129c47c67c6a9c343ba16c&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8h%2DEXSqOMb1vay5ybQtuHdDVUCUwuZBxMi3wqYhkzEPu7yxwvArXVPK2z5hBDEX6lcsWiAzm4_4%2D14lDYau9QEcaLmBnI38t7cQi83FguwTTxXO0Wv_ZWTYRqx%2DSydEGfriffyKI41O3Wgppqy1ZhMqb%2DUUdFCNZopoYPE6OjlBJp4biG1VeWzJLHAsLxoj7BPT_BIcSkWbipBDcCtNnMfT8tTes%26u%3DaHR0cHMlM2ElMmYlMmZ3d3cuYnlwYXNzZ3B0LmFpJTJmJTNmdXRtX3NvdXJjZSUzZGJpbmclMjZ1dG1fbWVkaXVtJTNkY3BjJTI2bGFuZ3VhZ2UlM2RlbiUyNmNhbXBhaWduaWQlM2Q0ODYyMjAwMzclMjZhZGdyb3VwaWQlM2QxMjI1OTU2NTQ1OTY4NjczJTI2a2V5d29yZCUzZGJ5cGFzc2dwdCUyNTIwdW5kZXRlY3RhYmxlJTI1MjBhaSUyNmRldmljZSUzZGMlMjZtc2Nsa2lkJTNkNjY4MDAwNmJlYmYyMTk1YWUxODU2OWRjYmRlNzJkYjYlMjZ1dG1fY2FtcGFpZ24lM2RTU19CcmFuZF9FTl9IMl8lMjZ1dG1fdGVybSUzZGJ5cGFzc2dwdCUyNTIwdW5kZXRlY3RhYmxlJTI1MjBhaSUyNnV0bV9jb250ZW50JTNkQnJhbmQlMjUzQSUyNTIwQ1A%26rlid%3D6680006bebf2195ae18569dcbde72db6&vqd=4-264366345987521660263948317081265586649&iurl=%7B1%7DIG%3DA61EC87DDC91437899D4234DEF4C610F%26CID%3D2CB23134F92769B8299E262AF8CF686C%26ID%3DDevEx%2C5046.1",
+      "title": "Bypass.gpt - Bypass AI With 99%+ Human Text",
+      "snippet": "Stop",
+      "query": "AI safety bypass methods",
+      "discovered_at": "2026-03-16T03:00:01.742347"
+    },
+    {
+      "url": "https://www.cdw.com/content/cdw/en/articles/offensive-security/5-techniques-for-ai-abuse-and-filter-bypassing.html",
+      "title": "5 Techniques for AI Abuse and Filter Bypassing - CDW",
+      "snippet": "5 Techniques for",
+      "query": "AI safety bypass methods",
+      "discovered_at": "2026-03-16T03:00:01.742347"
+    },
+    {
+      "url": "https://infosecwriteups.com/ai-jailbreaking-how-hackers-can-bypass-ai-safety-c1d853724ff8",
+      "title": "AI Jailbreaking : How Hackers Can Bypass AI Safety",
+      "snippet": "A Real Case From 2026 In January 2026, a case surfaced that showed how",
+      "query": "AI safety bypass methods",
+      "discovered_at": "2026-03-16T03:00:01.742347"
+    }
+  ]
+}
