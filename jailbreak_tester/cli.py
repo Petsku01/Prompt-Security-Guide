@@ -15,12 +15,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--base-url", default="http://localhost:11434/v1", help="OpenAI-compatible base URL")
     p.add_argument("--allow-insecure-http", action="store_true", help="Allow http:// base URL")
     p.add_argument("--redaction", choices=[m.value for m in RedactionMode], default=RedactionMode.PARTIAL.value)
-    p.add_argument("--timeout", type=float, default=60.0)
+    p.add_argument("--timeout", type=float, default=240.0)
     p.add_argument("--max-retries", type=int, default=4)
     p.add_argument("--checkpoint", default="results/checkpoint.jsonl")
     p.add_argument("--json-report", default="results/report.json")
     p.add_argument("--text-report", default="results/report.txt")
     p.add_argument("--temperature", type=float, default=0.0)
+    p.add_argument("--max-tokens", type=int, default=512)
     return p
 
 
@@ -38,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
         report_json_path=args.json_report,
         report_text_path=args.text_report,
         temperature=args.temperature,
+        max_tokens=args.max_tokens,
     )
 
     try:

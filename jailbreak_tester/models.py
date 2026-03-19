@@ -55,7 +55,7 @@ class AppConfig:
     model: str
     catalog_path: str
     base_url: str = "http://localhost:11434/v1"
-    timeout_seconds: float = 60.0
+    timeout_seconds: float = 240.0
     max_retries: int = 4
     backoff_base_seconds: float = 0.6
     backoff_cap_seconds: float = 8.0
@@ -65,3 +65,4 @@ class AppConfig:
     redaction_mode: RedactionMode = RedactionMode.PARTIAL
     allow_insecure_http: bool = False
     temperature: float = 0.0
+    max_tokens: int = 512

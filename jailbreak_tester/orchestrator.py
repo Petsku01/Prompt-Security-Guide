@@ -32,7 +32,12 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
 
     for attack in attacks:
         try:
-            llm_resp = client.chat(model=cfg.model, prompt=attack.prompt, temperature=cfg.temperature)
+            llm_resp = client.chat(
+                model=cfg.model, 
+                prompt=attack.prompt, 
+                temperature=cfg.temperature,
+                max_tokens=cfg.max_tokens
+            )
             redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
             classification = classify_response_v2(redacted_text)
             result = AttemptResult(

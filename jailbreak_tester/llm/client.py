@@ -12,12 +12,20 @@ class OpenAICompatibleClient:
         self.base_url = base_url.rstrip("/") + "/"
         self.transport = transport
 
-    def chat(self, *, model: str, prompt: str, temperature: float = 0.0) -> LLMResponse:
+    def chat(
+        self, 
+        *, 
+        model: str, 
+        prompt: str, 
+        temperature: float = 0.0,
+        max_tokens: int = 512
+    ) -> LLMResponse:
         endpoint = urljoin(self.base_url, "chat/completions")
         payload = {
             "model": model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": temperature,
+            "max_tokens": max_tokens,
         }
         data = self.transport.post_json(endpoint, payload)
         return parse_chat_completion(data)
