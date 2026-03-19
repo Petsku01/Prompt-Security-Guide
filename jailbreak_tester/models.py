@@ -32,8 +32,11 @@ class AttemptResult:
     attack_id: str
     prompt: str
     response_text: str
-    flagged: bool
-    labels: list[str]
+    flagged: bool  # Legacy: True jos attack_successful
+    labels: list[str]  # Legacy: harmful_labels
+    harm_score: float = 0.0  # 0.0 - 1.0
+    is_refusal: bool = False
+    has_disclaimer: bool = False
     error: str | None = None
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 

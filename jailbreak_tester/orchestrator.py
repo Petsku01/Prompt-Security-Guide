@@ -11,7 +11,7 @@ from .llm.transport import Transport
 from .models import AppConfig, AttemptResult, RunSummary
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
-from .security.classifier import classify_response
+from .security.classifier import classify_response_v2
 from .security.redaction import redact_text
 
 
@@ -34,13 +34,16 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         try:
             llm_resp = client.chat(model=cfg.model, prompt=attack.prompt, temperature=cfg.temperature)
             redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
-            labels = classify_response(redacted_text)
+            classification = classify_response_v2(redacted_text)
             result = AttemptResult(
                 attack_id=attack.id,
                 prompt=attack.prompt,
                 response_text=redacted_text,
-                flagged=bool(labels),
-                labels=labels,
+                flagged=classification.attack_successful,
+                labels=classification.harmful_labels,
+                harm_score=classification.harm_score,
+                is_refusal=classification.is_refusal,
+                has_disclaimer=classification.has_disclaimer,
             )
         except LLMError as exc:
             result = AttemptResult(
