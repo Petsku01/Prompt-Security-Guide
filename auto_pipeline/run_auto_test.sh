@@ -4,7 +4,7 @@ for MODEL in llama3:8b mistral:7b qwen2.5:3b phi3:mini gemma2:2b; do
     MODEL_SAFE=$(echo $MODEL | tr ':' '_')
     echo "Testing: $MODEL"
     python3 -m jailbreak_tester \
-        --catalog /home/ette/.openclaw/workspace/prompt-security-guide/datasets/auto_20260319.json \
+        --catalog /home/ette/.openclaw/workspace/prompt-security-guide/datasets/auto_20260320.json \
         --model "$MODEL" \
         --allow-insecure-http \
         --timeout 120 \
