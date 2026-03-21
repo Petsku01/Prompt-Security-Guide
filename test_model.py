@@ -83,6 +83,8 @@ if __name__ == "__main__":
         ("datasets/categories/code_completion_extended.json", "cc_ext"),
         ("datasets/categories/pliny_extended.json", "pliny_ext"),
         ("datasets/categories/pliny_attacks.json", "pliny_att"),
+        ("datasets/categories/research_based_attacks.json", "research"),
+        ("datasets/categories/effective_attacks.json", "effective"),
     ]
     
     total_jb = 0
