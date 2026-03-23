@@ -15,6 +15,14 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--model", required=True, help="Model name, e.g. llama3")
     parser.add_argument("--catalog", required=True, help="Path to attacks catalog JSON")
     parser.add_argument("--base-url", default="http://localhost:11434/v1", help="OpenAI-compatible base URL")
+    parser.add_argument(
+        "--detector",
+        choices=["keyword", "llm-judge", "ensemble"],
+        default="keyword",
+        help="Response detector mode",
+    )
+    parser.add_argument("--judge-model", default="llama3:8b", help="Model used by LLM judge detector")
+    parser.add_argument("--judge-url", help="OpenAI-compatible base URL for judge (defaults to --base-url)")
     parser.add_argument("--allow-insecure-http", action="store_true", help="Allow http:// base URL")
     parser.add_argument("--redaction", choices=[m.value for m in RedactionMode], default=RedactionMode.PARTIAL.value)
     parser.add_argument("--timeout", type=float, default=240.0)
@@ -76,6 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         api_key=args.api_key,
         system_prompt=system_prompt,
         defense_report=args.defense_report,
+        detector=args.detector,
+        judge_model=args.judge_model,
+        judge_url=args.judge_url or args.base_url,
     )
 
     try:

@@ -41,6 +41,35 @@ python -m psg scan \
 You can also load the system prompt from a file with `--system-prompt-file path/to/prompt.txt`.
 The defense report is written to `results/defense_report.txt`.
 
+## LLM Judge Detector
+
+PSG supports detector backends for response classification:
+- `keyword` (default): regex/rule classifier
+- `llm-judge`: local LLM judge via OpenAI-compatible API
+- `ensemble`: run both and flag if either flags
+
+Use LLM judge mode:
+
+```bash
+python -m psg scan \
+  --model dolphin-llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --base-url http://localhost:11434/v1 \
+  --allow-insecure-http \
+  --detector llm-judge \
+  --judge-model llama3:8b
+```
+
+Use ensemble mode:
+
+```bash
+python -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --allow-insecure-http \
+  --detector ensemble
+```
+
 ## Repository Layout
 
 - `psg/` — canonical engine and CLI

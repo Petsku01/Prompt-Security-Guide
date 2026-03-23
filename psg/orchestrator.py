@@ -14,7 +14,7 @@ from .models import AppConfig, Attack, AttemptResult, RunSummary
 from .reporting.defense_report import write_defense_report
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
-from .security.classifier import classify_response_v2
+from .security.detectors import Detector, build_detector
 from .security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
@@ -35,12 +35,14 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     )
     client = OpenAICompatibleClient(cfg.base_url, transport, api_key=cfg.api_key)
     checkpoint = JSONLCheckpoint(cfg.checkpoint_path)
+    detector = build_detector(cfg)
 
     defended_results = _run_attacks(
         cfg=cfg,
         attacks=attacks,
         client=client,
         checkpoint=checkpoint,
+        detector=detector,
         system_prompt=cfg.system_prompt,
         checkpoint_tag="defended",
     )
@@ -53,6 +55,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
             attacks=attacks,
             client=client,
             checkpoint=checkpoint,
+            detector=detector,
             system_prompt=None,
             checkpoint_tag="baseline",
         )
@@ -108,12 +111,19 @@ def _run_attacks(
     attacks: list[Attack],
     client: OpenAICompatibleClient,
     checkpoint: JSONLCheckpoint,
+    detector: Detector,
     system_prompt: str | None,
     checkpoint_tag: str,
 ) -> list[AttemptResult]:
     results: list[AttemptResult] = []
     for attack in attacks:
-        result = _process_attack(cfg=cfg, attack=attack, client=client, system_prompt=system_prompt)
+        result = _process_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+        )
         try:
             checkpoint.append({**asdict(result), "mode": checkpoint_tag})
         except Exception:
@@ -127,6 +137,7 @@ def _process_attack(
     cfg: AppConfig,
     attack: Attack,
     client: OpenAICompatibleClient,
+    detector: Detector,
     system_prompt: str | None,
 ) -> AttemptResult:
     redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
@@ -140,7 +151,7 @@ def _process_attack(
         )
         redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
         try:
-            classification = classify_response_v2(redacted_text)
+            classification = detector.classify(prompt=attack.prompt, response=redacted_text)
         except Exception as exc:
             raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
         return AttemptResult(

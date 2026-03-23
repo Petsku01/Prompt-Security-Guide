@@ -71,3 +71,6 @@ class AppConfig:
     system_prompt: str | None = None
     defense_report: bool = False
     defense_report_path: str = "results/defense_report.txt"
+    detector: str = "keyword"
+    judge_model: str = "llama3:8b"
+    judge_url: str | None = None

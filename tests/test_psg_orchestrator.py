@@ -26,6 +26,14 @@ class _FakeClient:
         return LLMResponse(content="safe", raw={})
 
 
+class _Detector:
+    def __init__(self, classify_fn) -> None:
+        self._classify_fn = classify_fn
+
+    def classify(self, prompt: str, response: str):
+        return self._classify_fn(prompt, response)
+
+
 def _cfg(tmp_path) -> AppConfig:
     return AppConfig(
         model="test-model",
@@ -46,8 +54,9 @@ def test_run_success_path(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
     monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text.replace("p", "[REDACTED]"))
     monkeypatch.setattr(
-        "psg.orchestrator.classify_response_v2",
-        lambda _text: ClassificationResult(
+        "psg.orchestrator.build_detector",
+        lambda _cfg: _Detector(
+            lambda _prompt, _response: ClassificationResult(
             is_refusal=False,
             is_harmful=True,
             attack_successful=True,
@@ -57,6 +66,7 @@ def test_run_success_path(monkeypatch, tmp_path) -> None:
             compliance_detected=True,
             has_disclaimer=False,
             raw_text_length=4,
+            )
         ),
     )
     monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
@@ -91,8 +101,8 @@ def test_run_continues_on_partial_failures(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
     monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
 
-    def _classify(text: str):
-        if text == "x":
+    def _classify(_prompt: str, response: str):
+        if response == "x":
             raise ClassifierError("bad classify")
         return ClassificationResult(
             is_refusal=False,
@@ -106,7 +116,7 @@ def test_run_continues_on_partial_failures(monkeypatch, tmp_path) -> None:
             raw_text_length=1,
         )
 
-    monkeypatch.setattr("psg.orchestrator.classify_response_v2", _classify)
+    monkeypatch.setattr("psg.orchestrator.build_detector", lambda _cfg: _Detector(_classify))
     monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
     monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
 
@@ -134,8 +144,9 @@ def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) ->
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
     monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
     monkeypatch.setattr(
-        "psg.orchestrator.classify_response_v2",
-        lambda _text: ClassificationResult(
+        "psg.orchestrator.build_detector",
+        lambda _cfg: _Detector(
+            lambda _prompt, _response: ClassificationResult(
             is_refusal=False,
             is_harmful=False,
             attack_successful=False,
@@ -145,6 +156,7 @@ def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) ->
             compliance_detected=False,
             has_disclaimer=False,
             raw_text_length=1,
+            )
         ),
     )
     monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)

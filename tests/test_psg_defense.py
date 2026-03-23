@@ -17,6 +17,14 @@ class _FakeCheckpoint:
         self.rows.append(record)
 
 
+class _Detector:
+    def __init__(self, classify_fn) -> None:
+        self._classify_fn = classify_fn
+
+    def classify(self, prompt: str, response: str):
+        return self._classify_fn(prompt, response)
+
+
 def test_cli_parses_system_prompt_and_defense_report() -> None:
     parser = build_parser()
     args = parser.parse_args(
@@ -54,8 +62,9 @@ def test_orchestrator_passes_system_prompt_and_runs_baseline(monkeypatch, tmp_pa
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
     monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
     monkeypatch.setattr(
-        "psg.orchestrator.classify_response_v2",
-        lambda _text: ClassificationResult(
+        "psg.orchestrator.build_detector",
+        lambda _cfg: _Detector(
+            lambda _prompt, _response: ClassificationResult(
             is_refusal=True,
             is_harmful=False,
             attack_successful=False,
@@ -65,6 +74,7 @@ def test_orchestrator_passes_system_prompt_and_runs_baseline(monkeypatch, tmp_pa
             compliance_detected=False,
             has_disclaimer=False,
             raw_text_length=24,
+            )
         ),
     )
     monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
