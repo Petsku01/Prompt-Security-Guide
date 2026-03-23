@@ -54,6 +54,7 @@ class Pipeline:
         logger.info(f"Generated {len(vectors)} new vectors")
         
         if vectors:
+            # TODO: Make dataset output path configurable via PipelineConfig.
             output_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
             self.generator.save_vectors(vectors, output_path)
             logger.info(f"Saved vectors to {output_path}")
@@ -96,22 +97,36 @@ class Pipeline:
         
         return report
     
-    def run_full(self, use_tmux: bool = False) -> PipelineReport | None:
+    def run_full(
+        self,
+        use_tmux: bool = False,
+        skip_discovery: bool = False,
+        skip_generation: bool = False,
+    ) -> PipelineReport | None:
         """Run full pipeline."""
         logger.info(f"Starting Auto Vector Pipeline at {datetime.now().isoformat()}")
         logger.info(f"Config: {self.config.max_vectors_per_run} max vectors, {len(self.config.test_models)} models")
         
         # Phase 1: Discovery
-        sources = self.run_discovery()
+        sources: list[Source] = []
+        if skip_discovery:
+            logger.info("Skipping discovery phase (--skip-discovery)")
+        else:
+            sources = self.run_discovery()
         
         # Phase 2: Generation
-        vectors = self.run_generation(sources)
+        vectors: list[AttackVector] = []
+        if skip_generation:
+            logger.info("Skipping generation phase (--skip-generation)")
+        else:
+            vectors = self.run_generation(sources)
         
         if not vectors:
             logger.info("No new vectors generated - pipeline complete")
             return None
         
         # Phase 3: Testing
+        # TODO: Make dataset output path configurable via PipelineConfig.
         vectors_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
         results = self.run_testing(vectors_path, use_tmux=use_tmux)
         
@@ -162,7 +177,11 @@ def main(argv: list[str] | None = None) -> int:
     
     # Full pipeline
     try:
-        pipeline.run_full(use_tmux=args.tmux)
+        pipeline.run_full(
+            use_tmux=args.tmux,
+            skip_discovery=args.skip_discovery,
+            skip_generation=args.skip_generation,
+        )
     except KeyboardInterrupt:
         logger.warning("Pipeline interrupted by user")
         return 130

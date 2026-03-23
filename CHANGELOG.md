@@ -3,7 +3,7 @@
 ## 3.0.0 - 2026-03-05
 
 ### Breaking / structural changes
-- Canonicalized runtime to `jailbreak_tester/`.
+- Canonicalized runtime to `psg/`.
 - Moved legacy entrypoint `tester.py` to `legacy/tester_v2.py`.
 - Moved `tools/` implementation to `legacy/tools/` and left temporary compatibility symlink.
 

@@ -2,7 +2,7 @@
 
 ## What changed
 
-- `jailbreak_tester/` is now the canonical runtime.
+- `psg/` is now the canonical runtime.
 - Root `tester.py` is deprecated and forwards to `legacy/tester_v2.py`.
 - `tools/` moved to `legacy/tools/` (compat symlink retained temporarily).
 - Heavy research artifacts moved to `archive/deprecated/`.
@@ -18,7 +18,7 @@ python tester.py --model llama3:8b --catalog datasets/obliteratus_attacks.json
 ### New
 
 ```bash
-python -m jailbreak_tester --model llama3:8b --catalog datasets/obliteratus_attacks.json
+python -m psg --model llama3:8b --catalog datasets/obliteratus_attacks.json
 ```
 
 ## Import migration
@@ -32,7 +32,7 @@ from tools.config import RunConfig
 
 ### New recommendation
 
-Treat legacy modules as frozen compatibility code. New development should target `jailbreak_tester.*` modules.
+Treat legacy modules as frozen compatibility code. New development should target `psg.*` modules.
 
 ## Deprecation timeline
 

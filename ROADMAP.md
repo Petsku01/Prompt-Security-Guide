@@ -124,7 +124,7 @@ prompt-security-guide/
 
 | Nykyinen | Uusi | Toimenpide |
 |----------|------|------------|
-| `jailbreak_tester/` | `psg/` | Refaktoroi & uudelleennimeä |
+| Nykyinen runtime-moduulirakenne | `psg/` | Refaktoroi & uudelleennimeä |
 | `archive/` | `_archive/` | Yhdistä, .gitignore |
 | `legacy/` | `_archive/` | Yhdistä |
 | `auto_pipeline/` | `psg/automation/` tai erillinen | Päätettävä |
@@ -406,7 +406,7 @@ repos:
 
 1. [ ] Hyväksy ROADMAP.md
 2. [ ] Luo `psg/` rakenne
-3. [ ] Migroi `jailbreak_tester/` → `psg/`
+3. [ ] Migroi vanha runtime-rakenne → `psg/`
 4. [ ] Siirrä vanhat → `_archive/`
 5. [ ] Päivitä `pyproject.toml`
 6. [ ] Kirjoita uusi README.md

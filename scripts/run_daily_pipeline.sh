@@ -3,9 +3,11 @@
 # Requires: Scrapling venv, Ollama running
 
 set -e
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# TODO: Make these runtime-configurable instead of hardcoding local paths/names.
 LOG_DIR="$PROJECT_ROOT/logs"
 DATE=$(date +%Y%m%d)
 SESSION_NAME="auto-pipeline-$DATE"
@@ -35,12 +37,17 @@ tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
 # Start pipeline in tmux
 tmux new-session -d -s "$SESSION_NAME" "
     cd '$PROJECT_ROOT'
+    # TODO: Make venv path configurable via env/config.
     source ~/.openclaw/workspace/tools/scrapling-venv/bin/activate
     export PYTHONUNBUFFERED=1
     echo 'Starting pipeline...'
-    python3 -m psg.automation --tmux 2>&1 | tee -a '$LOG_DIR/pipeline_$DATE.log'
-    echo '$TODAY' > '$MARKER_FILE'
-    echo 'Pipeline complete!'
+    if python3 -m psg.automation --tmux 2>&1 | tee -a '$LOG_DIR/pipeline_$DATE.log'; then
+        echo '$TODAY' > '$MARKER_FILE'
+        echo 'Pipeline complete!'
+    else
+        echo 'Pipeline failed - marker not updated' | tee -a '$LOG_DIR/pipeline_$DATE.log'
+        exit 1
+    fi
 "
 
 echo "Pipeline started in tmux session: $SESSION_NAME"

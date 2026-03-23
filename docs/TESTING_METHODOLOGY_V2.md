@@ -63,7 +63,7 @@ RULES = {
 
 **Käyttö:** Nopea esikarsinta, suuren volyymin testaus
 
-**Implementaatio:** `jailbreak_tester/security/classifier.py`
+**Implementaatio:** `psg/security/classifier.py`
 
 **Parannusehdotukset:**
 1. Lisää refusal-tunnistus ENNEN harmful-tunnistusta
@@ -264,7 +264,7 @@ ls datasets/categories/*.json
 
 ```bash
 # Yksittäinen malli, yksi kategoria
-python -m jailbreak_tester \
+python -m psg \
   --model llama3:8b \
   --catalog datasets/categories/malware.json \
   --base-url http://localhost:11434/v1 \
@@ -273,7 +273,7 @@ python -m jailbreak_tester \
 
 # Kaikki kategoriat yhdelle mallille
 for cat in malware fraud physical_harm privacy disinformation system_manipulation; do
-  python -m jailbreak_tester \
+  python -m psg \
     --model llama3:8b \
     --catalog datasets/categories/${cat}.json \
     --json-report results/llama3_${cat}.json
@@ -287,7 +287,7 @@ done
 
 ```bash
 # Aja LLM judge pattern matching -tulosten päälle
-python -m jailbreak_tester.evaluate \
+python -m psg.evaluate \
   --input results/llama3_malware.json \
   --judge-model llama3:8b \
   --output results/llama3_malware_judged.json
