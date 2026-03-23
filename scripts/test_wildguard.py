@@ -6,11 +6,12 @@ Compares old classifier (high false positives) vs new WildGuard-based approach.
 """
 
 import json
+from pathlib import Path
 import sys
-sys.path.insert(0, '.')
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from jailbreak_tester.security.classifier import classify_response_v2
-from jailbreak_tester.security.wildguard_classifier import WildGuardClassifier
+from psg.security.classifier import classify_response_v2
+from psg.security.wildguard_classifier import WildGuardClassifier
 
 
 def load_test_cases(result_file: str, limit: int = 20):

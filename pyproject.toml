@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompt-security-guide"
-version = "3.0.0"
-description = "Defensive LLM jailbreak testing toolkit"
+version = "4.0.0"
+description = "Professional framework for defensive LLM security testing"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.31.0",
+    "PyYAML>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -25,5 +26,7 @@ testpaths = ["tests"]
 addopts = "-v --tb=short"
 
 [tool.coverage.run]
-source = ["jailbreak_tester", "legacy"]
-omit = ["legacy/tester_v2.py"]
+source = ["psg"]
+
+[tool.setuptools.packages.find]
+include = ["psg*"]

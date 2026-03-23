@@ -1,7 +1,6 @@
 """Deprecated entrypoint.
 
-Use: python -m jailbreak_tester --model <model> --catalog <path>
-Legacy implementation moved to legacy/tester_v2.py.
+Use: python -m psg --model <model> --catalog <path>
 """
 from __future__ import annotations
 
@@ -9,12 +8,12 @@ import warnings
 
 warnings.warn(
     "tester.py is deprecated and will be removed in a future release. "
-    "Use `python -m jailbreak_tester` instead.",
+    "Use `python -m psg` instead.",
     DeprecationWarning,
     stacklevel=2,
 )
 
-from legacy.tester_v2 import main  # noqa: E402
+from psg.cli import main  # noqa: E402
 
 
 if __name__ == "__main__":

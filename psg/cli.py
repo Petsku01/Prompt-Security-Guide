@@ -9,7 +9,7 @@ from .orchestrator import run
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Jailbreak Tester v3.0")
+    p = argparse.ArgumentParser(description="Prompt Security Guide v4.0")
     p.add_argument("--model", required=True, help="Model name, e.g. llama3")
     p.add_argument("--catalog", required=True, help="Path to attacks catalog JSON")
     p.add_argument("--base-url", default="http://localhost:11434/v1", help="OpenAI-compatible base URL")

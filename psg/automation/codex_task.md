@@ -31,7 +31,7 @@ Read and implement: `SPEC.md`
 ## Testing
 After each module:
 ```bash
-python -c "from auto_pipeline.MODULE import *; print('OK')"
+python -c "from psg.automation.MODULE import *; print('OK')"
 ```
 
 ## Output Format

@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
+
 MODELS=("llama3:8b" "mistral:7b" "qwen2.5:3b" "phi3:mini" "gemma2:2b")
 CATALOG="datasets/obliteratus_attacks.json"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -17,7 +21,7 @@ for MODEL in "${MODELS[@]}"; do
     echo "Started: $(date)"
     echo "────────────────────────────────────────────────────────────"
     
-    python3 -m jailbreak_tester \
+    python3 -m psg \
         --model "$MODEL" \
         --catalog "$CATALOG" \
         --base-url http://localhost:11434/v1 \

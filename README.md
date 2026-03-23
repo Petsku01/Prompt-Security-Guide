@@ -1,34 +1,37 @@
 # prompt-security-guide
 
-Defensive toolkit for evaluating LLM jailbreak resistance.
+Professional framework for defensive LLM security testing.
 
-> Canonical runtime as of v3.0.0: `jailbreak_tester/`
+> Canonical runtime as of v4.0.0: `psg/`
 
-## Quick Start (single happy path)
+## Quick Start
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e ".[dev]"
 
 # Run test suite against local model endpoint
-python -m jailbreak_tester \
+python -m psg \
   --model llama3:8b \
   --catalog datasets/obliteratus_attacks.json \
   --base-url http://localhost:11434/v1
+
+# Daily discovery + generation + testing pipeline
+bash scripts/run_daily_pipeline.sh
 ```
 
 Outputs are written to `results/` (ignored by git except curated samples).
 
 ## Repository Layout
 
-- `jailbreak_tester/` — canonical engine and CLI
+- `psg/` — canonical engine and CLI
+- `psg/automation/` — integrated auto pipeline
 - `datasets/` — curated attack datasets
-- `attacks/` — attack definitions used by tests and experiments
 - `tests/` — automated test suite
+- `scripts/` — operational scripts (`run_*.sh`, `test_*.py`)
 - `docs/` — methodology and usage docs
-- `legacy/` — deprecated v2 runtime and migrated tooling
-- `archive/deprecated/` — historical large artifacts removed from active runtime
+- `_archive/` — historical legacy + archive code preserved out of active runtime
 
 ## Migration
 

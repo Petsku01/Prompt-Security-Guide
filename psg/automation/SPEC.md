@@ -64,7 +64,7 @@ discovery.py → generator.py → tester.py → reporter.py
 
 ## Scheduling
 - Cron: Daily at 03:00 EET
-- Manual: `python -m auto_pipeline`
+- Manual: `python -m psg.automation`
 
 ## Notification Format
 ```

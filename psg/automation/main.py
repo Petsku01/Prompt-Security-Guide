@@ -54,7 +54,7 @@ class Pipeline:
         logger.info(f"Generated {len(vectors)} new vectors")
         
         if vectors:
-            output_path = self.config.base_dir.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
+            output_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
             self.generator.save_vectors(vectors, output_path)
             logger.info(f"Saved vectors to {output_path}")
         
@@ -112,7 +112,7 @@ class Pipeline:
             return None
         
         # Phase 3: Testing
-        vectors_path = self.config.base_dir.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
+        vectors_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
         results = self.run_testing(vectors_path, use_tmux=use_tmux)
         
         if use_tmux:

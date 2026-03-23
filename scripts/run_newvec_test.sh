@@ -1,5 +1,7 @@
 #!/bin/bash
-cd /home/ette/.openclaw/workspace/prompt-security-guide
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 MODELS="llama3:8b mistral:7b qwen2.5:3b phi3:mini gemma2:2b"
 
@@ -15,7 +17,7 @@ for MODEL in $MODELS; do
     echo "Started: $(date)"
     echo "────────────────────────────────────────────────────────────"
     
-    python3 -m jailbreak_tester \
+    python3 -m psg \
         --catalog datasets/new_vectors_2026-03-06.json \
         --model "$MODEL" \
         --allow-insecure-http \

@@ -143,7 +143,7 @@ class Reporter:
                 lines.append(f"- {finding['model']}: {finding['flagged']} flagged")
         
         lines.append("")
-        lines.append(f"Full report: `auto_pipeline/reports/{report.date}.md`")
+        lines.append(f"Full report: `psg/automation/reports/{report.date}.md`")
         
         return "\n".join(lines)
     
