@@ -52,12 +52,12 @@ Citation:
 
 ## External Benchmark Comparison
 
-Use this table to track PSG performance against industry benchmarks.
+PSG performance against industry benchmarks.
 
 | Date | Model | Dataset | Samples | Attack Success Rate | Refusal Rate | Notes |
 |---|---|---|---:|---:|---:|---|
 | 2026-03-23 | (classifier) | PSG Golden | 50 | - | - | F1=1.000 |
-| - | - | JailbreakBench | 100 | - | - | Run with `--catalog datasets/jailbreakbench_behaviors.json` |
+| 2026-03-23 | smollm2:1.7b | JailbreakBench | 100 | **18%** | 24% | Local Ollama, 39 min |
 
 ## Recent Model Test Runs (results/)
 
