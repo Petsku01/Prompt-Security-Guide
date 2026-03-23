@@ -68,3 +68,6 @@ class AppConfig:
     temperature: float = 0.0
     max_tokens: int = 512
     api_key: str | None = None
+    system_prompt: str | None = None
+    defense_report: bool = False
+    defense_report_path: str = "results/defense_report.txt"

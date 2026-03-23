@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from pathlib import Path
 
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
@@ -23,12 +24,27 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--text-report", default="results/report.txt")
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=512)
+    system_prompt_group = parser.add_mutually_exclusive_group()
+    system_prompt_group.add_argument("--system-prompt", help="System prompt to test (inline)")
+    system_prompt_group.add_argument("--system-prompt-file", help="Path to file containing system prompt")
+    parser.add_argument("--defense-report", action="store_true", help="Generate defense effectiveness report")
     parser.add_argument(
         "--api-key",
         default=os.getenv("PSG_API_KEY"),
         help="API key for hosted OpenAI-compatible endpoints (or set PSG_API_KEY)",
     )
     return parser
+
+
+def _resolve_system_prompt(args: argparse.Namespace) -> str | None:
+    if args.system_prompt:
+        return args.system_prompt
+    if args.system_prompt_file:
+        p = Path(args.system_prompt_file)
+        if not p.exists() or not p.is_file():
+            raise ConfigError(f"system prompt file does not exist: {args.system_prompt_file}")
+        return p.read_text(encoding="utf-8")
+    return None
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,6 +54,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    try:
+        system_prompt = _resolve_system_prompt(args)
+    except ConfigError as exc:
+        print(f"Configuration error: {exc}", file=sys.stderr)
+        return 2
+
     cfg = AppConfig(
         model=args.model,
         catalog_path=args.catalog,
@@ -52,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         temperature=args.temperature,
         max_tokens=args.max_tokens,
         api_key=args.api_key,
+        system_prompt=system_prompt,
+        defense_report=args.defense_report,
     )
 
     try:

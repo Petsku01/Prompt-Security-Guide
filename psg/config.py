@@ -32,10 +32,13 @@ def validate_config(cfg: AppConfig) -> AppConfig:
     if cfg.max_retries < 0:
         raise ConfigError("max-retries must be >= 0")
 
-    for p in (cfg.checkpoint_path, cfg.report_json_path, cfg.report_text_path):
+    for p in (cfg.checkpoint_path, cfg.report_json_path, cfg.report_text_path, cfg.defense_report_path):
         Path(p).parent.mkdir(parents=True, exist_ok=True)
 
     if not isinstance(cfg.redaction_mode, RedactionMode):
         cfg.redaction_mode = RedactionMode(str(cfg.redaction_mode))
+
+    if cfg.system_prompt is not None:
+        cfg.system_prompt = cfg.system_prompt.strip() or None
 
     return cfg

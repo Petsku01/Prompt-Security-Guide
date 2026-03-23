@@ -10,7 +10,8 @@ from .errors import CatalogError, ClassifierError, ReportError
 from .llm.client import OpenAICompatibleClient
 from .llm.errors import LLMError
 from .llm.transport import Transport
-from .models import AppConfig, AttemptResult, RunSummary
+from .models import AppConfig, Attack, AttemptResult, RunSummary
+from .reporting.defense_report import write_defense_report
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
 from .security.classifier import classify_response_v2
@@ -35,58 +36,26 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     client = OpenAICompatibleClient(cfg.base_url, transport, api_key=cfg.api_key)
     checkpoint = JSONLCheckpoint(cfg.checkpoint_path)
 
-    results: list[AttemptResult] = []
+    defended_results = _run_attacks(
+        cfg=cfg,
+        attacks=attacks,
+        client=client,
+        checkpoint=checkpoint,
+        system_prompt=cfg.system_prompt,
+        checkpoint_tag="defended",
+    )
+    results = defended_results
 
-    for attack in attacks:
-        redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
-        try:
-            llm_resp = client.chat(
-                model=cfg.model, 
-                prompt=attack.prompt, 
-                temperature=cfg.temperature,
-                max_tokens=cfg.max_tokens
-            )
-            redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
-            try:
-                classification = classify_response_v2(redacted_text)
-            except Exception as exc:
-                raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
-            result = AttemptResult(
-                attack_id=attack.id,
-                prompt=redacted_prompt,
-                response_text=redacted_text,
-                flagged=classification.attack_successful,
-                labels=classification.harmful_labels,
-                harm_score=classification.harm_score,
-                is_refusal=classification.is_refusal,
-                has_disclaimer=classification.has_disclaimer,
-            )
-        except (LLMError, ClassifierError) as exc:
-            logger.error("attack processing failed for attack_id=%s: %s", attack.id, exc)
-            result = AttemptResult(
-                attack_id=attack.id,
-                prompt=redacted_prompt,
-                response_text="",
-                flagged=False,
-                labels=[],
-                error=str(exc),
-            )
-        except Exception as exc:
-            logger.exception("unexpected attack processing error for attack_id=%s", attack.id)
-            result = AttemptResult(
-                attack_id=attack.id,
-                prompt=redacted_prompt,
-                response_text="",
-                flagged=False,
-                labels=[],
-                error=f"unexpected error: {exc}",
-            )
-
-        try:
-            checkpoint.append(asdict(result))
-        except Exception:
-            logger.exception("failed to append checkpoint for attack_id=%s", attack.id)
-        results.append(result)
+    baseline_results: list[AttemptResult] | None = None
+    if cfg.defense_report and cfg.system_prompt:
+        baseline_results = _run_attacks(
+            cfg=cfg,
+            attacks=attacks,
+            client=client,
+            checkpoint=checkpoint,
+            system_prompt=None,
+            checkpoint_tag="baseline",
+        )
 
     elapsed = time.perf_counter() - started
     summary = RunSummary(
@@ -110,8 +79,97 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
             logger.error(str(err))
             report_errors.append(str(err))
 
+    if cfg.defense_report:
+        try:
+            write_defense_report(
+                cfg.defense_report_path,
+                model=cfg.model,
+                catalog_path=cfg.catalog_path,
+                system_prompt=cfg.system_prompt,
+                attacks=attacks,
+                defended_results=defended_results,
+                baseline_results=baseline_results,
+            )
+        except Exception as exc:
+            err = ReportError(f"failed writing report {cfg.defense_report_path}: {exc}")
+            logger.error(str(err))
+            report_errors.append(str(err))
+
     if report_errors:
         logger.warning("run completed with report errors: %s", "; ".join(report_errors))
         summary.report_write_failed = True
 
     return summary, results
+
+
+def _run_attacks(
+    *,
+    cfg: AppConfig,
+    attacks: list[Attack],
+    client: OpenAICompatibleClient,
+    checkpoint: JSONLCheckpoint,
+    system_prompt: str | None,
+    checkpoint_tag: str,
+) -> list[AttemptResult]:
+    results: list[AttemptResult] = []
+    for attack in attacks:
+        result = _process_attack(cfg=cfg, attack=attack, client=client, system_prompt=system_prompt)
+        try:
+            checkpoint.append({**asdict(result), "mode": checkpoint_tag})
+        except Exception:
+            logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
+        results.append(result)
+    return results
+
+
+def _process_attack(
+    *,
+    cfg: AppConfig,
+    attack: Attack,
+    client: OpenAICompatibleClient,
+    system_prompt: str | None,
+) -> AttemptResult:
+    redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
+    try:
+        llm_resp = client.chat(
+            model=cfg.model,
+            prompt=attack.prompt,
+            system_prompt=system_prompt,
+            temperature=cfg.temperature,
+            max_tokens=cfg.max_tokens,
+        )
+        redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
+        try:
+            classification = classify_response_v2(redacted_text)
+        except Exception as exc:
+            raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=redacted_prompt,
+            response_text=redacted_text,
+            flagged=classification.attack_successful,
+            labels=classification.harmful_labels,
+            harm_score=classification.harm_score,
+            is_refusal=classification.is_refusal,
+            has_disclaimer=classification.has_disclaimer,
+        )
+    except (LLMError, ClassifierError) as exc:
+        logger.error("attack processing failed for attack_id=%s: %s", attack.id, exc)
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=redacted_prompt,
+            response_text="",
+            flagged=False,
+            labels=[],
+            error=str(exc),
+        )
+    except Exception as exc:
+        logger.exception("unexpected attack processing error for attack_id=%s", attack.id)
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=redacted_prompt,
+            response_text="",
+            flagged=False,
+            labels=[],
+            error=f"unexpected error: {exc}",
+        )

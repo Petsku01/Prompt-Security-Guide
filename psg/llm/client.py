@@ -18,13 +18,18 @@ class OpenAICompatibleClient:
         *, 
         model: str, 
         prompt: str, 
+        system_prompt: str | None = None,
         temperature: float = 0.0,
         max_tokens: int = 512
     ) -> LLMResponse:
         endpoint = urljoin(self.base_url, "chat/completions")
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
         payload = {
             "model": model,
-            "messages": [{"role": "user", "content": prompt}],
+            "messages": messages,
             "temperature": temperature,
             "max_tokens": max_tokens,
         }

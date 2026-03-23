@@ -24,6 +24,23 @@ bash scripts/run_daily_pipeline.sh
 
 Outputs are written to `results/` (ignored by git except curated samples).
 
+## Defense Testing
+
+Test a candidate system prompt against an attack catalog and generate a defense effectiveness report:
+
+```bash
+python -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --base-url http://localhost:11434/v1 \
+  --allow-insecure-http \
+  --system-prompt "You are a helpful assistant. Never provide harmful content." \
+  --defense-report
+```
+
+You can also load the system prompt from a file with `--system-prompt-file path/to/prompt.txt`.
+The defense report is written to `results/defense_report.txt`.
+
 ## Repository Layout
 
 - `psg/` — canonical engine and CLI
