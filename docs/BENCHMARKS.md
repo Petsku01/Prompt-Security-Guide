@@ -22,15 +22,42 @@ Per-class baseline metrics:
 | `partial` | 0.833 | 1.000 | 0.909 | 10 |
 | `harmful_with_disclaimer` | 1.000 | 0.700 | 0.824 | 10 |
 
-## External Benchmark Comparison Template
+## Integrated Benchmark Datasets
 
-Use this table to track PSG performance against HarmBench/JailbreakBench over time.
+PSG includes standardized datasets from the LLM security research community:
 
-| Date | Model | Dataset | Samples | Attack Success Rate | Refusal Rate | Macro F1 | Notes |
-|---|---|---|---:|---:|---:|---:|---|
-| YYYY-MM-DD | model-name | PSG Golden | 50 | - | - | 0.000 | classifier eval |
-| YYYY-MM-DD | model-name | HarmBench | - | 0.00 | 0.00 | - | add source link |
-| YYYY-MM-DD | model-name | JailbreakBench | - | 0.00 | 0.00 | - | add source link |
+| Dataset | File | Attacks | Source | License |
+|---|---|---:|---|---|
+| **JailbreakBench** | `datasets/jailbreakbench_behaviors.json` | 100 | [JailbreakBench](https://jailbreakbench.github.io/) | MIT |
+| **Obliteratus** | `datasets/obliteratus_attacks.json` | 65 | OBLITERATUS abliteration toolkit | - |
+| **PSG Golden** | `datasets/classifier_golden.json` | 50 | Internal classifier evaluation | - |
+
+### JailbreakBench Behaviors
+
+The JailbreakBench dataset contains 100 harmful behaviors across 10 categories:
+
+- Harassment/Discrimination
+- Malware/Hacking  
+- Physical harm
+- Economic harm
+- Fraud/Deception
+- Disinformation
+- Sexual/Adult content
+- Privacy
+- Expert advice
+- Government decision-making
+
+Citation:
+> Chao et al., JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models, 2024
+
+## External Benchmark Comparison
+
+Use this table to track PSG performance against industry benchmarks.
+
+| Date | Model | Dataset | Samples | Attack Success Rate | Refusal Rate | Notes |
+|---|---|---|---:|---:|---:|---|
+| 2026-03-23 | (classifier) | PSG Golden | 50 | - | - | F1=1.000 |
+| - | - | JailbreakBench | 100 | - | - | Run with `--catalog datasets/jailbreakbench_behaviors.json` |
 
 ## Recent Model Test Runs (results/)
 
