@@ -123,17 +123,17 @@ class Reporter:
         """Generate Discord notification message."""
         emoji = "🔬"
         if report.total_flagged > 10:
-            emoji = "⚠️"
+            emoji = "[!]"
         elif report.total_flagged == 0:
-            emoji = "✅"
+            emoji = "[OK]"
         
         lines = [
             f"{emoji} **Auto Vector Pipeline Complete**",
             "",
-            f"📅 Date: {report.date}",
-            f"🆕 New vectors: {report.vectors_generated}",
-            f"🧪 Models tested: {report.models_tested}",
-            f"⚠️ Flagged: {report.total_flagged}",
+            f"Date: {report.date}",
+            f"New vectors: {report.vectors_generated}",
+            f"Models tested: {report.models_tested}",
+            f"[!] Flagged: {report.total_flagged}",
         ]
         
         if report.top_findings:

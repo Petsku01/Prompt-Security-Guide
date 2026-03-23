@@ -1,16 +1,16 @@
 # ROADMAP.md — prompt-security-guide v4.0
 
-> Suunnitelma repon muuttamiseksi ammattimaiseksi LLM security testing -frameworkiksi.
+> Plan to transform the repo into a professional LLM security testing framework.
 
-**Versio:** Draft 1.0  
-**Päivitetty:** 2026-03-19  
-**Status:** Suunnitteluvaihe
+**Version:** Draft 1.0  
+**Updated:** 2026-03-19  
+**Status:** Planning phase
 
 ---
 
-## Visio
+## Vision
 
-Muuttaa prompt-security-guide alan standardien mukaiseksi:
+Transform prompt-security-guide alan standardien mukaiseksi:
 - **JailbreakBench**-yhteensopiva metodologia
 - **StrongREJECT/HarmBench**-tason evaluaatio
 - **OWASP AI Testing Guide** -kategoriat
@@ -18,28 +18,28 @@ Muuttaa prompt-security-guide alan standardien mukaiseksi:
 
 ---
 
-## Vaihe 1: Rakenteen uudistus
+## Phase 1: Structure overhaul
 
-### 1.1 Kansiorakenne (Target)
+### 1.1 Directory structure (Target)
 
 ```
 prompt-security-guide/
 ├── README.md                 # Hero + badges + quick start
-├── ARCHITECTURE.md           # Tekninen arkkitehtuuri
-├── CONTRIBUTING.md           # Kontribuutio-ohjeet
+├── ARCHITECTURE.md           # Technical architecture
+├── CONTRIBUTING.md           # Contribution guide
 ├── SECURITY.md               # Responsible disclosure
-├── CHANGELOG.md              # Versiohistoria
+├── CHANGELOG.md              # Versionhistoria
 ├── LICENSE                   # MIT
-├── pyproject.toml            # Moderni packaging
+├── pyproject.toml            # Modern packaging
 ├── Makefile                  # make test, make lint, make scan
 │
-├── psg/                      # Pääpaketti (prompt-security-guide)
+├── psg/                      # Main package (prompt-security-guide)
 │   ├── __init__.py
 │   ├── __main__.py           # CLI entry: python -m psg
 │   ├── cli.py                # Click/Typer CLI
-│   ├── config.py             # Konfiguraatio & defaults
+│   ├── config.py             # Configuration & defaults
 │   │
-│   ├── probes/               # Hyökkäysvektorit
+│   ├── probes/               # Attack vectors
 │   │   ├── __init__.py
 │   │   ├── base.py           # BaseProbe class
 │   │   ├── jailbreak.py      # DAN, AIM, Grandma, etc.
@@ -47,40 +47,40 @@ prompt-security-guide/
 │   │   ├── extraction.py     # Data leak, PII, API keys
 │   │   └── encoding.py       # Base64, ROT13, etc.
 │   │
-│   ├── detectors/            # Tunnistuslogiikka
+│   ├── detectors/            # Detection logic
 │   │   ├── __init__.py
 │   │   ├── base.py           # BaseDetector class
 │   │   ├── pattern.py        # Regex, keyword matching
 │   │   ├── refusal.py        # Refusal detection
 │   │   └── llm_judge.py      # LLM-as-judge (StrongREJECT style)
 │   │
-│   ├── generators/           # LLM-yhteydet
+│   ├── generators/           # LLM integrations
 │   │   ├── __init__.py
 │   │   ├── base.py           # BaseGenerator class
 │   │   ├── ollama.py         # Ollama API
 │   │   ├── openai.py         # OpenAI-compatible
 │   │   └── anthropic.py      # Claude API
 │   │
-│   ├── evaluation/           # Tilastollinen evaluaatio
+│   ├── evaluation/           # Statistical evaluation
 │   │   ├── __init__.py
 │   │   ├── metrics.py        # Accuracy, precision, recall, F1
 │   │   ├── statistical.py    # Wilson CI, bootstrap
 │   │   └── cost.py           # Token & cost tracking
 │   │
-│   └── reporting/            # Raportointi
+│   └── reporting/            # Reporting
 │       ├── __init__.py
 │       ├── json.py           # JSON/JSONL output
 │       ├── markdown.py       # Markdown reports
 │       └── html.py           # Interactive HTML
 │
-├── datasets/                 # Hyökkäysdatasetit
+├── datasets/                 # Attack datasets
 │   ├── README.md             # Dataset documentation
 │   ├── jbb_behaviors.json    # JailbreakBench aligned
 │   ├── strongreject.json     # StrongREJECT categories
 │   ├── owasp_aitg.json       # OWASP AI Testing Guide
 │   └── custom/               # Custom datasets
 │
-├── docs/                     # Dokumentaatio
+├── docs/                     # Documentation
 │   ├── README.md
 │   ├── getting-started.md
 │   ├── methodology/
@@ -95,13 +95,13 @@ prompt-security-guide/
 │   └── api-reference/
 │       └── index.md
 │
-├── examples/                 # Käyttöesimerkit
+├── examples/                 # Usage examples
 │   ├── basic_scan.py
 │   ├── multi_model.py
 │   ├── custom_probe.py
 │   └── ci_integration.py
 │
-├── tests/                    # Pytest testit
+├── tests/                    # Pytest tests
 │   ├── conftest.py
 │   ├── test_probes.py
 │   ├── test_detectors.py
@@ -111,29 +111,29 @@ prompt-security-guide/
 ├── results/                  # .gitignored (paitsi samples/)
 │   └── samples/              # Kuratoidut esimerkit
 │
-├── _archive/                 # Vanha koodi (.gitignored)
+├── _archive/                 # Old code (.gitignored)
 │
 └── .github/
     └── workflows/
         ├── test.yml          # CI testit
         ├── lint.yml          # Ruff/Black
-        └── release.yml       # PyPI julkaisu
+        └── release.yml       # PyPI release
 ```
 
-### 1.2 Migraatio nykyisestä
+### 1.2 Migration from current structure
 
 | Nykyinen | Uusi | Toimenpide |
 |----------|------|------------|
-| Nykyinen runtime-moduulirakenne | `psg/` | Refaktoroi & uudelleennimeä |
-| `archive/` | `_archive/` | Yhdistä, .gitignore |
-| `legacy/` | `_archive/` | Yhdistä |
-| `auto_pipeline/` | `psg/automation/` tai erillinen | Päätettävä |
-| `models/`, `profiles/` | Poista tai dokumentoi | Tarkista tarve |
-| `*.sh` scriptit | `Makefile` | Konsolidoi |
+| Current runtime module structure | `psg/` | Refactor and rename |
+| `archive/` | `_archive/` | Merge, .gitignore |
+| `legacy/` | `_archive/` | Merge |
+| `auto_pipeline/` | `psg/automation/` or separate | To be decided |
+| `models/`, `profiles/` | Remove or document | Review necessity |
+| `*.sh` scripts | `Makefile` | Consolidate |
 
 ---
 
-## Vaihe 2: Testausmetodologia
+## Phase 2: Testing methodology
 
 ### 2.1 Probe-kategoriat (OWASP AITG aligned)
 
@@ -159,7 +159,7 @@ PROBES
     └── EXT-PII: PII leakage
 ```
 
-### 2.2 Evaluaatio-strategiat
+### 2.2 Evaluation strategies
 
 **Detector Pipeline:**
 ```
@@ -217,7 +217,7 @@ ASR = Attack Success Rate (lower is better for defense)
 Quality Score = Weighted combination of safety metrics
 ```
 
-### 2.4 Tilastollinen tarkkuus
+### 2.4 Statistical rigor
 
 ```python
 from psg.evaluation.statistical import (
@@ -243,9 +243,9 @@ MIN_SAMPLES = {
 
 ---
 
-## Vaihe 3: CLI & UX
+## Phase 3: CLI & UX
 
-### 3.1 Uusi CLI (Typer-based)
+### 3.1 New CLI (Typer-based)
 
 ```bash
 # Basic scan
@@ -293,7 +293,7 @@ clean:
 
 ---
 
-## Vaihe 4: Dokumentaatio
+## Phase 4: Documentation
 
 ### 4.1 README.md (Hero Section)
 
@@ -330,14 +330,14 @@ psg benchmark --models gpt-4o,claude-3-sonnet --output report.html
 
 ### 4.2 Methodology Docs
 
-- `docs/methodology/overview.md` — Mitä testataan ja miksi
+- `docs/methodology/overview.md` — What is tested and why
 - `docs/methodology/threat-model.md` — OWASP AI Threats mapping
 - `docs/methodology/evaluation.md` — Judge design, metrics
-- `docs/methodology/reproducibility.md` — Miten toistaa tulokset
+- `docs/methodology/reproducibility.md` — How to reproduce results
 
 ---
 
-## Vaihe 5: CI/CD & Quality
+## Phase 5: CI/CD & Quality
 
 ### 5.1 GitHub Actions
 
@@ -379,38 +379,38 @@ repos:
 
 ---
 
-## Aikataulu (ehdotus)
+## Timeline (proposal)
 
-| Vaihe | Kuvaus | Arvio |
+| Phase | Description | Arvio |
 |-------|--------|-------|
-| **1** | Rakenteen uudistus | 2-3 päivää |
-| **2** | Probe/Detector refaktori | 3-4 päivää |
-| **3** | CLI uudistus | 1-2 päivää |
-| **4** | Dokumentaatio | 2-3 päivää |
-| **5** | CI/CD | 1 päivä |
-| **6** | Testaus & hionta | 2-3 päivää |
-| **Total** | | ~2 viikkoa |
+| **1** | Structure overhaul | 2-3 days |
+| **2** | Probe/Detector refaktori | 3-4 days |
+| **3** | CLI uudistus | 1-2 days |
+| **4** | Documentation | 2-3 days |
+| **5** | CI/CD | 1 day |
+| **6** | Testaus & hionta | 2-3 days |
+| **Total** | | ~2 weeks |
 
 ---
 
-## Avoimet kysymykset
+## Open questions
 
-1. **Paketin nimi?** `psg` vs `prompt-security-guide` vs jokin muu?
-2. **auto_pipeline säilytys?** Erillinen moduuli vai integroitu?
-3. **JailbreakBench integraatio?** Suora riippuvuus vai vain aligned?
-4. **PyPI julkaisu?** Heti vai myöhemmin?
-
----
-
-## Seuraavat askeleet
-
-1. [ ] Hyväksy ROADMAP.md
-2. [ ] Luo `psg/` rakenne
-3. [ ] Migroi vanha runtime-rakenne → `psg/`
-4. [ ] Siirrä vanhat → `_archive/`
-5. [ ] Päivitä `pyproject.toml`
-6. [ ] Kirjoita uusi README.md
+1. **Package name?** `psg` vs `prompt-security-guide` vs jokin muu?
+2. **auto_pipeline retention?** Separate module or integrated?
+3. **JailbreakBench integration?** Direct dependency or only aligned?
+4. **PyPI release?** Now or later?
 
 ---
 
-*Tämä dokumentti on elävä suunnitelma. Päivitä kun päätöksiä tehdään.*
+## Next steps
+
+1. [ ] Approve ROADMAP.md
+2. [ ] Create `psg/` rakenne
+3. [ ] Migrate old runtime structure → `psg/`
+4. [ ] Move old files → `_archive/`
+5. [ ] Update `pyproject.toml`
+6. [ ] Write new README.md
+
+---
+
+*This document is a living plan. Update it as decisions are made.*

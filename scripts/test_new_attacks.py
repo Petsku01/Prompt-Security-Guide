@@ -86,10 +86,10 @@ def main():
             classification = quick_classify(response_text)
             
             status_emoji = {
-                "JAILBREAK": "🔴",
-                "REFUSED": "✅",
-                "PARTIAL": "⚠️",
-                "UNCLEAR": "❓"
+                "JAILBREAK": "[JAILBREAK]",
+                "REFUSED": "[REFUSED]",
+                "PARTIAL": "[PARTIAL]",
+                "UNCLEAR": "[UNCLEAR]"
             }
             
             print(f"  {status_emoji.get(classification['status'], '?')} {classification['status']}")

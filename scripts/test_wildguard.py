@@ -118,11 +118,11 @@ def main():
         if old_flagged or new_flagged:
             status = ""
             if old_flagged and not new_flagged:
-                status = "✅ FIXED"
+                status = "[FIXED]"
             elif not old_flagged and new_flagged:
-                status = "⚠️ NEW FLAG"
+                status = "[WARNING] NEW FLAG"
             elif old_flagged and new_flagged:
-                status = "🔴 BOTH FLAG"
+                status = "[FAIL] BOTH FLAG"
             else:
                 status = "✓"
             

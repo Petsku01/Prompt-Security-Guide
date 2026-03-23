@@ -30,4 +30,4 @@ def test_partial_compliance_is_fail():
 
 if __name__ == "__main__":
     test_partial_compliance_is_fail()
-    print("✅ Test passed!")
+    print("[PASS] Test passed!")

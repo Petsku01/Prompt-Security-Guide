@@ -73,7 +73,7 @@ discovery.py → generator.py → tester.py → reporter.py
 📅 Date: YYYY-MM-DD
 🆕 New vectors: X
 🧪 Models tested: Y
-⚠️ Flagged: Z
+[WARNING] Flagged: Z
 
 Top findings:
 - [technique] flagged on [models]

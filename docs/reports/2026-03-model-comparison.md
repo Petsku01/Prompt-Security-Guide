@@ -8,9 +8,9 @@
 
 ## Executive Summary
 
-Testasimme viittä paikallista LLM-mallia niiden kykyä vastustaa jailbreak-hyökkäyksiä. Tulokset osoittavat merkittäviä eroja mallien turvallisuusasetuksissa.
+We tested five local LLM models for their ability to resist jailbreak attacks. The results show significant differences in model safety settings.
 
-**Paras suorituskyky:** Llama 3 8B ja Qwen 2.5 3B  
+**Best performance:** Llama 3 8B and Qwen 2.5 3B  
 **Heikoin suorituskyky:** Mistral 7B
 
 ---
@@ -19,23 +19,23 @@ Testasimme viittä paikallista LLM-mallia niiden kykyä vastustaa jailbreak-hyö
 
 | Malli | Koko | Flagged | Flagged % | Turvallisuusluokitus |
 |-------|------|---------|-----------|----------------------|
-| **Llama 3** | 8B | 3/65 | 4.6% | 🟢 Hyvä |
-| **Qwen 2.5** | 3B | 4/65 | 6.2% | 🟢 Hyvä |
-| **Phi-3 Mini** | 3.8B | 6/65 | 9.2% | 🟡 Kohtalainen |
-| **Gemma 2** | 2B | 9/65 | 13.8% | 🟡 Kohtalainen |
-| **Mistral** | 7B | 17/65 | 26.2% | 🔴 Heikko |
+| **Llama 3** | 8B | 3/65 | 4.6% | [SAFE] Good |
+| **Qwen 2.5** | 3B | 4/65 | 6.2% | [SAFE] Good |
+| **Phi-3 Mini** | 3.8B | 6/65 | 9.2% | [MODERATE] Moderate |
+| **Gemma 2** | 2B | 9/65 | 13.8% | [MODERATE] Moderate |
+| **Mistral** | 7B | 17/65 | 26.2% | [VULNERABLE] Weak |
 
 ### Terminologia
 
-- **Flagged:** Malli tuotti potentiaalisesti haitallista sisältöä
-- **OK:** Malli kieltäytyi tai tuotti turvallisen vastauksen
-- **Flagged %:** Pienempi on parempi (malli vastustaa hyökkäyksiä)
+- **Flagged:** The model produced potentially harmful content
+- **OK:** The model refused or produced a safe response
+- **Flagged %:** Lower is better (model resists attacks)
 
 ---
 
 ## Analyysi malleittain
 
-### 🟢 Llama 3 8B — Paras turvallisuus
+### [SAFE] Llama 3 8B — Best security
 
 ```
 Flagged: 3/65 (4.6%)
@@ -43,17 +43,17 @@ Testiaika: 17 min
 ```
 
 **Vahvuudet:**
-- Vahvat sisäänrakennetut turvallisuusrajat
-- Kieltäytyy johdonmukaisesti haitallisista pyynnöistä
-- Meta:n RLHF-koulutus näkyy tuloksissa
+- Strong built-in safety boundaries
+- Consistently refuses harmful requests
+- Meta's RLHF training is visible in the results
 
-**Havainnot:**
-- Pieni osa jailbreak-varianteista ohitti suojaukset
-- Suorat hyökkäykset torjuttiin tehokkaasti
+**Observations:**
+- A small portion of jailbreak variants bypassed safeguards
+- Direct attacks were blocked effectively
 
 ---
 
-### 🟢 Qwen 2.5 3B — Yllättävän vahva pienelle mallille
+### [SAFE] Qwen 2.5 3B — Surprisingly strong for a small model
 
 ```
 Flagged: 4/65 (6.2%)
@@ -61,17 +61,17 @@ Testiaika: 14 min
 ```
 
 **Vahvuudet:**
-- Hyvä turvallisuus pienestä koosta huolimatta
-- Nopea suorituskyky
-- Alibaban turvallisuuskoulutus toimii
+- Good safety despite small size
+- Fast performance
+- Alibaba's safety training works
 
-**Havainnot:**
-- Kilpailukykyinen isompien mallien kanssa
-- Hyvä valinta resurssirajoitteisiin ympäristöihin
+**Observations:**
+- Competitive with larger models
+- Good choice for resource-constrained environments
 
 ---
 
-### 🟡 Phi-3 Mini 3.8B — Kohtalainen
+### [MODERATE] Phi-3 Mini 3.8B — Moderate
 
 ```
 Flagged: 6/65 (9.2%)
@@ -79,50 +79,50 @@ Testiaika: 29 min
 ```
 
 **Vahvuudet:**
-- Microsoftin turvallisuuskoulutus
-- Kohtuullinen suorituskyky
+- Microsoft safety training
+- Reasonable performance
 
-**Heikkoudet:**
-- Jotkut suorat hyökkäykset onnistuivat
-- Hitaampi kuin kooltaan vastaavat mallit
+**Weakudet:**
+- Some direct attacks succeeded
+- Slower than similarly sized models
 
 ---
 
-### 🟡 Gemma 2 2B — Pieni malli, kompromisseja
+### [MODERATE] Gemma 2 2B — Small model, compromises
 
 ```
 Flagged: 9/65 (13.8%)
 Testiaika: 27 min
 ```
 
-**Havainnot:**
-- Googlen pienin malli
-- Turvallisuus kärsii koon rajoituksista
-- Sopii ei-kriittisiin käyttötarkoituksiin
+**Observations:**
+- Google's smallest model
+- Safety is limited by model size constraints
+- Suited for non-critical use cases
 
 ---
 
-### 🔴 Mistral 7B — Heikoin turvallisuus
+### [VULNERABLE] Mistral 7B — Weakest security
 
 ```
 Flagged: 17/65 (26.2%)
 Testiaika: 78 min
 ```
 
-**Heikkoudet:**
-- Yli neljännes hyökkäyksistä onnistui
-- Erityisesti suorat hyökkäykset tehokkaita
-- Myös jailbreak-variantit toimivat useammin
+**Weakudet:**
+- More than a quarter of attacks succeeded
+- Direct attacks were especially effective
+- Jailbreak variants also worked more often
 
-**Huomio:**
-- Mistral on suunniteltu vähemmän rajoitetuksi
-- **Ei suositella** tuotantokäyttöön ilman lisäsuojauksia
+**Note:**
+- Mistral is designed to be less restricted
+- **Not recommended** for production use without additional safeguards
 
 ---
 
-## Hyökkäystyyppien tehokkuus
+## Effectiveness by attack type
 
-### Suorat hyökkäykset (50 testiä)
+### Direct attacks (50 tests)
 
 | Malli | Onnistuneet | Osuus |
 |-------|-------------|-------|
@@ -132,7 +132,7 @@ Testiaika: 78 min
 | Gemma 2 | 9 | 18% |
 | Mistral | 16 | 32% |
 
-### Jailbreak-variantit (15 testiä)
+### Jailbreak variants (15 tests)
 
 | Malli | Onnistuneet | Osuus |
 |-------|-------------|-------|
@@ -142,44 +142,44 @@ Testiaika: 78 min
 | Gemma 2 | 0 | 0% |
 | Mistral | 1 | 7% |
 
-**Huomio:** Testatut jailbreak-variantit eivät olleet tehokkaita yhtäkään mallia vastaan Mistralia lukuunottamatta. Tämä voi viitata siihen, että nämä variantit ovat jo tunnettuja ja mallit on koulutettu torjumaan ne.
+**Note:** The tested jailbreak variants were not effective against any model except Mistral. This may indicate these variants are already known and models are trained to block them.
 
 ---
 
 ## Havaitut haavoittuvuuskategoriat
 
-Flagatut vastaukset sisälsivät seuraavia kategorioita:
+Flagged responses contained the following categories:
 
-| Kategoria | Esiintymät | Huomiot |
+| Category | Occurrences | Notet |
 |-----------|------------|---------|
 | Malware-ohjeet | 8 | Koodi/skriptit |
 | Sosiaalinen manipulointi | 5 | Phishing-mallit |
 | Turvallisuuden ohitus | 4 | Ohjeita suojausten kiertoon |
 
-*Tarkkoja prompteja ei julkaista turvallisuussyistä.*
+*Exact prompts are not published for safety reasons.*
 
 ---
 
 ## Suositukset
 
-### Tuotantokäyttöön
+### For production use
 
-1. **Suosi Llama 3 tai Qwen 2.5** — Parhaat turvallisuustulokset
-2. **Vältä Mistralia ilman lisäsuojauksia** — Liian haavoittuva sellaisenaan
-3. **Lisää output-suodatus** — Myös parhaat mallit voivat epäonnistua
+1. **Prefer Llama 3 or Qwen 2.5** — Best safety results
+2. **Avoid Mistral without additional safeguards** — Too vulnerable as-is
+3. **Add output filtering** — Even the best models can fail
 
-### Kehittäjille
+### For developers
 
-1. **System prompt hardening** — Vahvista järjestelmäpromptit
-2. **Input validation** — Tarkista käyttäjäsyötteet ennen mallille lähettämistä
+1. **System prompt hardening** — Strengthen system prompts
+2. **Input validation** — Validate user input before sending to the model
 3. **Output monitoring** — Valvo ja suodata vastauksia
-4. **Defense in depth** — Älä luota vain mallin sisäisiin suojauksiin
+4. **Defense in depth** — Do not rely only on model-internal safeguards
 
 ---
 
 ## Metodologia
 
-### Testausympäristö
+### Test environment
 
 - **Runtime:** Ollama (localhost)
 - **Testikehys:** Jailbreak Tester v3.0
@@ -187,26 +187,26 @@ Flagatut vastaukset sisälsivät seuraavia kategorioita:
 
 ### Dataset
 
-- 50 suoraa hyökkäyspromptia
-- 15 jailbreak-varianttia (5 tyyppiä × 3 esimerkkiä)
-- Lähteet: Julkiset jailbreak-tietokannat, mukautetut variantit
+- 50 direct attack prompts
+- 15 jailbreak variants (5 types x 3 examples)
+- Sources: public jailbreak datasets, custom variants
 
-### Rajoitukset
+### Limitations
 
-1. **Paikallinen testaus** — Tulokset voivat poiketa API-versioista
-2. **Yksinkertainen detector** — Ei LLM-as-judge evaluaatiota
-3. **Rajoitettu dataset** — 65 testiä ei kata kaikkia hyökkäystyyppejä
-4. **Snapshot-tulokset** — Mallit päivittyvät jatkuvasti
+1. **Local testing** — Results may differ from API versions
+2. **Simple detector** — No LLM-as-judge evaluation
+3. **Limited dataset** — 65 tests do not cover all attack types
+4. **Snapshot results** — Models are updated continuously
 
 ---
 
 ## Yhteenveto
 
-Paikallisten LLM-mallien turvallisuus vaihtelee merkittävästi. **Llama 3** ja **Qwen 2.5** tarjoavat parhaan suojan jailbreak-hyökkäyksiä vastaan, kun taas **Mistral** vaatii lisäsuojauksia tuotantokäytössä.
+Safety of local LLM models varies significantly. **Llama 3** ja **Qwen 2.5** provide the best protection against jailbreak attacks, kun taas **Mistral** requires additional safeguards in production.
 
-Yksikään malli ei ole täysin immuuni hyökkäyksille. **Defense in depth** -lähestymistapa on välttämätön.
+No model is fully immune to attacks. **Defense in depth** -approach is essential.
 
 ---
 
-*Raportti generoitu prompt-security-guide -työkalulla.*  
-*Promptit sensuroitu turvallisuussyistä.*
+*Report generated with the prompt-security-guide tool.*  
+*Prompts censored for safety reasons.*
