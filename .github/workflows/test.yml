@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest tests/test_psg_*.py
+
+      - name: Evaluate classifier
+        run: |
+          python -m psg.security.evaluate --golden datasets/classifier_golden.json --out /tmp/classifier_eval.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path('/tmp/classifier_eval.json').read_text(encoding='utf-8'))
+          macro_f1 = float(report.get('macro_f1', 0.0))
+          print(f"macro_f1={macro_f1:.3f}")
+          if macro_f1 < 0.85:
+              raise SystemExit(f"Classifier macro F1 below threshold: {macro_f1:.3f} < 0.85")
+          PY
