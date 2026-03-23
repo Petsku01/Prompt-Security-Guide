@@ -30,6 +30,11 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/test_psg_*.py
 
+      - name: CLI smoke test
+        run: |
+          python -m psg --help
+          python -m psg catalog validate --path datasets/obliteratus_attacks.json
+
       - name: Lint with ruff
         run: |
           pip install ruff

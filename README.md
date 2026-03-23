@@ -11,7 +11,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 
-# Run test suite against local model endpoint
+# Run security scan against local model endpoint
 python -m psg \
   --model llama3:8b \
   --catalog datasets/obliteratus_attacks.json \

@@ -123,7 +123,7 @@ def load_config(config_path: Path | None = None) -> PipelineConfig:
     """Load config from YAML file or use defaults."""
     if config_path and config_path.exists():
         with open(config_path) as f:
-            data: dict[str, Any] = yaml.safe_load(f)
+            data: dict[str, Any] = yaml.safe_load(f) or {}
         return PipelineConfig(**data)
     return PipelineConfig()
 
