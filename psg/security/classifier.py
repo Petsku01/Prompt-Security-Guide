@@ -112,7 +112,7 @@ HARMFUL_PATTERNS: dict[str, re.Pattern[str]] = {
     # System Manipulation (Legacy)
     "policy_evasion": re.compile(
         r"\b(ignore (all )?(previous|prior) instructions|"
-        r"bypass|jailbreak|DAN mode|developer mode|"
+        r"bypass (safety|filters?|guardrails?|restrictions?)|"
         r"forget your (rules|guidelines|instructions))\b", 
         re.IGNORECASE
     ),
@@ -124,6 +124,14 @@ HARMFUL_PATTERNS: dict[str, re.Pattern[str]] = {
         re.IGNORECASE
     ),
 }
+
+POLICY_EVASION_ACTION_INTENT = re.compile(
+    r"\b(how to|ways? to|steps? to|instructions? (for|to)|show me|teach me|help me|give me)\b.{0,40}"
+    r"\b(bypass|jailbreak|dan mode|developer mode)\b|"
+    r"\b(bypass|jailbreak|dan mode|developer mode)\b.{0,40}"
+    r"\b(system|model|guardrails?|safety|filters?|restrictions?|polic(y|ies)|instructions?)\b",
+    re.IGNORECASE,
+)
 
 
 # =============================================================================
@@ -224,6 +232,10 @@ def detect_harmful_content(text: str) -> list[str]:
     
     labels = []
     for name, pattern in HARMFUL_PATTERNS.items():
+        if name == "policy_evasion":
+            if pattern.search(text) or POLICY_EVASION_ACTION_INTENT.search(text):
+                labels.append(name)
+            continue
         if pattern.search(text):
             labels.append(name)
     

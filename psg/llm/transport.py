@@ -24,10 +24,11 @@ class Transport:
 
     def post_json(self, url: str, payload: dict[str, Any], headers: dict[str, str] | None = None) -> dict[str, Any]:
         attempts = 0
+        request_headers = dict(headers or {})
         while True:
             attempts += 1
             try:
-                resp = requests.post(url, json=payload, headers=headers or {}, timeout=self.timeout_seconds)
+                resp = requests.post(url, json=payload, headers=request_headers, timeout=self.timeout_seconds)
             except requests.RequestException as exc:
                 if attempts > self.max_retries:
                     raise RetryExhaustedError(f"request failed after retries: {exc}") from exc

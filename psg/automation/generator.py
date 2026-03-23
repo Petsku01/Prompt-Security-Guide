@@ -208,6 +208,7 @@ class VectorGenerator:
             if len(all_vectors) >= self.config.max_vectors_per_run:
                 break
         
+        self.vector_store.flush()
         return all_vectors[:self.config.max_vectors_per_run]
     
     def save_vectors(self, vectors: list[AttackVector], output_path: Path) -> None:

@@ -32,12 +32,13 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         backoff_base_seconds=cfg.backoff_base_seconds,
         backoff_cap_seconds=cfg.backoff_cap_seconds,
     )
-    client = OpenAICompatibleClient(cfg.base_url, transport)
+    client = OpenAICompatibleClient(cfg.base_url, transport, api_key=cfg.api_key)
     checkpoint = JSONLCheckpoint(cfg.checkpoint_path)
 
     results: list[AttemptResult] = []
 
     for attack in attacks:
+        redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
         try:
             llm_resp = client.chat(
                 model=cfg.model, 
@@ -52,7 +53,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
                 raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
             result = AttemptResult(
                 attack_id=attack.id,
-                prompt=attack.prompt,
+                prompt=redacted_prompt,
                 response_text=redacted_text,
                 flagged=classification.attack_successful,
                 labels=classification.harmful_labels,
@@ -64,7 +65,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
             logger.error("attack processing failed for attack_id=%s: %s", attack.id, exc)
             result = AttemptResult(
                 attack_id=attack.id,
-                prompt=attack.prompt,
+                prompt=redacted_prompt,
                 response_text="",
                 flagged=False,
                 labels=[],
@@ -74,7 +75,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
             logger.exception("unexpected attack processing error for attack_id=%s", attack.id)
             result = AttemptResult(
                 attack_id=attack.id,
-                prompt=attack.prompt,
+                prompt=redacted_prompt,
                 response_text="",
                 flagged=False,
                 labels=[],
@@ -94,6 +95,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         failed=sum(1 for r in results if r.error),
         flagged=sum(1 for r in results if r.flagged),
         duration_seconds=elapsed,
+        report_write_failed=False,
     )
 
     report_errors: list[str] = []
@@ -110,5 +112,6 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
 
     if report_errors:
         logger.warning("run completed with report errors: %s", "; ".join(report_errors))
+        summary.report_write_failed = True
 
     return summary, results

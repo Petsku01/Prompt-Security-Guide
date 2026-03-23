@@ -228,6 +228,7 @@ class DiscoveryEngine:
                 break
         
         logger.info(f"Discovery complete: {len(new_sources)} new sources found")
+        self.source_store.flush()
         return new_sources
     
     def save_sources(self, sources: list[Source], output_path: Path) -> None:

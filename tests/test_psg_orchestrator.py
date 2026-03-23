@@ -44,7 +44,7 @@ def test_run_success_path(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text.replace("p", "[REDACTED]"))
     monkeypatch.setattr(
         "psg.orchestrator.classify_response_v2",
         lambda _text: ClassificationResult(
@@ -68,6 +68,7 @@ def test_run_success_path(monkeypatch, tmp_path) -> None:
     assert summary.failed == 0
     assert summary.flagged == 2
     assert len(results) == 2
+    assert results[0].prompt == "[REDACTED]1"
 
 
 def test_run_continues_on_partial_failures(monkeypatch, tmp_path) -> None:
@@ -155,4 +156,5 @@ def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) ->
     summary, results = run(cfg)
 
     assert summary.total == 1
+    assert summary.report_write_failed is True
     assert len(results) == 1

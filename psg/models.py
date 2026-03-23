@@ -48,6 +48,7 @@ class RunSummary:
     failed: int
     flagged: int
     duration_seconds: float
+    report_write_failed: bool = False
 
 
 @dataclass(slots=True)
@@ -66,3 +67,4 @@ class AppConfig:
     allow_insecure_http: bool = False
     temperature: float = 0.0
     max_tokens: int = 512
+    api_key: str | None = None

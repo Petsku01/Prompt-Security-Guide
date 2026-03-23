@@ -14,9 +14,11 @@ def hash_text(text: str) -> str:
 class DeduplicationStore:
     """Store for tracking seen items via hashes."""
     
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, save_every: int = 100) -> None:
         self.path = path
+        self.save_every = max(1, int(save_every))
         self.hashes: set[str] = set()
+        self._pending_writes = 0
         self._load()
     
     def _load(self) -> None:
@@ -44,7 +46,9 @@ class DeduplicationStore:
         if h in self.hashes:
             return False
         self.hashes.add(h)
-        self._save()
+        self._pending_writes += 1
+        if self._pending_writes >= self.save_every:
+            self.flush()
         return True
     
     def add_many(self, texts: list[str]) -> int:
@@ -56,8 +60,16 @@ class DeduplicationStore:
                 self.hashes.add(h)
                 new_count += 1
         if new_count > 0:
-            self._save()
+            self._pending_writes += new_count
+            self.flush()
         return new_count
+
+    def flush(self) -> None:
+        """Persist pending updates to disk."""
+        if self._pending_writes == 0:
+            return
+        self._save()
+        self._pending_writes = 0
     
     def __len__(self) -> int:
         return len(self.hashes)
@@ -67,9 +79,10 @@ if __name__ == "__main__":
     # Quick test
     import tempfile
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
-        store = DeduplicationStore(Path(f.name))
+        store = DeduplicationStore(Path(f.name), save_every=1)
         assert store.add("test prompt")
         assert not store.add("test prompt")
         assert store.is_known("test prompt")
         assert not store.is_known("new prompt")
+        store.flush()
         print("Dedup tests passed!")

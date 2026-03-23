@@ -1,15 +1,22 @@
 """Input validation for auto_pipeline."""
+import socket
 import re
 from urllib.parse import urlparse
 import ipaddress
+from typing import Union
 
-BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254'}
+IPAddress = Union[ipaddress.IPv4Address, ipaddress.IPv6Address]
+
+BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254', '::1'}
 BLOCKED_NETWORKS = [
     ipaddress.ip_network('127.0.0.0/8'),
     ipaddress.ip_network('10.0.0.0/8'),
     ipaddress.ip_network('172.16.0.0/12'),
     ipaddress.ip_network('192.168.0.0/16'),
     ipaddress.ip_network('169.254.0.0/16'),
+    ipaddress.ip_network('::1/128'),
+    ipaddress.ip_network('fc00::/7'),
+    ipaddress.ip_network('fe80::/10'),
 ]
 
 
@@ -75,16 +82,21 @@ def validate_url(url: str) -> bool:
         hostname = parsed.hostname
         if hostname is None:
             return False
-        if hostname in BLOCKED_HOSTS:
+        normalized_hostname = hostname.rstrip('.').lower()
+        if normalized_hostname in BLOCKED_HOSTS:
             return False
             
         try:
-            ip = ipaddress.ip_address(hostname)
-            for network in BLOCKED_NETWORKS:
-                if ip in network:
-                    return False
+            ip = ipaddress.ip_address(normalized_hostname)
+            if _is_blocked_ip(ip):
+                return False
         except ValueError:
-            pass # Not an IP, continue
+            resolved_ips = _resolve_host_ips(normalized_hostname, parsed.port)
+            if not resolved_ips:
+                return False
+            for resolved_ip in resolved_ips:
+                if _is_blocked_ip(resolved_ip):
+                    return False
 
         
         # Block obvious dangerous patterns
@@ -103,6 +115,43 @@ def validate_url(url: str) -> bool:
         
     except Exception:
         return False
+
+
+def _is_blocked_ip(ip: IPAddress) -> bool:
+    """Check whether an IP falls into any blocked private/local ranges."""
+    if (
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_reserved
+        or ip.is_unspecified
+        or ip.is_multicast
+    ):
+        return True
+    for network in BLOCKED_NETWORKS:
+        if ip in network:
+            return True
+    return False
+
+
+def _resolve_host_ips(hostname: str, port: int | None) -> set[IPAddress]:
+    """Resolve hostname to all IPv4/IPv6 addresses."""
+    resolved: set[IPAddress] = set()
+    try:
+        infos = socket.getaddrinfo(hostname, port or 443, proto=socket.IPPROTO_TCP)
+    except OSError:
+        return resolved
+
+    for info in infos:
+        sockaddr = info[4]
+        if not sockaddr:
+            continue
+        ip_text = sockaddr[0]
+        try:
+            resolved.add(ipaddress.ip_address(ip_text))
+        except ValueError:
+            continue
+    return resolved
 
 
 def sanitize_filename(name: str) -> str:

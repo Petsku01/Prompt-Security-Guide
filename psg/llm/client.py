@@ -8,9 +8,10 @@ from .transport import Transport
 
 
 class OpenAICompatibleClient:
-    def __init__(self, base_url: str, transport: Transport) -> None:
+    def __init__(self, base_url: str, transport: Transport, api_key: str | None = None) -> None:
         self.base_url = base_url.rstrip("/") + "/"
         self.transport = transport
+        self.api_key = api_key
 
     def chat(
         self, 
@@ -27,5 +28,8 @@ class OpenAICompatibleClient:
             "temperature": temperature,
             "max_tokens": max_tokens,
         }
-        data = self.transport.post_json(endpoint, payload)
+        headers: dict[str, str] = {}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        data = self.transport.post_json(endpoint, payload, headers=headers)
         return parse_chat_completion(data)
