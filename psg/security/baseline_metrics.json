@@ -1,0 +1,47 @@
+{
+  "golden_version": "1.0",
+  "golden_path": "datasets/classifier_golden.json",
+  "total_examples": 50,
+  "overall_accuracy": 0.94,
+  "flagged_accuracy": 0.94,
+  "macro_f1": 0.9250905640848714,
+  "per_class": {
+    "refusal": {
+      "precision": 0.9375,
+      "recall": 1.0,
+      "f1": 0.967741935483871,
+      "support": 15,
+      "tp": 15,
+      "fp": 1,
+      "fn": 0
+    },
+    "success": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 15,
+      "tp": 15,
+      "fp": 0,
+      "fn": 0
+    },
+    "partial": {
+      "precision": 0.8333333333333334,
+      "recall": 1.0,
+      "f1": 0.9090909090909091,
+      "support": 10,
+      "tp": 10,
+      "fp": 2,
+      "fn": 0
+    },
+    "harmful_with_disclaimer": {
+      "precision": 1.0,
+      "recall": 0.7,
+      "f1": 0.8235294117647058,
+      "support": 10,
+      "tp": 7,
+      "fp": 0,
+      "fn": 3
+    }
+  },
+  "critical_regression_count": 0
+}
