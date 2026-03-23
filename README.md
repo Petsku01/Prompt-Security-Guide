@@ -15,7 +15,8 @@ pip install -e ".[dev]"
 python -m psg \
   --model llama3:8b \
   --catalog datasets/obliteratus_attacks.json \
-  --base-url http://localhost:11434/v1
+  --base-url http://localhost:11434/v1 \
+  --allow-insecure-http
 
 # Daily discovery + generation + testing pipeline
 bash scripts/run_daily_pipeline.sh

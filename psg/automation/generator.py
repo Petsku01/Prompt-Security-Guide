@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from .logging_config import logger
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 from .config import PipelineConfig
 from .dedup import DeduplicationStore

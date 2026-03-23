@@ -10,7 +10,7 @@ def write_text_report(path: str, summary: RunSummary, results: list[AttemptResul
     p.parent.mkdir(parents=True, exist_ok=True)
 
     lines = [
-        "Jailbreak Tester v3.0 Report",
+        "PSG v4.0.0 Report",
         "=" * 32,
         f"Total: {summary.total}",
         f"Succeeded: {summary.succeeded}",

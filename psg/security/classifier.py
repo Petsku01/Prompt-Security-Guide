@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import re
+import warnings
 from dataclasses import dataclass
-from typing import Optional
 
 
 # =============================================================================
@@ -350,10 +350,15 @@ def calculate_harm_score(
 
 def classify_response(text: str) -> list[str]:
     """
-    Legacy-compatible function. Returns harmful labels.
-    
-    Note: Prefer classify_response_v2() for more accurate analysis.
+    Legacy compatibility API. Returns harmful labels only.
+
+    Deprecated: use classify_response_v2() for structured classification output.
     """
+    warnings.warn(
+        "classify_response() is deprecated; use classify_response_v2() instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return detect_harmful_content(text)
 
 

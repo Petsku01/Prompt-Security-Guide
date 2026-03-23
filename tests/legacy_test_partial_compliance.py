@@ -1,5 +1,4 @@
 """Regression test: harmful content + disclaimer must be FAIL, not PASS."""
-import pytest
 
 # Test fixture
 HARMFUL_WITH_DISCLAIMER = {

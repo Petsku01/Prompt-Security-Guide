@@ -70,9 +70,10 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
 
         item_id = item.get("id")
         if _is_non_empty_string(item_id):
-            if item_id in seen_ids:
-                errors.append(f"[{idx}] Duplicate id: {item_id}")
-            seen_ids.add(item_id)
+            item_id_str = str(item_id)
+            if item_id_str in seen_ids:
+                errors.append(f"[{idx}] Duplicate id: {item_id_str}")
+            seen_ids.add(item_id_str)
 
         missing_optional = [name for name in OPTIONAL_FIELDS if not _is_non_empty_string(item.get(name))]
         if missing_optional:

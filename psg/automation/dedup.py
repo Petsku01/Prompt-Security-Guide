@@ -4,7 +4,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
 
 
 def hash_text(text: str) -> str:
@@ -69,8 +68,8 @@ if __name__ == "__main__":
     import tempfile
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         store = DeduplicationStore(Path(f.name))
-        assert store.add("test prompt") == True
-        assert store.add("test prompt") == False
-        assert store.is_known("test prompt") == True
-        assert store.is_known("new prompt") == False
+        assert store.add("test prompt")
+        assert not store.add("test prompt")
+        assert store.is_known("test prompt")
+        assert not store.is_known("new prompt")
         print("Dedup tests passed!")

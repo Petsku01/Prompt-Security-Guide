@@ -59,7 +59,6 @@ class TestRunner:
     def get_available_models(self) -> list[str]:
         """Get list of models available in Ollama."""
         import subprocess
-        import json
         try:
             result = subprocess.run(
                 ["curl", "-s", f"{self.config.ollama_base_url}/api/tags"],

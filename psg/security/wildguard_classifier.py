@@ -16,7 +16,6 @@ from harmful keyword matching.
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
-import re
 
 
 @dataclass
@@ -113,7 +112,6 @@ Analyze the above conversation. Classify:
             detect_refusal, 
             detect_harmful_content,
             detect_compliance,
-            detect_disclaimer
         )
         
         # Step 1: Detect refusal

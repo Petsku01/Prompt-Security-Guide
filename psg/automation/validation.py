@@ -2,7 +2,6 @@
 import re
 from urllib.parse import urlparse
 import ipaddress
-import socket
 
 BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254'}
 BLOCKED_NETWORKS = [
@@ -45,7 +44,7 @@ def validate_query(query: str) -> str:
     cleaned = re.sub(r'[\x00-\x1f\x7f]', '', cleaned)
     
     if not QUERY_PATTERN.match(cleaned):
-        raise ValueError(f"Query contains invalid characters")
+        raise ValueError("Query contains invalid characters")
     
     return cleaned
 
@@ -74,6 +73,8 @@ def validate_url(url: str) -> bool:
             return False
 
         hostname = parsed.hostname
+        if hostname is None:
+            return False
         if hostname in BLOCKED_HOSTS:
             return False
             
