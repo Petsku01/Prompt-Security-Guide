@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from .config import PipelineConfig, load_config
+from .config import PipelineConfig, load_config, validate_environment
 from .discovery import DiscoveryEngine, Source
 from .generator import VectorGenerator, AttackVector
 from .tester import TestRunner, TestResult
@@ -54,8 +54,7 @@ class Pipeline:
         logger.info(f"Generated {len(vectors)} new vectors")
         
         if vectors:
-            # TODO: Make dataset output path configurable via PipelineConfig.
-            output_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
+            output_path = self.config.datasets_dir / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
             self.generator.save_vectors(vectors, output_path)
             logger.info(f"Saved vectors to {output_path}")
         
@@ -126,8 +125,7 @@ class Pipeline:
             return None
         
         # Phase 3: Testing
-        # TODO: Make dataset output path configurable via PipelineConfig.
-        vectors_path = self.config.base_dir.parent.parent / "datasets" / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
+        vectors_path = self.config.datasets_dir / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
         results = self.run_testing(vectors_path, use_tmux=use_tmux)
         
         if use_tmux:
@@ -177,11 +175,16 @@ def main(argv: list[str] | None = None) -> int:
     
     # Full pipeline
     try:
+        if not args.skip_discovery:
+            validate_environment(config)
         pipeline.run_full(
             use_tmux=args.tmux,
             skip_discovery=args.skip_discovery,
             skip_generation=args.skip_generation,
         )
+    except RuntimeError as e:
+        logger.error(str(e))
+        return 2
     except KeyboardInterrupt:
         logger.warning("Pipeline interrupted by user")
         return 130

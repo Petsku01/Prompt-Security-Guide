@@ -1,5 +1,4 @@
-class LLMError(Exception):
-    """Base LLM error."""
+from ..errors import LLMError
 
 
 class HTTPStatusError(LLMError):

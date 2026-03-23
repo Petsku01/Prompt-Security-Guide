@@ -92,7 +92,7 @@ class TestRunner:
         output_base = self.config.results_dir / f"{output_prefix}_{model_safe}_{timestamp}"
         
         cmd = [
-            "/usr/bin/python3", "-m", "psg",
+            self.config.python_executable, "-m", "psg",
             "--catalog", str(vectors_path),
             "--model", model,
             "--allow-insecure-http",
@@ -106,7 +106,7 @@ class TestRunner:
         try:
             result = subprocess.run(
                 cmd,
-                cwd=self.config.base_dir.parent.parent,
+                cwd=self.config.project_root,
                 capture_output=True,
                 text=True,
                 timeout=self.config.test_timeout * 100,  # Allow for many tests
@@ -177,19 +177,20 @@ class TestRunner:
         output_prefix: str = "auto",
     ) -> str:
         """Start tests in tmux session. Returns session name."""
+        result_dir = shlex.quote(str(self.config.results_dir))
         script = f'''
-cd {self.config.base_dir.parent.parent}
+cd {shlex.quote(str(self.config.project_root))}
 for MODEL in {' '.join(shlex.quote(m) for m in self.config.test_models)}; do
     MODEL_SAFE=$(echo $MODEL | tr ':' '_')
     echo "Testing: $MODEL"
-    python3 -m psg \\
+    {shlex.quote(self.config.python_executable)} -m psg \\
         --catalog {shlex.quote(str(vectors_path))} \\
         --model "$MODEL" \\
         --allow-insecure-http \\
         --timeout {self.config.test_timeout} \\
-        --checkpoint "results/{output_prefix}_${{MODEL_SAFE}}.jsonl" \\
-        --json-report "results/{output_prefix}_${{MODEL_SAFE}}.json" \\
-        --text-report "results/{output_prefix}_${{MODEL_SAFE}}.txt"
+        --checkpoint "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.jsonl" \\
+        --json-report "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.json" \\
+        --text-report "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.txt"
 done
 echo "=== ALL TESTS COMPLETE ==="
 '''
