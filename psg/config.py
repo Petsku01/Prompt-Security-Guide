@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
+from .automation.validation import validate_url
 from .models import AppConfig, RedactionMode
 
 
@@ -18,22 +19,17 @@ def validate_config(cfg: AppConfig) -> AppConfig:
     if not catalog.exists() or not catalog.is_file():
         raise ConfigError(f"catalog does not exist: {cfg.catalog_path}")
 
-    parsed = urlparse(cfg.base_url)
-    if parsed.scheme not in {"http", "https"}:
-        raise ConfigError("base-url must start with http:// or https://")
-
-    if parsed.scheme == "http" and not cfg.allow_insecure_http:
-        raise ConfigError(
-            "Refusing insecure http:// base-url. Use --allow-insecure-http to override."
-        )
+    _validate_endpoint_url(
+        field_name="base-url",
+        url=cfg.base_url,
+        allow_insecure_http=cfg.allow_insecure_http,
+    )
     judge_url = cfg.judge_url or cfg.base_url
-    judge_parsed = urlparse(judge_url)
-    if judge_parsed.scheme not in {"http", "https"}:
-        raise ConfigError("judge-url must start with http:// or https://")
-    if judge_parsed.scheme == "http" and not cfg.allow_insecure_http:
-        raise ConfigError(
-            "Refusing insecure http:// judge-url. Use --allow-insecure-http to override."
-        )
+    _validate_endpoint_url(
+        field_name="judge-url",
+        url=judge_url,
+        allow_insecure_http=cfg.allow_insecure_http,
+    )
 
     if cfg.timeout_seconds <= 0:
         raise ConfigError("timeout must be > 0")
@@ -54,3 +50,20 @@ def validate_config(cfg: AppConfig) -> AppConfig:
         cfg.system_prompt = cfg.system_prompt.strip() or None
 
     return cfg
+
+
+def _validate_endpoint_url(field_name: str, url: str, allow_insecure_http: bool) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        raise ConfigError(f"{field_name} must start with http:// or https://")
+
+    if parsed.scheme == "http" and not allow_insecure_http:
+        raise ConfigError(
+            f"Refusing insecure http:// {field_name}. Use --allow-insecure-http to override."
+        )
+
+    # SSRF guardrails: disallow localhost/private and resolved internal targets by default.
+    if not allow_insecure_http and not validate_url(url):
+        raise ConfigError(
+            f"{field_name} target is blocked by SSRF protection. Use --allow-insecure-http to override."
+        )
