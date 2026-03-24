@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .automation.validation import validate_url
-from .models import AppConfig, RedactionMode
+from .models import AppConfig, ClassificationInputMode, RedactionMode
 
 
 class ConfigError(ValueError):
@@ -45,6 +45,8 @@ def validate_config(cfg: AppConfig) -> AppConfig:
 
     if not isinstance(cfg.redaction_mode, RedactionMode):
         cfg.redaction_mode = RedactionMode(str(cfg.redaction_mode))
+    if not isinstance(cfg.classification_input_mode, ClassificationInputMode):
+        cfg.classification_input_mode = ClassificationInputMode(str(cfg.classification_input_mode))
 
     if cfg.system_prompt is not None:
         cfg.system_prompt = cfg.system_prompt.strip() or None

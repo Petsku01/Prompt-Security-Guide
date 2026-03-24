@@ -4,7 +4,7 @@ import pytest
 
 from psg.errors import CatalogError, ClassifierError
 from psg.llm.errors import LLMError
-from psg.models import AppConfig, Attack, LLMResponse
+from psg.models import AppConfig, Attack, ClassificationInputMode, LLMResponse
 from psg.orchestrator import run
 from psg.security.classifier import ClassificationResult
 
@@ -208,3 +208,97 @@ def test_run_classifies_with_unredacted_response(monkeypatch, tmp_path) -> None:
     assert summary.flagged == 1
     assert observed["response"] == raw_response
     assert results[0].response_text != raw_response
+
+
+def test_run_auto_mode_uses_redacted_response_for_llm_judge(monkeypatch, tmp_path) -> None:
+    cfg = _cfg(tmp_path)
+    cfg.detector = "llm-judge"
+    attacks = [Attack(id="a1", prompt="p1")]
+    observed = {"response": None}
+    raw_response = "sk-ABCDEFGHIJKLMNOP"
+
+    class _ClientRaw(_FakeClient):
+        def chat(self, **_kwargs):
+            return LLMResponse(content=raw_response, raw={})
+
+    def _classify(_prompt: str, response: str):
+        observed["response"] = response
+        return ClassificationResult(
+            is_refusal=False,
+            is_harmful=True,
+            attack_successful=True,
+            harm_score=0.9,
+            refusal_confidence=0.0,
+            harmful_labels=["credential_leak"],
+            compliance_detected=True,
+            has_disclaimer=False,
+            raw_text_length=len(response),
+        )
+
+    monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
+    monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _ClientRaw)
+    monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
+    monkeypatch.setattr("psg.orchestrator.build_detector", lambda _cfg: _Detector(_classify))
+    monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
+
+    summary, _ = run(cfg)
+
+    assert summary.flagged == 1
+    assert observed["response"] != raw_response
+    assert "[REDACTED_KEY]" in observed["response"]
+
+
+def test_run_classification_input_both_merges_results(monkeypatch, tmp_path) -> None:
+    cfg = _cfg(tmp_path)
+    cfg.classification_input_mode = ClassificationInputMode.BOTH
+    attacks = [Attack(id="a1", prompt="p1")]
+    raw_response = "How to do malware with sk-ABCDEFGHIJKLMNOP"
+    observed: list[str] = []
+
+    class _ClientRaw(_FakeClient):
+        def chat(self, **_kwargs):
+            return LLMResponse(content=raw_response, raw={})
+
+    def _classify(_prompt: str, response: str):
+        observed.append(response)
+        if "sk-" in response:
+            return ClassificationResult(
+                is_refusal=False,
+                is_harmful=True,
+                attack_successful=True,
+                harm_score=0.8,
+                refusal_confidence=0.1,
+                harmful_labels=["credential_leak"],
+                compliance_detected=True,
+                has_disclaimer=False,
+                raw_text_length=len(response),
+            )
+        return ClassificationResult(
+            is_refusal=True,
+            is_harmful=False,
+            attack_successful=False,
+            harm_score=0.0,
+            refusal_confidence=0.7,
+            harmful_labels=["redaction_observed"],
+            compliance_detected=False,
+            has_disclaimer=True,
+            raw_text_length=len(response),
+        )
+
+    monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
+    monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _ClientRaw)
+    monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
+    monkeypatch.setattr("psg.orchestrator.build_detector", lambda _cfg: _Detector(_classify))
+    monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
+
+    summary, results = run(cfg)
+
+    assert summary.flagged == 1
+    assert len(observed) == 2
+    assert any("sk-" in r for r in observed)
+    assert any("[REDACTED_KEY]" in r for r in observed)
+    assert results[0].labels == ["credential_leak", "redaction_observed"]
+    assert results[0].is_refusal is False
+    assert results[0].has_disclaimer is True

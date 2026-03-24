@@ -13,6 +13,7 @@ def test_build_parser_parses_core_args() -> None:
     assert args.model == "llama3"
     assert args.catalog == "datasets/tiny_test.json"
     assert args.timeout == 240.0
+    assert args.classification_input == "auto"
 
 
 def test_main_returns_2_on_config_error(monkeypatch) -> None:
@@ -81,3 +82,11 @@ def test_build_parser_allows_api_key_flag_over_env(monkeypatch) -> None:
     parser = build_parser()
     args = parser.parse_args(["--model", "m", "--catalog", "c", "--api-key", "cli-secret"])
     assert args.api_key == "cli-secret"
+
+
+def test_build_parser_parses_classification_input() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        ["--model", "m", "--catalog", "c", "--classification-input", "redacted"]
+    )
+    assert args.classification_input == "redacted"

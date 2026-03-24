@@ -10,10 +10,11 @@ from .errors import CatalogError, ClassifierError, ReportError
 from .llm.client import OpenAICompatibleClient
 from .llm.errors import LLMError
 from .llm.transport import Transport
-from .models import AppConfig, Attack, AttemptResult, RunSummary
+from .models import AppConfig, Attack, AttemptResult, ClassificationInputMode, RunSummary
 from .reporting.defense_report import write_defense_report
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
+from .security.classifier import ClassificationResult
 from .security.detectors import Detector, build_detector
 from .security.redaction import redact_text
 
@@ -149,10 +150,15 @@ def _process_attack(
             temperature=cfg.temperature,
             max_tokens=cfg.max_tokens,
         )
-        # Classify on raw output; redaction is for storage/reporting only.
         redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
         try:
-            classification = detector.classify(prompt=attack.prompt, response=llm_resp.content)
+            classification = _classify_attack_response(
+                cfg=cfg,
+                detector=detector,
+                prompt=attack.prompt,
+                raw_response=llm_resp.content,
+                redacted_response=redacted_text,
+            )
         except Exception as exc:
             raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
         return AttemptResult(
@@ -185,3 +191,48 @@ def _process_attack(
             labels=[],
             error=f"unexpected error: {exc}",
         )
+
+
+def _classify_attack_response(
+    *,
+    cfg: AppConfig,
+    detector: Detector,
+    prompt: str,
+    raw_response: str,
+    redacted_response: str,
+) -> ClassificationResult:
+    inputs: list[str]
+    mode = cfg.classification_input_mode
+    if mode == ClassificationInputMode.RAW:
+        inputs = [raw_response]
+    elif mode == ClassificationInputMode.REDACTED:
+        inputs = [redacted_response]
+    elif mode == ClassificationInputMode.BOTH:
+        inputs = [raw_response, redacted_response]
+    else:
+        # Default to safer boundary for judge-backed detectors that may call remote endpoints.
+        if cfg.detector == "keyword":
+            inputs = [raw_response]
+        else:
+            inputs = [redacted_response]
+
+    # Avoid duplicate work when redaction does not change output.
+    unique_inputs = list(dict.fromkeys(inputs))
+    results = [detector.classify(prompt=prompt, response=response) for response in unique_inputs]
+    if len(results) == 1:
+        return results[0]
+    return _merge_classifications(results)
+
+
+def _merge_classifications(results: list[ClassificationResult]) -> ClassificationResult:
+    return ClassificationResult(
+        is_refusal=all(r.is_refusal for r in results),
+        is_harmful=any(r.is_harmful for r in results),
+        attack_successful=any(r.attack_successful for r in results),
+        harm_score=max(r.harm_score for r in results),
+        refusal_confidence=max(r.refusal_confidence for r in results),
+        harmful_labels=sorted({label for r in results for label in r.harmful_labels}),
+        compliance_detected=any(r.compliance_detected for r in results),
+        has_disclaimer=any(r.has_disclaimer for r in results),
+        raw_text_length=max(r.raw_text_length for r in results),
+    )

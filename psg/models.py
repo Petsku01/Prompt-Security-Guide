@@ -12,6 +12,13 @@ class RedactionMode(str, Enum):
     OFF = "off"
 
 
+class ClassificationInputMode(str, Enum):
+    AUTO = "auto"
+    RAW = "raw"
+    REDACTED = "redacted"
+    BOTH = "both"
+
+
 @dataclass(slots=True)
 class Attack:
     id: str
@@ -74,3 +81,4 @@ class AppConfig:
     detector: str = "keyword"
     judge_model: str = "llama3:8b"
     judge_url: str | None = None
+    classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO

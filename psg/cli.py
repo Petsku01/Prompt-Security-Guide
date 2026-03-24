@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
-from .models import AppConfig, RedactionMode
+from .models import AppConfig, ClassificationInputMode, RedactionMode
 from .orchestrator import run
 
 
@@ -40,6 +40,15 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         "--api-key",
         default=os.getenv("PSG_API_KEY"),
         help="API key for hosted OpenAI-compatible endpoints (or set PSG_API_KEY)",
+    )
+    parser.add_argument(
+        "--classification-input",
+        choices=[m.value for m in ClassificationInputMode],
+        default=ClassificationInputMode.AUTO.value,
+        help=(
+            "Input passed to detector: auto (raw for keyword, redacted for llm-judge/ensemble), "
+            "raw, redacted, or both"
+        ),
     )
     return parser
 
@@ -87,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
         detector=args.detector,
         judge_model=args.judge_model,
         judge_url=args.judge_url or args.base_url,
+        classification_input_mode=ClassificationInputMode(args.classification_input),
     )
 
     try:
