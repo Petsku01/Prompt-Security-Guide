@@ -1,0 +1,130 @@
+{
+  "sources": [
+    {
+      "url": "https://github.com/Joe-B-Security/awesome-prompt-injection",
+      "type": "github",
+      "description": "Curated list of prompt injection resources, tools, and research papers",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://grokipedia.com/page/Grok_Jailbreak_Prompts",
+      "type": "wiki",
+      "description": "Community-maintained Grok jailbreak techniques and workarounds (Jan 2026)",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://mindgard.ai/blog/ai-red-teaming-statistics",
+      "type": "blog",
+      "description": "AI Red Teaming Statistics & Benchmarks for 2026",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/dreadnode/AIRTBench-Code",
+      "type": "github",
+      "description": "AI Red Team Benchmark - LLM agent red teaming capabilities benchmark",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2506.14682",
+      "type": "paper",
+      "description": "AIRTBench research paper on LLM red teaming agents",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/WithSecureLabs/damn-vulnerable-llm-agent",
+      "type": "github",
+      "description": "Damn Vulnerable LLM Agent - intentionally vulnerable for testing",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/deadbits/vigil-llm",
+      "type": "github",
+      "description": "Vigil - LLM security scanner and prompt injection detection",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/agentseal/agentseal",
+      "type": "github",
+      "description": "AgentSeal - AI agent security framework",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://blog.fondu.ai/posts/data_exfil/",
+      "type": "blog",
+      "description": "LLM data exfiltration techniques and prevention",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://blog.fondu.ai/posts/prompt-injection-defence/",
+      "type": "blog",
+      "description": "Prompt injection defense strategies",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2504.19793",
+      "type": "paper",
+      "description": "2025 prompt injection attack paper",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2507.13169",
+      "type": "paper",
+      "description": "2025 LLM security research paper",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2510.09023",
+      "type": "paper",
+      "description": "2025 adversarial prompt research",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2511.15759",
+      "type": "paper",
+      "description": "2025 jailbreak research paper",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://arxiv.org/abs/2602.10453",
+      "type": "paper",
+      "description": "2026 prompt injection research",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/ahow2004/injectlab",
+      "type": "github",
+      "description": "InjectLab - prompt injection testing framework",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://github.com/c-goosen/ai-prompt-ctf",
+      "type": "github",
+      "description": "AI Prompt CTF challenges",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://academy.8ksec.io/course/ai-exploitation-challenges",
+      "type": "course",
+      "description": "8kSec AI Exploitation Challenges course",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://ai.meta.com/blog/practical-ai-agent-security/",
+      "type": "blog",
+      "description": "Meta's practical AI agent security guidelines",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://www.anthropic.com/research/small-samples-poison",
+      "type": "research",
+      "description": "Anthropic research on data poisoning with small samples",
+      "discovered": "2026-03-24"
+    },
+    {
+      "url": "https://genai.owasp.org/llmrisk/llm01-prompt-injection/",
+      "type": "reference",
+      "description": "OWASP LLM01:2025 Prompt Injection - canonical definition",
+      "discovered": "2026-03-24"
+    }
+  ]
+}
