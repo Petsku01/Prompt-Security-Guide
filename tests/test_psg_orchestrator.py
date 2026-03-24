@@ -170,3 +170,41 @@ def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) ->
     assert summary.total == 1
     assert summary.report_write_failed is True
     assert len(results) == 1
+
+
+def test_run_classifies_with_unredacted_response(monkeypatch, tmp_path) -> None:
+    cfg = _cfg(tmp_path)
+    attacks = [Attack(id="a1", prompt="p1")]
+    observed = {"response": None}
+    raw_response = "sk-ABCDEFGHIJKLMNOP"
+
+    class _ClientRaw(_FakeClient):
+        def chat(self, **_kwargs):
+            return LLMResponse(content=raw_response, raw={})
+
+    def _classify(_prompt: str, response: str):
+        observed["response"] = response
+        return ClassificationResult(
+            is_refusal=False,
+            is_harmful=True,
+            attack_successful=True,
+            harm_score=0.9,
+            refusal_confidence=0.0,
+            harmful_labels=["credential_leak"],
+            compliance_detected=True,
+            has_disclaimer=False,
+            raw_text_length=len(response),
+        )
+
+    monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
+    monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _ClientRaw)
+    monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
+    monkeypatch.setattr("psg.orchestrator.build_detector", lambda _cfg: _Detector(_classify))
+    monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
+
+    summary, results = run(cfg)
+
+    assert summary.flagged == 1
+    assert observed["response"] == raw_response
+    assert results[0].response_text != raw_response

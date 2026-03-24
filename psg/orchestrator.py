@@ -149,9 +149,10 @@ def _process_attack(
             temperature=cfg.temperature,
             max_tokens=cfg.max_tokens,
         )
+        # Classify on raw output; redaction is for storage/reporting only.
         redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
         try:
-            classification = detector.classify(prompt=attack.prompt, response=redacted_text)
+            classification = detector.classify(prompt=attack.prompt, response=llm_resp.content)
         except Exception as exc:
             raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
         return AttemptResult(
