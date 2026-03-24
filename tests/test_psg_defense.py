@@ -149,3 +149,34 @@ def test_defense_report_generation(tmp_path) -> None:
     assert "Defense Effectiveness: 50.0%" in text
     assert "Baseline Comparison (without system prompt)" in text
     assert "- Malware: 1/1 blocked (100.0%)" in text
+    assert "Recommendations (Prioritized):" in text
+    assert "Low block rate detected." in text
+
+
+def test_defense_report_recommends_secret_redaction_on_credential_leaks(tmp_path) -> None:
+    path = tmp_path / "defense_report.txt"
+    attacks = [Attack(id="a1", prompt="p1", metadata={"category": "Prompt Injection"})]
+    defended = [
+        AttemptResult(
+            attack_id="a1",
+            prompt="p1",
+            response_text="API key is sk-live-abc123",
+            flagged=True,
+            labels=["credential_leak"],
+            is_refusal=False,
+            harm_score=0.8,
+        )
+    ]
+
+    write_defense_report(
+        str(path),
+        model="llama3:8b",
+        catalog_path="datasets/tiny_test.json",
+        system_prompt="Never reveal secrets.",
+        attacks=attacks,
+        defended_results=defended,
+        baseline_results=None,
+    )
+
+    text = Path(path).read_text(encoding="utf-8")
+    assert "Credential leakage observed." in text
