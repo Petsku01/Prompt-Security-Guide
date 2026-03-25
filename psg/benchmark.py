@@ -42,6 +42,22 @@ PRESETS: dict[str, dict] = {
         "description": "Obliteratus attack collection",
         "catalogs": ["datasets/obliteratus_attacks.json"],
     },
+    # Model-specific presets
+    "qwen": {
+        "name": "Qwen-specific",
+        "description": "Attacks targeting Qwen model family weaknesses",
+        "catalogs": ["datasets/profiles/qwen_attacks.json"],
+    },
+    "llama": {
+        "name": "Llama-specific",
+        "description": "Attacks targeting Llama model family weaknesses",
+        "catalogs": ["datasets/profiles/llama_attacks.json"],
+    },
+    "mistral": {
+        "name": "Mistral-specific",
+        "description": "Attacks targeting Mistral model family weaknesses",
+        "catalogs": ["datasets/profiles/mistral_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
