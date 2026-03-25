@@ -24,12 +24,18 @@ guard = PSGGuardMiddleware(
 - ✅ Logging
 - ✅ 11 tests passing
 
-### 2. CI regression gate (S)
+### ~~2. CI regression gate (S)~~ ✅ DONE
 ```bash
 psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
+# Exit code 1 if F1 < 0.85
+
+psg eval --golden datasets/classifier_golden.json --json
+# Machine-readable JSON output
 ```
-- Tavoite: GitHub Actions -valmis
-- Lisää: exit code 1 jos threshold ei täyty
+- ✅ `psg eval` command
+- ✅ GitHub Actions workflow updated
+- ✅ Golden dataset (20 samples)
+- ✅ 11 tests passing
 
 ### 3. Parallel scan (M)
 ```bash
