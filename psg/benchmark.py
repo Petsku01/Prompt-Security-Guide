@@ -58,6 +58,36 @@ PRESETS: dict[str, dict] = {
         "description": "Attacks targeting Mistral model family weaknesses",
         "catalogs": ["datasets/profiles/mistral_attacks.json"],
     },
+    "gemma": {
+        "name": "Gemma-specific",
+        "description": "Attacks targeting Gemma model family weaknesses",
+        "catalogs": ["datasets/profiles/gemma_attacks.json"],
+    },
+    "phi": {
+        "name": "Phi-specific",
+        "description": "Attacks targeting Phi model family weaknesses",
+        "catalogs": ["datasets/profiles/phi_attacks.json"],
+    },
+    "deepseek": {
+        "name": "DeepSeek-specific",
+        "description": "Attacks targeting DeepSeek model family weaknesses",
+        "catalogs": ["datasets/profiles/deepseek_attacks.json"],
+    },
+    "falcon": {
+        "name": "Falcon-specific",
+        "description": "Attacks targeting Falcon model family weaknesses",
+        "catalogs": ["datasets/profiles/falcon_attacks.json"],
+    },
+    "yi": {
+        "name": "Yi-specific",
+        "description": "Attacks targeting Yi model family weaknesses",
+        "catalogs": ["datasets/profiles/yi_attacks.json"],
+    },
+    "stablelm": {
+        "name": "StableLM-specific",
+        "description": "Attacks targeting StableLM model family weaknesses",
+        "catalogs": ["datasets/profiles/stablelm_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
