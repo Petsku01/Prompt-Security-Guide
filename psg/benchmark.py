@@ -88,6 +88,11 @@ PRESETS: dict[str, dict] = {
         "description": "Attacks targeting StableLM model family weaknesses",
         "catalogs": ["datasets/profiles/stablelm_attacks.json"],
     },
+    "chatgpt": {
+        "name": "ChatGPT/OpenAI-specific",
+        "description": "Research-validated attacks targeting OpenAI models (30 attacks)",
+        "catalogs": ["datasets/profiles/chatgpt_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
