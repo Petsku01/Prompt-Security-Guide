@@ -50,6 +50,12 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
             "raw, redacted, or both"
         ),
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of parallel workers (default: 1 = sequential)",
+    )
     return parser
 
 
@@ -97,6 +103,7 @@ def main(argv: list[str] | None = None) -> int:
         judge_model=args.judge_model,
         judge_url=args.judge_url or args.base_url,
         classification_input_mode=ClassificationInputMode(args.classification_input),
+        workers=args.workers,
     )
 
     try:

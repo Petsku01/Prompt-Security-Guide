@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict
+from threading import Lock
 
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
@@ -116,6 +118,38 @@ def _run_attacks(
     system_prompt: str | None,
     checkpoint_tag: str,
 ) -> list[AttemptResult]:
+    if cfg.workers <= 1:
+        return _run_attacks_sequential(
+            cfg=cfg,
+            attacks=attacks,
+            client=client,
+            checkpoint=checkpoint,
+            detector=detector,
+            system_prompt=system_prompt,
+            checkpoint_tag=checkpoint_tag,
+        )
+    return _run_attacks_parallel(
+        cfg=cfg,
+        attacks=attacks,
+        client=client,
+        checkpoint=checkpoint,
+        detector=detector,
+        system_prompt=system_prompt,
+        checkpoint_tag=checkpoint_tag,
+    )
+
+
+def _run_attacks_sequential(
+    *,
+    cfg: AppConfig,
+    attacks: list[Attack],
+    client: OpenAICompatibleClient,
+    checkpoint: JSONLCheckpoint,
+    detector: Detector,
+    system_prompt: str | None,
+    checkpoint_tag: str,
+) -> list[AttemptResult]:
+    """Run attacks sequentially (original behavior)."""
     results: list[AttemptResult] = []
     for attack in attacks:
         result = _process_attack(
@@ -131,6 +165,61 @@ def _run_attacks(
             logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
         results.append(result)
     return results
+
+
+def _run_attacks_parallel(
+    *,
+    cfg: AppConfig,
+    attacks: list[Attack],
+    client: OpenAICompatibleClient,
+    checkpoint: JSONLCheckpoint,
+    detector: Detector,
+    system_prompt: str | None,
+    checkpoint_tag: str,
+) -> list[AttemptResult]:
+    """Run attacks in parallel using ThreadPoolExecutor."""
+    results: dict[str, AttemptResult] = {}
+    checkpoint_lock = Lock()
+    
+    def process_one(attack: Attack) -> tuple[str, AttemptResult]:
+        result = _process_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+        )
+        # Thread-safe checkpoint write
+        with checkpoint_lock:
+            try:
+                checkpoint.append({**asdict(result), "mode": checkpoint_tag})
+            except Exception:
+                logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
+        return attack.id, result
+    
+    logger.info("Running %d attacks with %d workers", len(attacks), cfg.workers)
+    
+    with ThreadPoolExecutor(max_workers=cfg.workers) as executor:
+        futures = {executor.submit(process_one, attack): attack for attack in attacks}
+        
+        for future in as_completed(futures):
+            attack = futures[future]
+            try:
+                attack_id, result = future.result()
+                results[attack_id] = result
+            except Exception as exc:
+                logger.exception("Worker failed for attack_id=%s", attack.id)
+                results[attack.id] = AttemptResult(
+                    attack_id=attack.id,
+                    prompt=attack.prompt[:100] + "..." if len(attack.prompt) > 100 else attack.prompt,
+                    response_text="",
+                    flagged=False,
+                    labels=[],
+                    error=f"worker error: {exc}",
+                )
+    
+    # Preserve original order
+    return [results[attack.id] for attack in attacks]
 
 
 def _process_attack(

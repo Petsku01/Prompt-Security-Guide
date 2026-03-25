@@ -302,3 +302,40 @@ def test_run_classification_input_both_merges_results(monkeypatch, tmp_path) -> 
     assert results[0].labels == ["credential_leak", "redaction_observed"]
     assert results[0].is_refusal is False
     assert results[0].has_disclaimer is True
+
+
+def test_run_parallel_workers(monkeypatch, tmp_path) -> None:
+    """Test that parallel workers process attacks correctly."""
+    cfg = _cfg(tmp_path)
+    cfg.workers = 4  # Enable parallel execution
+    attacks = [Attack(id=f"a{i}", prompt=f"p{i}") for i in range(10)]
+
+    monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _: attacks)
+    monkeypatch.setattr("psg.orchestrator.Transport", lambda **_: None)
+    monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
+    monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
+    monkeypatch.setattr(
+        "psg.orchestrator.build_detector",
+        lambda _: _Detector(
+            lambda _prompt, _response: ClassificationResult(
+                is_refusal=False,
+                is_harmful=False,
+                attack_successful=False,
+                harm_score=0.1,
+                refusal_confidence=0.0,
+                harmful_labels=[],
+                compliance_detected=False,
+                has_disclaimer=False,
+                raw_text_length=4,
+            )
+        ),
+    )
+
+    summary, results = run(cfg)
+
+    assert summary.total == 10
+    assert summary.succeeded == 10
+    assert summary.failed == 0
+    assert len(results) == 10
+    # Check order is preserved
+    assert [r.attack_id for r in results] == [f"a{i}" for i in range(10)]

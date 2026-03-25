@@ -82,3 +82,4 @@ class AppConfig:
     judge_model: str = "llama3:8b"
     judge_url: str | None = None
     classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO
+    workers: int = 1  # Number of parallel workers (1 = sequential)
