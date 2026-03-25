@@ -128,11 +128,15 @@ Raises `PSGSecurityException` when threshold exceeded. Async version: `AsyncPSGG
 ```
 psg/                 — core library and CLI
 psg/integrations/    — LangChain middleware
-datasets/            — attack catalogs
+psg/automation/      — auto-discovery pipeline
+datasets/            — attack catalogs (JSON)
+generators/          — attack generation code (Python)
 tests/               — test suite
 scripts/             — operational scripts
-docs/                — methodology docs
-_archive/            — historical code (not in active use)
+docs/                — methodology and research docs
+models/              — ML model files (not in git)
+profiles/            — model behavior profiles
+_archive/            — historical code (preserved for reference)
 ```
 
 ## Documentation
