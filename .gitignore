@@ -24,3 +24,16 @@ results/*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Build artifacts
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Runtime state
+.last_discovery
+*.pkl
+
+# Ruff cache
+.ruff_cache/
