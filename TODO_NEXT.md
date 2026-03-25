@@ -37,12 +37,14 @@ psg eval --golden datasets/classifier_golden.json --json
 - ✅ Golden dataset (20 samples)
 - ✅ 11 tests passing
 
-### 3. Parallel scan (M)
+### ~~3. Parallel scan (M)~~ ✅ DONE
 ```bash
 psg scan --workers 4 --model llama3:8b --catalog datasets/owasp_2025_attacks.json
 ```
-- Tavoite: 2-4x nopeampi suoritus
-- Toteutus: `concurrent.futures.ThreadPoolExecutor`
+- ✅ `--workers` CLI flag
+- ✅ ThreadPoolExecutor parallel execution
+- ✅ Thread-safe checkpoint writes
+- ✅ Order preserved in results
 
 ### 4. Benchmark preset (M)
 ```bash
