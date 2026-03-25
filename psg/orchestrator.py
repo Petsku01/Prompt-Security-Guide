@@ -4,7 +4,7 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict
-from threading import Lock, Semaphore
+from threading import Lock
 
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
@@ -263,7 +263,6 @@ def _run_attacks_parallel(
         futures = {executor.submit(process_one, attack): attack for attack in attacks}
         
         for future in as_completed(futures):
-            attack = futures[future]
             # _process_attack handles errors, so future.result() should not raise
             attack_id, result = future.result()
             results[attack_id] = result

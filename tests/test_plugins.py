@@ -1,7 +1,6 @@
 """Tests for psg.plugins module."""
 from __future__ import annotations
 
-import pytest
 
 from psg.plugins import (
     DetectionResult,

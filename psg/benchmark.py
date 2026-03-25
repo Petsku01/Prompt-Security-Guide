@@ -21,7 +21,7 @@ from pathlib import Path
 
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
-from .models import AppConfig, ClassificationInputMode, RedactionMode
+from .models import AppConfig
 from .orchestrator import run
 
 

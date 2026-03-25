@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import sys
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
