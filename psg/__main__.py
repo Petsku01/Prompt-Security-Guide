@@ -7,10 +7,11 @@ from .benchmark import main as benchmark_main
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments, main as cli_main
 from .eval import main as eval_main
+from .serve import main as serve_main
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Prompt Security Guide v4.0")
+    parser = argparse.ArgumentParser(description="Prompt Security Guide v4.1")
     subparsers = parser.add_subparsers(dest="command")
 
     scan_parser = subparsers.add_parser("scan", help="Run prompt security scan")
@@ -39,6 +40,13 @@ def build_parser() -> argparse.ArgumentParser:
     catalog_subparsers = catalog_parser.add_subparsers(dest="catalog_command")
     validate_parser = catalog_subparsers.add_parser("validate", help="Validate catalog JSON files")
     validate_parser.add_argument("--path", default="datasets/", help="Path to catalog JSON file/directory")
+
+    serve_parser = subparsers.add_parser("serve", help="Start screening API server")
+    serve_parser.add_argument("--host", default="0.0.0.0", help="Host to bind (default: 0.0.0.0)")
+    serve_parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
+    serve_parser.add_argument("--threshold", type=float, default=0.5, help="Default threshold")
+    serve_parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
+
     return parser
 
 
@@ -71,6 +79,9 @@ def main(argv: list[str] | None = None) -> int:
         return benchmark_main(benchmark_args)
     if ns.command == "catalog" and ns.catalog_command == "validate":
         return catalog_validate_main(["--path", ns.path])
+    if ns.command == "serve":
+        serve_args = [*args[1:]]
+        return serve_main(serve_args)
 
     parser.print_help()
     return 2

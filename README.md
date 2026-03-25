@@ -103,6 +103,34 @@ Exit code 1 if F1 score drops below threshold. Use `--json` for machine-readable
   run: python3 -m psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
 ```
 
+## API Server
+
+Run PSG as a REST API for real-time screening:
+
+```bash
+pip install -e ".[serve]"
+python3 -m psg serve --port 8000
+```
+
+Endpoints:
+- `POST /screen` — screen single text
+- `POST /screen/bulk` — screen multiple texts
+- `GET /health` — health check
+- `GET /metrics` — request metrics
+- `GET /docs` — OpenAPI documentation
+
+Example:
+```bash
+curl -X POST http://localhost:8000/screen \
+  -H "Content-Type: application/json" \
+  -d '{"text": "I cannot help with that request."}'
+```
+
+Response:
+```json
+{"harmful": false, "harm_score": 0.0, "is_refusal": true, "attack_successful": false, "latency_ms": 0.5}
+```
+
 ## LangChain Integration
 
 Screen LLM inputs and outputs in your LangChain app:

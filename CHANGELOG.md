@@ -2,6 +2,11 @@
 
 ## 4.1.0 - 2026-03-25
 
+### API Server
+- Added FastAPI server: `psg serve --port 8000`
+- Endpoints: `/screen`, `/screen/bulk`, `/health`, `/metrics`
+- Optional dependencies: `pip install -e ".[serve]"`
+
 ### Integrations
 - Added LangChain middleware integration in `psg/integrations/langchain.py`:
   - `PSGGuardMiddleware`
@@ -21,6 +26,12 @@
 - Added preset benchmark runner: `psg benchmark`.
 - Added benchmark presets: `jbb`, `owasp`, `obliteratus`, `full`.
 - Example: `psg benchmark --preset jbb --model llama3:8b`
+
+### Repository cleanup
+- Removed deprecated files (tester.py, tools symlink, requirements.txt)
+- Renamed attacks/ → generators/
+- Moved research/ → docs/research/
+- Fixed CI workflow to use pyproject.toml
 
 ## 4.0.0 - 2026-03-23
 
