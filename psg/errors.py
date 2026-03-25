@@ -20,3 +20,11 @@ class ClassifierError(PSGError):
 class ReportError(PSGError):
     """Report write failure."""
 
+
+class PSGSecurityException(PSGError):
+    """Raised when PSG detects harmful output above policy threshold."""
+
+
+
+class PSGSecurityException(PSGError):
+    """Raised when PSG detects harmful output above policy threshold."""
