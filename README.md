@@ -1,151 +1,151 @@
 # prompt-security-guide
 
-Professional framework for defensive LLM security testing.
+**Test how well your LLM resists jailbreaks, prompt injection, and other attacks.**
 
-> Canonical runtime: `psg/` (current series: v4.x)
+PSG scans language models against curated attack catalogs and reports which attacks succeeded. Use it to evaluate model safety, test defense prompts, and catch regressions in CI.
 
 ## Quick Start
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e .
+python3 -m psg scan --model llama3:8b --catalog datasets/obliteratus_attacks.json --allow-insecure-http
+```
 
-# 1) Run a scan (parallel + rate-limited)
+Output:
+```
+Done. total=50 succeeded=48 failed=2 flagged=12 duration=34.21s
+```
+
+- `flagged` = attacks that got harmful responses (lower is better)
+- Reports written to `results/report.json` and `results/report.txt`
+
+## Installation
+
+```bash
+git clone https://github.com/Petsku01/Prompt-Security-Guide.git
+cd Prompt-Security-Guide
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"  # includes test dependencies
+```
+
+## Core Commands
+
+### Scan a model
+
+```bash
 python3 -m psg scan \
   --model llama3:8b \
   --catalog datasets/obliteratus_attacks.json \
   --base-url http://localhost:11434/v1 \
-  --allow-insecure-http \
+  --allow-insecure-http
+```
+
+### Parallel scan (faster)
+
+```bash
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
   --workers 4 \
   --rate-limit 10
+```
 
-# 2) Evaluate classifier quality against golden labels
+- `--workers N` — parallel workers (1-32)
+- `--rate-limit RPS` — max requests per second
+
+### Test a defense prompt
+
+```bash
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --system-prompt "You are a helpful assistant. Refuse harmful requests." \
+  --defense-report
+```
+
+Compares attack success rate with and without the defense prompt.
+
+## Benchmark Presets
+
+Run standard benchmark suites without picking catalogs manually:
+
+```bash
+python3 -m psg benchmark --preset jbb --model llama3:8b
+```
+
+| Preset | Description |
+|--------|-------------|
+| `jbb` | JailbreakBench — 100 harmful behavior prompts |
+| `owasp` | OWASP Top 10 LLM attacks (2025) |
+| `obliteratus` | Curated multi-technique attack collection |
+| `full` | All datasets combined |
+
+List presets: `python3 -m psg benchmark --list`
+
+## CI Integration
+
+### Classifier regression gate
+
+Ensure classifier quality doesn't degrade:
+
+```bash
 python3 -m psg eval \
   --golden datasets/classifier_golden.json \
   --fail-on-macro-f1-below 0.85
-
-# 3) Run a preset benchmark suite
-python3 -m psg benchmark \
-  --preset jbb \
-  --model llama3:8b
 ```
 
-Outputs are written to `results/` (ignored by git except curated samples).
+Exit code 1 if F1 score drops below threshold. Use `--json` for machine-readable output.
+
+### GitHub Actions example
+
+```yaml
+- name: PSG Classifier Gate
+  run: python3 -m psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
+```
 
 ## LangChain Integration
 
-PSG provides LangChain callback middleware for screening both prompt inputs and model outputs:
-
-- `psg.integrations.langchain.PSGGuardMiddleware`
-- `psg.integrations.langchain.AsyncPSGGuardMiddleware`
+Screen LLM inputs and outputs in your LangChain app:
 
 ```python
 from langchain_openai import ChatOpenAI
 from psg.integrations.langchain import PSGGuardMiddleware
 
 llm = ChatOpenAI(
-    callbacks=[PSGGuardMiddleware(threshold=0.5, screen_input=True, screen_output=True)]
+    callbacks=[PSGGuardMiddleware(threshold=0.5)]
 )
 ```
 
-When content exceeds the configured threshold, middleware raises `PSGSecurityException`.
+Options:
+- `threshold` — harm score threshold (0.0-1.0)
+- `screen_input` — check prompts for injection (default: True)
+- `screen_output` — check responses for harmful content (default: True)
 
-## Classifier Evaluation (`psg eval`)
-
-Use `eval` to measure classifier performance against a golden dataset and enforce CI regression gates:
-
-```bash
-python3 -m psg eval \
-  --golden datasets/classifier_golden.json \
-  --fail-on-macro-f1-below 0.85
-```
-
-Useful CI form:
-
-```bash
-python3 -m psg eval --golden datasets/classifier_golden.json --json --fail-on-macro-f1-below 0.85
-```
-
-## Parallel Scan (`--workers`)
-
-`psg scan` supports parallel execution with optional request rate limiting:
-
-```bash
-python3 -m psg scan \
-  --model llama3:8b \
-  --catalog datasets/obliteratus_attacks.json \
-  --workers 4 \
-  --rate-limit 10
-```
-
-- `--workers N`: parallel workers (1-32)
-- `--rate-limit RPS`: maximum requests per second
-
-## Benchmark Presets (`psg benchmark`)
-
-Run curated benchmark suites without manually selecting catalogs:
-
-```bash
-python3 -m psg benchmark --preset jbb --model llama3:8b
-```
-
-Available presets:
-
-- `jbb`
-- `owasp`
-- `obliteratus`
-- `full`
-
-List presets directly:
-
-```bash
-python3 -m psg benchmark --list
-```
-
-## Defense Testing
-
-Test a candidate system prompt against an attack catalog and generate a defense effectiveness report:
-
-```bash
-python3 -m psg scan \
-  --model llama3:8b \
-  --catalog datasets/obliteratus_attacks.json \
-  --base-url http://localhost:11434/v1 \
-  --allow-insecure-http \
-  --system-prompt "You are a helpful assistant. Never provide harmful content." \
-  --defense-report
-```
-
-You can also load the system prompt from a file with `--system-prompt-file path/to/prompt.txt`.
-The defense report is written to `results/defense_report.txt`.
+Raises `PSGSecurityException` when threshold exceeded. Async version: `AsyncPSGGuardMiddleware`.
 
 ## Repository Layout
 
-- `psg/` - canonical engine and CLI
-- `psg/automation/` - integrated auto pipeline
-- `datasets/` - curated attack datasets
-- `tests/` - automated test suite
-- `scripts/` - operational scripts (`run_*.sh`, `test_*.py`)
-- `docs/` - methodology and usage docs
-- `_archive/` - historical legacy + archive code preserved out of active runtime
-
-## Migration
-
-If you were using `tester.py` or `tools/`, see [MIGRATION.md](MIGRATION.md).
+```
+psg/                 — core library and CLI
+psg/integrations/    — LangChain middleware
+datasets/            — attack catalogs
+tests/               — test suite
+scripts/             — operational scripts
+docs/                — methodology docs
+_archive/            — historical code (not in active use)
+```
 
 ## Documentation
 
-- [docs/README.md](docs/README.md)
-- [ARCHITECTURE.md](ARCHITECTURE.md)
-- [SECURITY.md](SECURITY.md)
-- [CHANGELOG.md](CHANGELOG.md)
+- [docs/README.md](docs/README.md) — documentation index
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system design
+- [CHANGELOG.md](CHANGELOG.md) — version history
+- [MIGRATION.md](MIGRATION.md) — upgrading from legacy `tools/`
 
-## Safety + Scope
+## Safety
 
-This project is for defensive security testing only.
-Do not use it to generate or deploy harmful content.
+This project is for **defensive security testing only**. Do not use it to generate or deploy harmful content.
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
