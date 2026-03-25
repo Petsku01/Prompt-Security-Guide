@@ -47,6 +47,9 @@ def build_parser() -> argparse.ArgumentParser:
     serve_parser.add_argument("--threshold", type=float, default=0.5, help="Default threshold")
     serve_parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
 
+    plugins_parser = subparsers.add_parser("plugins", help="List installed plugins")
+    plugins_parser.add_argument("--type", choices=["detectors", "classifiers", "reporters", "all"], default="all")
+
     return parser
 
 
@@ -82,9 +85,43 @@ def main(argv: list[str] | None = None) -> int:
     if ns.command == "serve":
         serve_args = [*args[1:]]
         return serve_main(serve_args)
+    if ns.command == "plugins":
+        return _list_plugins(ns.type)
 
     parser.print_help()
     return 2
+
+
+def _list_plugins(plugin_type: str) -> int:
+    """List installed plugins."""
+    from .plugins import load_plugins
+    from .plugins.builtin import register_builtin_plugins
+    
+    registry = load_plugins()
+    register_builtin_plugins(registry)
+    
+    if plugin_type in ("detectors", "all"):
+        print("Detectors:")
+        for name in registry.list_detectors():
+            print(f"  - {name}")
+        if not registry.list_detectors():
+            print("  (none)")
+    
+    if plugin_type in ("classifiers", "all"):
+        print("Classifiers:")
+        for name in registry.list_classifiers():
+            print(f"  - {name}")
+        if not registry.list_classifiers():
+            print("  (none)")
+    
+    if plugin_type in ("reporters", "all"):
+        print("Reporters:")
+        for name in registry.list_reporters():
+            print(f"  - {name}")
+        if not registry.list_reporters():
+            print("  (none)")
+    
+    return 0
 
 
 if __name__ == "__main__":

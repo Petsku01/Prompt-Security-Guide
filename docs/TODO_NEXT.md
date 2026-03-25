@@ -61,8 +61,8 @@ psg benchmark --list
 ## Viikon sisällä
 
 - [x] `psg serve` - FastAPI runtime screening endpoint ✅ DONE
-- [ ] Plugin interfaces (`entry_points`)
-- [ ] HTML dashboard report
+- [x] Plugin interfaces (`entry_points`) ✅ DONE
+- [x] HTML dashboard report ✅ DONE
 
 ## Resurssit
 

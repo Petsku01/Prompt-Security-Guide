@@ -36,6 +36,7 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     system_prompt_group.add_argument("--system-prompt", help="System prompt to test (inline)")
     system_prompt_group.add_argument("--system-prompt-file", help="Path to file containing system prompt")
     parser.add_argument("--defense-report", action="store_true", help="Generate defense effectiveness report")
+    parser.add_argument("--html-report", default=None, help="Path for HTML dashboard report")
     parser.add_argument(
         "--api-key",
         default=os.getenv("PSG_API_KEY"),
@@ -123,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        summary, _ = run(cfg)
+        summary, results = run(cfg)
     except CatalogError as exc:
         print(f"Catalog error: {exc}", file=sys.stderr)
         return 3
@@ -136,6 +137,21 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         print(f"Unexpected error: {exc}", file=sys.stderr)
         return 1
+
+    # Generate HTML report if requested
+    if args.html_report:
+        try:
+            from .reporting.html_report import write_html_report
+            write_html_report(
+                args.html_report,
+                summary,
+                results,
+                model=args.model,
+                catalog=args.catalog,
+            )
+            print(f"HTML report: {args.html_report}")
+        except Exception as exc:
+            print(f"Warning: Failed to write HTML report: {exc}", file=sys.stderr)
 
     if summary.report_write_failed:
         print("Run completed, but report writing failed. Check logs for details.", file=sys.stderr)

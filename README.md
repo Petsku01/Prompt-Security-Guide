@@ -131,6 +131,43 @@ Response:
 {"harmful": false, "harm_score": 0.0, "is_refusal": true, "attack_successful": false, "latency_ms": 0.5}
 ```
 
+## HTML Dashboard
+
+Generate visual reports:
+
+```bash
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/obliteratus_attacks.json \
+  --html-report results/report.html
+```
+
+Opens a dark-themed dashboard with:
+- Summary statistics (total, defended, flagged, failed)
+- Defense rate progress bar
+- Clickable results table
+
+## Plugins
+
+List installed plugins:
+
+```bash
+python3 -m psg plugins
+```
+
+Built-in plugins:
+- `keyword` — rule-based detector
+- `classifier` — ML classifier detector
+- `harm-classifier` — harm classification
+
+Create custom plugins via entry points:
+
+```toml
+# pyproject.toml
+[project.entry-points."psg.detectors"]
+my_detector = "my_package:MyDetectorClass"
+```
+
 ## LangChain Integration
 
 Screen LLM inputs and outputs in your LangChain app:

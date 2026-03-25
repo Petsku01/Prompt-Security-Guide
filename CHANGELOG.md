@@ -7,6 +7,18 @@
 - Endpoints: `/screen`, `/screen/bulk`, `/health`, `/metrics`
 - Optional dependencies: `pip install -e ".[serve]"`
 
+### Plugin System
+- Added plugin architecture with entry points
+- Detector plugins: `psg.detectors`
+- Classifier plugins: `psg.classifiers`
+- Reporter plugins: `psg.reporters`
+- CLI: `psg plugins` to list installed plugins
+
+### HTML Dashboard
+- Added HTML report generation: `psg scan --html-report report.html`
+- Dark theme dashboard with statistics, defense rate, and results table
+- XSS-safe template with proper escaping
+
 ### Integrations
 - Added LangChain middleware integration in `psg/integrations/langchain.py`:
   - `PSGGuardMiddleware`
