@@ -93,6 +93,11 @@ PRESETS: dict[str, dict] = {
         "description": "Research-validated attacks targeting OpenAI models (30 attacks)",
         "catalogs": ["datasets/profiles/chatgpt_attacks.json"],
     },
+    "claude": {
+        "name": "Claude/Anthropic-specific",
+        "description": "Research-validated attacks targeting Anthropic Claude models (30 attacks)",
+        "catalogs": ["datasets/profiles/claude_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
