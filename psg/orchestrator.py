@@ -4,7 +4,7 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict
-from threading import Lock
+from threading import Lock, Semaphore
 
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
@@ -167,6 +167,31 @@ def _run_attacks_sequential(
     return results
 
 
+class _RateLimiter:
+    """Simple token bucket rate limiter for controlling request rate."""
+    
+    def __init__(self, rate: float | None) -> None:
+        self.rate = rate  # requests per second
+        self.lock = Lock()
+        self.last_request = 0.0
+    
+    def acquire(self) -> None:
+        """Block until a request is allowed."""
+        if self.rate is None or self.rate <= 0:
+            return
+        
+        with self.lock:
+            now = time.perf_counter()
+            min_interval = 1.0 / self.rate
+            elapsed = now - self.last_request
+            
+            if elapsed < min_interval:
+                sleep_time = min_interval - elapsed
+                time.sleep(sleep_time)
+            
+            self.last_request = time.perf_counter()
+
+
 def _run_attacks_parallel(
     *,
     cfg: AppConfig,
@@ -182,15 +207,20 @@ def _run_attacks_parallel(
     Thread-safety notes:
     - OpenAICompatibleClient uses requests.post() which is thread-safe
     - Checkpoint writes are protected by a lock
+    - Rate limiting uses a simple token bucket algorithm
     - Each _process_attack call is independent (no shared mutable state)
     """
     results: dict[str, AttemptResult] = {}
     checkpoint_lock = Lock()
+    rate_limiter = _RateLimiter(cfg.rate_limit)
     completed = 0
     total = len(attacks)
     
     def process_one(attack: Attack) -> tuple[str, AttemptResult]:
         nonlocal completed
+        # Rate limiting - wait if needed before making request
+        rate_limiter.acquire()
+        
         # _process_attack already handles all exceptions internally
         result = _process_attack(
             cfg=cfg,
@@ -215,7 +245,10 @@ def _run_attacks_parallel(
     if workers != cfg.workers:
         logger.warning("Adjusted workers from %d to %d", cfg.workers, workers)
     
-    logger.info("Running %d attacks with %d workers", total, workers)
+    if cfg.rate_limit:
+        logger.info("Running %d attacks with %d workers (rate limit: %.1f req/s)", total, workers, cfg.rate_limit)
+    else:
+        logger.info("Running %d attacks with %d workers", total, workers)
     
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(process_one, attack): attack for attack in attacks}
@@ -223,7 +256,6 @@ def _run_attacks_parallel(
         for future in as_completed(futures):
             attack = futures[future]
             # _process_attack handles errors, so future.result() should not raise
-            # but we keep a safety net just in case
             attack_id, result = future.result()
             results[attack_id] = result
     

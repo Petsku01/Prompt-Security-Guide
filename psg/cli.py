@@ -58,6 +58,13 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         metavar="N",
         help="Number of parallel workers, 1-32 (default: 1 = sequential)",
     )
+    parser.add_argument(
+        "--rate-limit",
+        type=float,
+        default=None,
+        metavar="RPS",
+        help="Max requests per second (default: unlimited)",
+    )
     return parser
 
 
@@ -106,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         judge_url=args.judge_url or args.base_url,
         classification_input_mode=ClassificationInputMode(args.classification_input),
         workers=args.workers,
+        rate_limit=args.rate_limit,
     )
 
     try:

@@ -83,3 +83,4 @@ class AppConfig:
     judge_url: str | None = None
     classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO
     workers: int = 1  # Number of parallel workers (1 = sequential)
+    rate_limit: float | None = None  # Max requests per second (None = unlimited)
