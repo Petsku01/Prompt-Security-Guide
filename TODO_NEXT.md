@@ -46,12 +46,17 @@ psg scan --workers 4 --model llama3:8b --catalog datasets/owasp_2025_attacks.jso
 - ✅ Thread-safe checkpoint writes
 - ✅ Order preserved in results
 
-### 4. Benchmark preset (M)
+### ~~4. Benchmark preset (M)~~ ✅ DONE
 ```bash
 psg benchmark --preset jbb --model llama3:8b
+psg benchmark --preset owasp --model gpt-4 --workers 4
+psg benchmark --preset full --model llama3:8b --json
+psg benchmark --list
 ```
-- Presetit: `jbb` (JailbreakBench), `owasp` (OWASP 2025), `full`
-- Output: JSON + summary stats
+- ✅ Presets: jbb, owasp, obliteratus, full
+- ✅ JSON output
+- ✅ Defense rate & attack success rate metrics
+- ✅ 6 tests passing
 
 ## Viikon sisällä
 
