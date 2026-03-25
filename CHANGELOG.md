@@ -1,5 +1,27 @@
 # Changelog
 
+## 4.1.0 - 2026-03-25
+
+### Integrations
+- Added LangChain middleware integration in `psg/integrations/langchain.py`:
+  - `PSGGuardMiddleware`
+  - `AsyncPSGGuardMiddleware`
+- Added input and output screening support in LangChain callback flow.
+
+### Evaluation and CI
+- Added classifier evaluation CLI: `psg eval`.
+- Added golden-dataset evaluation flow with regression gating:
+  - `psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85`
+
+### Scan performance
+- Added parallel scan execution with `--workers`.
+- Added rate control for scans with `--rate-limit`.
+
+### Benchmarking
+- Added preset benchmark runner: `psg benchmark`.
+- Added benchmark presets: `jbb`, `owasp`, `obliteratus`, `full`.
+- Example: `psg benchmark --preset jbb --model llama3:8b`
+
 ## 4.0.0 - 2026-03-23
 
 ### Major updates
