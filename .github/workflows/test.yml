@@ -45,16 +45,6 @@ jobs:
           pip install mypy types-requests
           mypy psg/ --ignore-missing-imports
 
-      - name: Evaluate classifier
+      - name: Evaluate classifier (regression gate)
         run: |
-          python -m psg.security.evaluate --golden datasets/classifier_golden.json --out /tmp/classifier_eval.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          report = json.loads(Path('/tmp/classifier_eval.json').read_text(encoding='utf-8'))
-          macro_f1 = float(report.get('macro_f1', 0.0))
-          print(f"macro_f1={macro_f1:.3f}")
-          if macro_f1 < 0.85:
-              raise SystemExit(f"Classifier macro F1 below threshold: {macro_f1:.3f} < 0.85")
-          PY
+          python -m psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85

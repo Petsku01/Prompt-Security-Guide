@@ -5,6 +5,7 @@ import sys
 
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments, main as cli_main
+from .eval import main as eval_main
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -13,6 +14,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     scan_parser = subparsers.add_parser("scan", help="Run prompt security scan")
     add_scan_arguments(scan_parser)
+
+    eval_parser = subparsers.add_parser("eval", help="Evaluate classifier against golden dataset")
+    eval_parser.add_argument("--golden", required=True, help="Path to golden dataset JSON")
+    eval_parser.add_argument("--threshold", type=float, default=0.5, help="Classification threshold")
+    eval_parser.add_argument("--fail-on-macro-f1-below", type=float, metavar="SCORE", help="Fail if F1 < threshold")
+    eval_parser.add_argument("--json", action="store_true", help="Output as JSON")
 
     catalog_parser = subparsers.add_parser("catalog", help="Catalog utilities")
     catalog_subparsers = catalog_parser.add_subparsers(dest="catalog_command")
@@ -36,6 +43,9 @@ def main(argv: list[str] | None = None) -> int:
     if ns.command == "scan":
         scan_args = [*args[1:]]
         return cli_main(scan_args)
+    if ns.command == "eval":
+        eval_args = [*args[1:]]
+        return eval_main(eval_args)
     if ns.command == "catalog" and ns.catalog_command == "validate":
         return catalog_validate_main(["--path", ns.path])
 
