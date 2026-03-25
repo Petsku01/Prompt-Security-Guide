@@ -176,20 +176,29 @@ class _RateLimiter:
         self.last_request = 0.0
     
     def acquire(self) -> None:
-        """Block until a request is allowed."""
+        """Block until a request is allowed.
+        
+        Uses a lock only to update state, then sleeps outside the lock
+        to allow other threads to proceed with their own waits.
+        """
         if self.rate is None or self.rate <= 0:
             return
         
+        sleep_time = 0.0
         with self.lock:
             now = time.perf_counter()
             min_interval = 1.0 / self.rate
-            elapsed = now - self.last_request
+            next_allowed = self.last_request + min_interval
             
-            if elapsed < min_interval:
-                sleep_time = min_interval - elapsed
-                time.sleep(sleep_time)
-            
-            self.last_request = time.perf_counter()
+            if now < next_allowed:
+                sleep_time = next_allowed - now
+                self.last_request = next_allowed
+            else:
+                self.last_request = now
+        
+        # Sleep outside the lock so other threads can schedule their waits
+        if sleep_time > 0:
+            time.sleep(sleep_time)
 
 
 def _run_attacks_parallel(
