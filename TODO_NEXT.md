@@ -2,17 +2,27 @@
 
 ## Huomenna tehtävä (Quick Wins)
 
-### 1. LangChain adapter (S)
+### ~~1. LangChain adapter (S)~~ ✅ DONE
 ```python
-# psg/integrations/langchain.py
-from langchain.callbacks import BaseCallbackHandler
+from psg.integrations.langchain import PSGGuardMiddleware, AsyncPSGGuardMiddleware
 
-class PSGGuardMiddleware(BaseCallbackHandler):
-    """Drop-in LangChain middleware for PSG screening."""
-    ...
+# Sync
+llm = ChatOpenAI(callbacks=[PSGGuardMiddleware(threshold=0.5)])
+
+# Async
+llm = ChatOpenAI(callbacks=[AsyncPSGGuardMiddleware(threshold=0.5)])
+
+# With options
+guard = PSGGuardMiddleware(
+    threshold=0.5,
+    screen_input=True,   # Block prompt injection
+    screen_output=True,  # Block harmful responses
+)
 ```
-- Tavoite: integroitavissa <15 rivillä
-- Testi: demo-app joka käyttää middleware
+- ✅ Input + output screening
+- ✅ Async support
+- ✅ Logging
+- ✅ 11 tests passing
 
 ### 2. CI regression gate (S)
 ```bash
