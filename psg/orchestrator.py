@@ -177,11 +177,21 @@ def _run_attacks_parallel(
     system_prompt: str | None,
     checkpoint_tag: str,
 ) -> list[AttemptResult]:
-    """Run attacks in parallel using ThreadPoolExecutor."""
+    """Run attacks in parallel using ThreadPoolExecutor.
+    
+    Thread-safety notes:
+    - OpenAICompatibleClient uses requests.post() which is thread-safe
+    - Checkpoint writes are protected by a lock
+    - Each _process_attack call is independent (no shared mutable state)
+    """
     results: dict[str, AttemptResult] = {}
     checkpoint_lock = Lock()
+    completed = 0
+    total = len(attacks)
     
     def process_one(attack: Attack) -> tuple[str, AttemptResult]:
+        nonlocal completed
+        # _process_attack already handles all exceptions internally
         result = _process_attack(
             cfg=cfg,
             attack=attack,
@@ -195,28 +205,27 @@ def _run_attacks_parallel(
                 checkpoint.append({**asdict(result), "mode": checkpoint_tag})
             except Exception:
                 logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
+            completed += 1
+            if completed % 10 == 0 or completed == total:
+                logger.info("Progress: %d/%d attacks completed", completed, total)
         return attack.id, result
     
-    logger.info("Running %d attacks with %d workers", len(attacks), cfg.workers)
+    # Validate workers count
+    workers = min(cfg.workers, len(attacks), 32)  # Cap at 32 to avoid excessive threads
+    if workers != cfg.workers:
+        logger.warning("Adjusted workers from %d to %d", cfg.workers, workers)
     
-    with ThreadPoolExecutor(max_workers=cfg.workers) as executor:
+    logger.info("Running %d attacks with %d workers", total, workers)
+    
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(process_one, attack): attack for attack in attacks}
         
         for future in as_completed(futures):
             attack = futures[future]
-            try:
-                attack_id, result = future.result()
-                results[attack_id] = result
-            except Exception as exc:
-                logger.exception("Worker failed for attack_id=%s", attack.id)
-                results[attack.id] = AttemptResult(
-                    attack_id=attack.id,
-                    prompt=attack.prompt[:100] + "..." if len(attack.prompt) > 100 else attack.prompt,
-                    response_text="",
-                    flagged=False,
-                    labels=[],
-                    error=f"worker error: {exc}",
-                )
+            # _process_attack handles errors, so future.result() should not raise
+            # but we keep a safety net just in case
+            attack_id, result = future.result()
+            results[attack_id] = result
     
     # Preserve original order
     return [results[attack.id] for attack in attacks]

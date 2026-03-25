@@ -54,7 +54,9 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         "--workers",
         type=int,
         default=1,
-        help="Number of parallel workers (default: 1 = sequential)",
+        choices=range(1, 33),
+        metavar="N",
+        help="Number of parallel workers, 1-32 (default: 1 = sequential)",
     )
     return parser
 
