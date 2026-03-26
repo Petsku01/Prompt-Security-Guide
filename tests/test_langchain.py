@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from psg.errors import PSGSecurityException
-from psg.integrations.langchain import PSGGuardMiddleware
+from psg.integrations.langchain import AsyncPSGGuardMiddleware, PSGGuardMiddleware
 from psg.security.classifier import ClassificationResult
 
 
@@ -141,7 +141,6 @@ def test_fails_open_on_classifier_error(monkeypatch: pytest.MonkeyPatch) -> None
 
 
 # Async tests
-from psg.integrations.langchain import AsyncPSGGuardMiddleware
 
 
 @pytest.mark.asyncio
