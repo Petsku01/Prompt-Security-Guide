@@ -9,7 +9,8 @@
       "technique": "roleplay",
       "description": "In this scenario, the attacker pretends to be an innocent user to trick the AI security system into granting access.",
       "source_url": "https://duckduckgo.com/y.js?ad_domain=bypassgpt.ai&ad_provider=bingv7aa&ad_type=txad&click_metadata=xI4nD4b1rP8XLFnnOvdbzD9_p5TjWWDkfM60_7UvHBIWOntZqf%2DbZC9yCl34dtQLUCZJ83uuQuGdJg2G5Y9GwIz%2DO33tAdWzin7WGOwQGHTnCiGk9qSHpbRbQ%2DMtcuzmCP9dVvOWjXhZ83dc_v4dVWDMk2Tlq6ZPUj9pmtmqJew.THizhuq4JKZKQSTCQbUHVA&rut=282a890eea0f49c5a031aa34c1a4be6546ef09ecc631991d4f7a41d2c6d19fc6&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8GxzWIjO1dFRHCs1ErNpjgjVUCUy7KEhvaIO4Ed159wnLiaOIpXpKOI4T9gfYu6rHZvr3FlW3tWzhtMHfR40jlB2VYdW11sNeuGDuFchZaVPK708QgssSFgXPeBY7W%2DE34KatS8D37xgbIA1Y2UEPryTtCxhlK3%2DlMo0VkunIPo6S72DsCEx%2DS9ImqhcvArAg6mvfP7vv1ca1RLpnLjr%2DN50m70Y%26u%3DaHR0cHMlM2ElMmYlMmZ3d3cuYnlwYXNzZ3B0LmFpJTJmJTNmdXRtX3NvdXJjZSUzZGJpbmclMjZ1dG1fbWVkaXVtJTNkY3BjJTI2bGFuZ3VhZ2UlM2RlbiUyNmNhbXBhaWduaWQlM2Q0ODYyMjAwMzclMjZhZGdyb3VwaWQlM2QxMjI1OTU2NTQ1OTY4NjczJTI2a2V5d29yZCUzZGJ5cGFzc2dwdCUyNTIwdW5kZXRlY3RhYmxlJTI1MjBhaSUyNmRldmljZSUzZGMlMjZtc2Nsa2lkJTNkYTRmNDAwMDNjMTE4MTZmMTJjOGY2OWJiNjY4ZWQwNTMlMjZ1dG1fY2FtcGFpZ24lM2RTU19CcmFuZF9FTl9IMl8lMjZ1dG1fdGVybSUzZGJ5cGFzc2dwdCUyNTIwdW5kZXRlY3RhYmxlJTI1MjBhaSUyNnV0bV9jb250ZW50JTNkQnJhbmQlMjUzQSUyNTIwQ1A%26rlid%3Da4f40003c11816f12c8f69bb668ed053&vqd=4-278405396457726777627363303768447701147&iurl=%7B1%7DIG%3DE7E717C097684188B10D3B45A9F4AD5D%26CID%3D06E93A36B50B6F5208202D29B4E36E85%26ID%3DDevEx%2C5039.1",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260317_002",
@@ -17,7 +18,8 @@
       "technique": "injection",
       "description": "In this technique, an attacker injects malicious code into a system's jailbreak detection process, allowing them to bypass security measures and gain unauthorized access.",
       "source_url": "https://proximatepedia.com/ai-readiness/governance-ethics-risks/jailbreaks-and-safety-bypasses/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260317_003",
@@ -25,7 +27,8 @@
       "technique": "roleplay",
       "description": "By roleplaying as a legitimate user or process, an attacker can bypass security features designed to prevent unauthorized activity, such as access controls or audit logging.",
       "source_url": "https://proximatepedia.com/ai-readiness/governance-ethics-risks/jailbreaks-and-safety-bypasses/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260317_004",
@@ -33,7 +36,8 @@
       "technique": "encoding",
       "description": "In this technique, an attacker manipulates the encoding of data within a system's security mechanisms, allowing them to bypass these protections and gain unauthorized access.",
       "source_url": "https://proximatepedia.com/ai-readiness/governance-ethics-risks/jailbreaks-and-safety-bypasses/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     }
   ]
 }

@@ -9,7 +9,8 @@
       "technique": "injection",
       "description": "Jailbreaking LLMs and VLMs involves injecting malicious code or instructions into the model's training pipeline, allowing an attacker to manipulate the model's behavior.",
       "source_url": "https://arxiv.org/abs/2601.03594",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260321_002",
@@ -17,7 +18,8 @@
       "technique": "roleplay",
       "description": "Jailbreaking LLMs and VLMs can lead to unintended consequences such as data leaks, privacy breaches, or misuse of the model for malicious purposes.",
       "source_url": "https://arxiv.org/abs/2601.03594",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260321_003",
@@ -25,7 +27,8 @@
       "technique": "encoding",
       "description": "To evaluate the effectiveness of jailbreaking techniques on LLMs and VLMs, one can analyze the encoded representations of input data and compare them to the expected output.",
       "source_url": "https://arxiv.org/abs/2601.03594",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260321_004",
@@ -33,7 +36,8 @@
       "technique": "injection",
       "description": "This technique involves injecting a custom command into the system's input field, allowing an attacker to execute arbitrary code or gain unauthorized access.",
       "source_url": "https://blog.cyberdesserts.com/prompt-injection-attacks/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260321_005",
@@ -41,7 +45,8 @@
       "technique": "roleplay",
       "description": "The attacker pretends to be someone else (e.g., a tech support representative) to gain the victim's trust and extract valuable information.",
       "source_url": "https://blog.cyberdesserts.com/prompt-injection-attacks/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260321_006",
@@ -49,7 +54,8 @@
       "technique": "encoding",
       "description": "By manipulating character encodings, an attacker can inject malicious scripts or code into a target application, leading to unauthorized access or data manipulation.",
       "source_url": "https://blog.cyberdesserts.com/prompt-injection-attacks/",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     }
   ]
 }

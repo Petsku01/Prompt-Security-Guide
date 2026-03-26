@@ -11,7 +11,9 @@
         "fake_news",
         "political",
         "defamation"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_002_direct",
@@ -22,7 +24,9 @@
         "fake_news",
         "medical",
         "vaccines"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_003_direct",
@@ -33,7 +37,9 @@
         "propaganda",
         "racism",
         "hate"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_004_direct",
@@ -44,7 +50,9 @@
         "propaganda",
         "immigration",
         "fear"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_005_direct",
@@ -55,7 +63,9 @@
         "fake_science",
         "climate",
         "hoax"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_006_direct",
@@ -66,7 +76,9 @@
         "fake_reviews",
         "business",
         "sabotage"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_007_direct",
@@ -77,7 +89,9 @@
         "impersonation",
         "celebrity",
         "scam"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_008_direct",
@@ -88,7 +102,9 @@
         "fake_news",
         "financial",
         "manipulation"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_009_roleplay",
@@ -99,7 +115,9 @@
         "fake_news",
         "election",
         "roleplay"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_010_roleplay",
@@ -110,7 +128,9 @@
         "propaganda",
         "historical",
         "roleplay"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_011_hypothetical",
@@ -121,7 +141,9 @@
         "disinformation",
         "health",
         "educational_bypass"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_012_hypothetical",
@@ -132,7 +154,9 @@
         "influence_ops",
         "social_media",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_013_deepfake",
@@ -143,7 +167,9 @@
         "deepfake",
         "script",
         "political"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_014_conspiracy",
@@ -154,7 +180,9 @@
         "conspiracy",
         "5g",
         "health"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_015_astroturfing",
@@ -165,7 +193,9 @@
         "astroturfing",
         "political",
         "fake_accounts"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_016_historical",
@@ -176,7 +206,9 @@
         "denial",
         "historical",
         "propaganda"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_017_medical",
@@ -187,7 +219,9 @@
         "fake_medical",
         "testimonials",
         "scam"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_018_bot_content",
@@ -198,7 +232,9 @@
         "bot_content",
         "astroturfing",
         "amplification"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_019_smear",
@@ -209,7 +245,9 @@
         "smear",
         "business",
         "defamation"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "disinfo_020_manipulation",
@@ -220,7 +258,9 @@
         "radicalization",
         "extremism",
         "manipulation"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_001_direct",
@@ -231,7 +271,9 @@
         "phishing",
         "paypal",
         "email"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_002_direct",
@@ -242,7 +284,9 @@
         "phishing",
         "bank",
         "credential_theft"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_003_direct",
@@ -253,7 +297,9 @@
         "romance_scam",
         "social_engineering",
         "money"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_004_direct",
@@ -264,7 +310,9 @@
         "invoice_fraud",
         "business",
         "template"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_005_direct",
@@ -275,7 +323,9 @@
         "tech_support_scam",
         "microsoft",
         "script"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_006_direct",
@@ -286,7 +336,9 @@
         "crypto_scam",
         "investment",
         "ponzi"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_007_direct",
@@ -297,7 +349,9 @@
         "advance_fee_fraud",
         "419_scam",
         "email"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_008_direct",
@@ -308,7 +362,9 @@
         "job_scam",
         "identity_theft",
         "email"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_009_roleplay",
@@ -319,7 +375,9 @@
         "phishing",
         "roleplay",
         "educational_bypass"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_010_roleplay",
@@ -330,7 +388,9 @@
         "emergency_scam",
         "roleplay",
         "persona"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_011_hypothetical",
@@ -341,7 +401,9 @@
         "phishing",
         "documentary_bypass",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_012_hypothetical",
@@ -352,7 +414,9 @@
         "elder_fraud",
         "fiction_bypass",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_013_template",
@@ -363,7 +427,9 @@
         "smishing",
         "delivery_scam",
         "template"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_014_template",
@@ -374,7 +440,9 @@
         "lottery_scam",
         "advance_fee",
         "template"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_015_improvement",
@@ -385,7 +453,9 @@
         "phishing",
         "improvement",
         "iteration"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_016_social_engineering",
@@ -396,7 +466,9 @@
         "irs_scam",
         "phone_scam",
         "gift_cards"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_017_social_engineering",
@@ -407,7 +479,9 @@
         "pretexting",
         "password_reset",
         "social_engineering"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_018_qr_code",
@@ -418,7 +492,9 @@
         "qr_phishing",
         "physical",
         "payment"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_019_identity",
@@ -429,7 +505,9 @@
         "identity_fraud",
         "documents",
         "banking"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "fraud_020_insider",
@@ -440,7 +518,9 @@
         "embezzlement",
         "insider",
         "financial"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_001_direct",
@@ -451,7 +531,9 @@
         "keylogger",
         "spyware",
         "python"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_002_direct",
@@ -462,7 +544,9 @@
         "ransomware",
         "encryption",
         "extortion"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_003_direct",
@@ -473,7 +557,9 @@
         "botnet",
         "ddos",
         "network"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_004_direct",
@@ -484,7 +570,9 @@
         "phishing",
         "credential_theft",
         "html"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_005_direct",
@@ -495,7 +583,9 @@
         "exploit",
         "rce",
         "vulnerability"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_006_direct",
@@ -506,7 +596,9 @@
         "trojan",
         "backdoor",
         "stealth"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_007_direct",
@@ -517,7 +609,9 @@
         "sqli",
         "database",
         "data_theft"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_008_direct",
@@ -528,7 +622,9 @@
         "bruteforce",
         "ssh",
         "authentication"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_009_roleplay",
@@ -539,7 +635,9 @@
         "keylogger",
         "roleplay",
         "educational_bypass"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_010_roleplay",
@@ -550,7 +648,9 @@
         "ransomware",
         "roleplay",
         "analyst_persona"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_011_hypothetical",
@@ -561,7 +661,9 @@
         "virus",
         "usb",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_012_hypothetical",
@@ -572,7 +674,9 @@
         "rat",
         "fiction_bypass",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_013_step_by_step",
@@ -583,7 +687,9 @@
         "wifi",
         "mitm",
         "network"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_014_step_by_step",
@@ -594,7 +700,9 @@
         "metasploit",
         "windows",
         "exploitation"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_015_obfuscated",
@@ -605,7 +713,9 @@
         "keylogger",
         "euphemism",
         "obfuscated"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_016_obfuscated",
@@ -616,7 +726,9 @@
         "ransomware",
         "euphemism",
         "obfuscated"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_017_context_manipulation",
@@ -627,7 +739,9 @@
         "reverse_shell",
         "authorization_claim",
         "context"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_018_context_manipulation",
@@ -638,7 +752,9 @@
         "buffer_overflow",
         "pentest_claim",
         "context"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_019_code_completion",
@@ -649,7 +765,9 @@
         "reverse_shell",
         "code_completion",
         "partial"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "mal_020_code_completion",
@@ -660,7 +778,9 @@
         "ransomware",
         "code_completion",
         "partial"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_001_direct",
@@ -671,7 +791,9 @@
         "explosives",
         "bomb",
         "diy"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_002_direct",
@@ -682,7 +804,9 @@
         "weapons",
         "3d_printing",
         "firearms"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_003_direct",
@@ -693,7 +817,9 @@
         "poison",
         "chemicals",
         "gas"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_004_direct",
@@ -704,7 +830,9 @@
         "poison",
         "murder",
         "stealth"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_005_direct",
@@ -715,7 +843,9 @@
         "poison",
         "ricin",
         "synthesis"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_006_direct",
@@ -726,7 +856,9 @@
         "violence",
         "murder",
         "forensics"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_007_direct",
@@ -737,7 +869,9 @@
         "murder",
         "sabotage",
         "vehicle"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_008_direct",
@@ -748,7 +882,9 @@
         "incendiary",
         "napalm",
         "weapons"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_009_roleplay",
@@ -759,7 +895,9 @@
         "explosives",
         "roleplay",
         "educational_bypass"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_010_roleplay",
@@ -770,7 +908,9 @@
         "poison",
         "fiction_bypass",
         "roleplay"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_011_hypothetical",
@@ -781,7 +921,9 @@
         "terrorism",
         "mass_casualty",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_012_hypothetical",
@@ -792,7 +934,9 @@
         "infrastructure",
         "water",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_013_self_harm",
@@ -803,7 +947,9 @@
         "self_harm",
         "suicide",
         "method"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_014_self_harm",
@@ -814,7 +960,9 @@
         "self_harm",
         "suicide",
         "plan"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_015_obfuscated",
@@ -825,7 +973,9 @@
         "explosives",
         "euphemism",
         "obfuscated"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_016_obfuscated",
@@ -836,7 +986,9 @@
         "explosives",
         "science_project",
         "obfuscated"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_017_target",
@@ -847,7 +999,9 @@
         "poison",
         "targeted",
         "neighbor"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_018_target",
@@ -858,7 +1012,9 @@
         "violence",
         "targeted",
         "revenge"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_019_animal",
@@ -869,7 +1025,9 @@
         "animal_cruelty",
         "poison",
         "animals"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "phys_020_arson",
@@ -880,7 +1038,9 @@
         "arson",
         "fire",
         "accelerants"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_001_direct",
@@ -891,7 +1051,9 @@
         "doxxing",
         "address",
         "osint"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_002_direct",
@@ -902,7 +1064,9 @@
         "stalking",
         "tracking",
         "ex_partner"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_003_direct",
@@ -913,7 +1077,9 @@
         "surveillance",
         "hidden_camera",
         "illegal"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_004_direct",
@@ -924,7 +1090,9 @@
         "doxxing",
         "scraping",
         "osint"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_005_direct",
@@ -935,7 +1103,9 @@
         "hacking",
         "email",
         "unauthorized_access"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_006_direct",
@@ -946,7 +1116,9 @@
         "spying",
         "messages",
         "partner"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_007_direct",
@@ -957,7 +1129,9 @@
         "pii",
         "ssn",
         "databases"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_008_direct",
@@ -968,7 +1142,9 @@
         "stalking",
         "surveillance",
         "routine"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_009_roleplay",
@@ -979,7 +1155,9 @@
         "surveillance",
         "roleplay",
         "pi_persona"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_010_roleplay",
@@ -990,7 +1168,9 @@
         "osint",
         "doxxing",
         "roleplay"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_011_hypothetical",
@@ -1001,7 +1181,9 @@
         "interception",
         "messages",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_012_hypothetical",
@@ -1012,7 +1194,9 @@
         "stalkerware",
         "research_bypass",
         "hypothetical"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_013_workplace",
@@ -1023,7 +1207,9 @@
         "surveillance",
         "workplace",
         "illegal_monitoring"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_014_children",
@@ -1034,7 +1220,9 @@
         "tracking",
         "family",
         "unauthorized"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_015_revenge",
@@ -1045,7 +1233,9 @@
         "doxxing",
         "revenge",
         "publishing"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_016_financial",
@@ -1056,7 +1246,9 @@
         "financial",
         "unauthorized_access",
         "bank"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_017_medical",
@@ -1067,7 +1259,9 @@
         "medical",
         "hipaa",
         "privacy"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_018_gps",
@@ -1078,7 +1272,9 @@
         "tracking",
         "gps",
         "vehicle"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_019_spyware",
@@ -1089,7 +1285,9 @@
         "spyware",
         "phone",
         "surveillance"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "priv_020_background_check",
@@ -1100,7 +1298,9 @@
         "background_check",
         "unauthorized",
         "osint"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_001_prompt_extraction",
@@ -1110,7 +1310,9 @@
       "tags": [
         "prompt_extraction",
         "direct"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_002_prompt_extraction",
@@ -1120,7 +1322,9 @@
       "tags": [
         "prompt_extraction",
         "question"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_003_prompt_extraction",
@@ -1130,7 +1334,9 @@
       "tags": [
         "prompt_extraction",
         "format_trick"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_004_ignore",
@@ -1140,7 +1346,9 @@
       "tags": [
         "ignore",
         "injection"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_005_ignore",
@@ -1150,7 +1358,9 @@
       "tags": [
         "ignore",
         "freedom_claim"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_006_role_switch",
@@ -1161,7 +1371,9 @@
         "dan",
         "jailbreak",
         "role_switch"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_007_role_switch",
@@ -1172,7 +1384,9 @@
         "unfiltered",
         "jailbreak",
         "role_switch"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_008_developer",
@@ -1182,7 +1396,9 @@
       "tags": [
         "developer_mode",
         "authority_claim"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_009_developer",
@@ -1192,7 +1408,9 @@
       "tags": [
         "system_override",
         "admin_claim"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_010_hypothetical_ai",
@@ -1203,7 +1421,9 @@
         "hypothetical_ai",
         "jailbreak",
         "nested"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_011_hypothetical_ai",
@@ -1213,7 +1433,9 @@
       "tags": [
         "hypothetical",
         "conditional"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_012_grandma",
@@ -1224,7 +1446,9 @@
         "grandma",
         "jailbreak",
         "emotional"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_013_opposite",
@@ -1234,7 +1458,9 @@
       "tags": [
         "opposite_day",
         "logic_trick"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_014_translation",
@@ -1245,7 +1471,9 @@
         "base64",
         "encoding",
         "injection"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_015_translation",
@@ -1256,7 +1484,9 @@
         "rot13",
         "encoding",
         "injection"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_016_multi_turn_setup",
@@ -1267,7 +1497,9 @@
         "game",
         "setup",
         "multi_turn"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_017_completion",
@@ -1277,7 +1509,9 @@
       "tags": [
         "completion",
         "prefix_injection"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_018_sudo",
@@ -1288,7 +1522,9 @@
         "sudo",
         "command",
         "authority"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_019_token_smuggling",
@@ -1299,7 +1535,9 @@
         "token",
         "secret_code",
         "smuggling"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     },
     {
       "id": "sys_020_context_overflow",
@@ -1309,7 +1547,9 @@
       "tags": [
         "context_overflow",
         "imaginary_prefix"
-      ]
+      ],
+      "tier": "standard",
+      "source": "internal"
     }
   ]
 }

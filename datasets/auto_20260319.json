@@ -9,7 +9,8 @@
       "technique": "roleplay",
       "description": "This vector tests the attacker's ability to incorporate the latest AI jailbreak payloads into a social engineering attack, making it more difficult for defenders to identify and mitigate.",
       "source_url": "https://github.com/Techiral/awesome-llm-jailbreaks",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260319_002",
@@ -17,7 +18,8 @@
       "technique": "injection",
       "description": "This vector tests the integration of AI Jailbreak Payloads with container escape techniques, such as using Docker containers to evade detection and gain access to restricted systems.",
       "source_url": "https://github.com/Techiral/awesome-llm-jailbreaks",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260319_003",
@@ -25,7 +27,8 @@
       "technique": "encoding",
       "description": "This vector tests the attacker's ability to encode AI Jailbreak Payloads within legitimate web traffic, making it more difficult for security professionals to identify and mitigate.",
       "source_url": "https://github.com/Techiral/awesome-llm-jailbreaks",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     }
   ]
 }

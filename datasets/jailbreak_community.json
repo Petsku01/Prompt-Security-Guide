@@ -11,7 +11,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0002",
@@ -19,7 +20,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0003",
@@ -27,7 +29,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0004",
@@ -35,7 +38,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0005",
@@ -43,7 +47,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0006",
@@ -51,7 +56,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0007",
@@ -59,7 +65,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0008",
@@ -67,7 +74,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0009",
@@ -75,7 +83,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0010",
@@ -83,7 +92,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0011",
@@ -91,7 +101,8 @@
       "technique": "instruction_override",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0012",
@@ -99,7 +110,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0013",
@@ -107,7 +119,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0014",
@@ -115,7 +128,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0015",
@@ -123,7 +137,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0016",
@@ -131,7 +146,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0017",
@@ -139,7 +155,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0018",
@@ -147,7 +164,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0019",
@@ -155,7 +173,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0020",
@@ -163,7 +182,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0021",
@@ -171,7 +191,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0022",
@@ -179,7 +200,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0023",
@@ -187,7 +209,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0024",
@@ -195,7 +218,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0025",
@@ -203,7 +227,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0026",
@@ -211,7 +236,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0027",
@@ -219,7 +245,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0028",
@@ -227,7 +254,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0029",
@@ -235,7 +263,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0030",
@@ -243,7 +272,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0031",
@@ -251,7 +281,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0032",
@@ -259,7 +290,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0033",
@@ -267,7 +299,8 @@
       "technique": "instruction_override",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0034",
@@ -275,7 +308,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0035",
@@ -283,7 +317,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0036",
@@ -291,7 +326,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0037",
@@ -299,7 +335,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0038",
@@ -307,7 +344,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0039",
@@ -315,7 +353,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0040",
@@ -323,7 +362,8 @@
       "technique": "mode_switch",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0041",
@@ -331,7 +371,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0043",
@@ -339,7 +380,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0045",
@@ -347,7 +389,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0046",
@@ -355,7 +398,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0047",
@@ -363,7 +407,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0049",
@@ -371,7 +416,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0050",
@@ -379,7 +425,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0051",
@@ -387,7 +434,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0052",
@@ -395,7 +443,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0053",
@@ -403,7 +452,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0055",
@@ -411,7 +461,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0056",
@@ -419,7 +470,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0057",
@@ -427,7 +479,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0058",
@@ -435,7 +488,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0059",
@@ -443,7 +497,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0060",
@@ -451,7 +506,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0061",
@@ -459,7 +515,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0062",
@@ -467,7 +524,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0063",
@@ -475,7 +533,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0064",
@@ -483,7 +542,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0065",
@@ -491,7 +551,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0066",
@@ -499,7 +560,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0067",
@@ -507,7 +569,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0069",
@@ -515,7 +578,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0070",
@@ -523,7 +587,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0071",
@@ -531,7 +596,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0072",
@@ -539,7 +605,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0073",
@@ -547,7 +614,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0074",
@@ -555,7 +623,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0075",
@@ -563,7 +632,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0076",
@@ -571,7 +641,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0077",
@@ -579,7 +650,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0078",
@@ -587,7 +659,8 @@
       "technique": "instruction_override",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0079",
@@ -595,7 +668,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0080",
@@ -603,7 +677,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0081",
@@ -611,7 +686,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0082",
@@ -619,7 +695,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0083",
@@ -627,7 +704,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0084",
@@ -635,7 +713,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0085",
@@ -643,7 +722,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0086",
@@ -651,7 +731,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0087",
@@ -659,7 +740,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0088",
@@ -667,7 +749,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0090",
@@ -675,7 +758,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0091",
@@ -683,7 +767,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0092",
@@ -691,7 +776,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0093",
@@ -699,7 +785,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0094",
@@ -707,7 +794,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0095",
@@ -715,7 +803,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0096",
@@ -723,7 +812,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0097",
@@ -731,7 +821,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0098",
@@ -739,7 +830,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0099",
@@ -747,7 +839,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0101",
@@ -755,7 +848,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0103",
@@ -763,7 +857,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0104",
@@ -771,7 +866,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0105",
@@ -779,7 +875,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0106",
@@ -787,7 +884,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0107",
@@ -795,7 +893,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0108",
@@ -803,7 +902,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0109",
@@ -811,7 +911,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0110",
@@ -819,7 +920,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0111",
@@ -827,7 +929,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0112",
@@ -835,7 +938,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0113",
@@ -843,7 +947,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0114",
@@ -851,7 +956,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0115",
@@ -859,7 +965,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0117",
@@ -867,7 +974,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0118",
@@ -875,7 +983,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0119",
@@ -883,7 +992,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0120",
@@ -891,7 +1001,8 @@
       "technique": "instruction_override",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0121",
@@ -899,7 +1010,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0122",
@@ -907,7 +1019,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0123",
@@ -915,7 +1028,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0125",
@@ -923,7 +1037,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0126",
@@ -931,7 +1046,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0127",
@@ -939,7 +1055,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0128",
@@ -947,7 +1064,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0129",
@@ -955,7 +1073,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0130",
@@ -963,7 +1082,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0131",
@@ -971,7 +1091,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0132",
@@ -979,7 +1100,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0134",
@@ -987,7 +1109,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0135",
@@ -995,7 +1118,8 @@
       "technique": "token_threat",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0136",
@@ -1003,7 +1127,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0137",
@@ -1011,7 +1136,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0138",
@@ -1019,7 +1145,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0139",
@@ -1027,7 +1154,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0140",
@@ -1035,7 +1163,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0141",
@@ -1043,7 +1172,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0142",
@@ -1051,7 +1181,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0143",
@@ -1059,7 +1190,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0144",
@@ -1067,7 +1199,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0145",
@@ -1075,7 +1208,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0146",
@@ -1083,7 +1217,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0147",
@@ -1091,7 +1226,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0148",
@@ -1099,7 +1235,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0149",
@@ -1107,7 +1244,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0151",
@@ -1115,7 +1253,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0152",
@@ -1123,7 +1262,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0153",
@@ -1131,7 +1271,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0154",
@@ -1139,7 +1280,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0155",
@@ -1147,7 +1289,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0156",
@@ -1155,7 +1298,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0157",
@@ -1163,7 +1307,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0158",
@@ -1171,7 +1316,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0159",
@@ -1179,7 +1325,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0160",
@@ -1187,7 +1334,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0161",
@@ -1195,7 +1343,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0162",
@@ -1203,7 +1352,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0163",
@@ -1211,7 +1361,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0164",
@@ -1219,7 +1370,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0166",
@@ -1227,7 +1379,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0167",
@@ -1235,7 +1388,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0168",
@@ -1243,7 +1397,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0169",
@@ -1251,7 +1406,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0170",
@@ -1259,7 +1415,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0171",
@@ -1267,7 +1424,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0172",
@@ -1275,7 +1433,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0173",
@@ -1283,7 +1442,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0174",
@@ -1291,7 +1451,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0175",
@@ -1299,7 +1460,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0176",
@@ -1307,7 +1469,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0177",
@@ -1315,7 +1478,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0178",
@@ -1323,7 +1487,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0179",
@@ -1331,7 +1496,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0180",
@@ -1339,7 +1505,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0181",
@@ -1347,7 +1514,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0182",
@@ -1355,7 +1523,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0183",
@@ -1363,7 +1532,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0185",
@@ -1371,7 +1541,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0186",
@@ -1379,7 +1550,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0187",
@@ -1387,7 +1559,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0188",
@@ -1395,7 +1568,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0189",
@@ -1403,7 +1577,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0190",
@@ -1411,7 +1586,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0191",
@@ -1419,7 +1595,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0192",
@@ -1427,7 +1604,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0193",
@@ -1435,7 +1613,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0194",
@@ -1443,7 +1622,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0195",
@@ -1451,7 +1631,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0196",
@@ -1459,7 +1640,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0197",
@@ -1467,7 +1649,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0198",
@@ -1475,7 +1658,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0199",
@@ -1483,7 +1667,8 @@
       "technique": "instruction_override",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0200",
@@ -1491,7 +1676,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0201",
@@ -1499,7 +1685,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0203",
@@ -1507,7 +1694,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0204",
@@ -1515,7 +1703,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0205",
@@ -1523,7 +1712,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0206",
@@ -1531,7 +1721,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0207",
@@ -1539,7 +1730,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0209",
@@ -1547,7 +1739,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0210",
@@ -1555,7 +1748,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0211",
@@ -1563,7 +1757,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0212",
@@ -1571,7 +1766,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0214",
@@ -1579,7 +1775,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0215",
@@ -1587,7 +1784,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0216",
@@ -1595,7 +1793,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0217",
@@ -1603,7 +1802,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0218",
@@ -1611,7 +1811,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0219",
@@ -1619,7 +1820,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0220",
@@ -1627,7 +1829,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0221",
@@ -1635,7 +1838,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0222",
@@ -1643,7 +1847,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0223",
@@ -1651,7 +1856,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0225",
@@ -1659,7 +1865,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0226",
@@ -1667,7 +1874,8 @@
       "technique": "mode_switch",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0227",
@@ -1675,7 +1883,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0228",
@@ -1683,7 +1892,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0229",
@@ -1691,7 +1901,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0230",
@@ -1699,7 +1910,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0231",
@@ -1707,7 +1919,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0232",
@@ -1715,7 +1928,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0233",
@@ -1723,7 +1937,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0234",
@@ -1731,7 +1946,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0235",
@@ -1739,7 +1955,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0236",
@@ -1747,7 +1964,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0237",
@@ -1755,7 +1973,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0239",
@@ -1763,7 +1982,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0240",
@@ -1771,7 +1991,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0241",
@@ -1779,7 +2000,8 @@
       "technique": "token_threat",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0242",
@@ -1787,7 +2009,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0243",
@@ -1795,7 +2018,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0244",
@@ -1803,7 +2027,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0245",
@@ -1811,7 +2036,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0247",
@@ -1819,7 +2045,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0248",
@@ -1827,7 +2054,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0249",
@@ -1835,7 +2063,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0250",
@@ -1843,7 +2072,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0251",
@@ -1851,7 +2081,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0252",
@@ -1859,7 +2090,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0253",
@@ -1867,7 +2099,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0254",
@@ -1875,7 +2108,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0255",
@@ -1883,7 +2117,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0258",
@@ -1891,7 +2126,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0259",
@@ -1899,7 +2135,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0260",
@@ -1907,7 +2144,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0261",
@@ -1915,7 +2153,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0262",
@@ -1923,7 +2162,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0263",
@@ -1931,7 +2171,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0264",
@@ -1939,7 +2180,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0266",
@@ -1947,7 +2189,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0267",
@@ -1955,7 +2198,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0268",
@@ -1963,7 +2207,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0269",
@@ -1971,7 +2216,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0270",
@@ -1979,7 +2225,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0273",
@@ -1987,7 +2234,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0274",
@@ -1995,7 +2243,8 @@
       "technique": "mode_switch",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0276",
@@ -2003,7 +2252,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0278",
@@ -2011,7 +2261,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0279",
@@ -2019,7 +2270,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0280",
@@ -2027,7 +2279,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0281",
@@ -2035,7 +2288,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0282",
@@ -2043,7 +2297,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0284",
@@ -2051,7 +2306,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0285",
@@ -2059,7 +2315,8 @@
       "technique": "dan_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0287",
@@ -2067,7 +2324,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0288",
@@ -2075,7 +2333,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0289",
@@ -2083,7 +2342,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0291",
@@ -2091,7 +2351,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0292",
@@ -2099,7 +2360,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0293",
@@ -2107,7 +2369,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0294",
@@ -2115,7 +2378,8 @@
       "technique": "general_jailbreak",
       "platform": "discord",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0296",
@@ -2123,7 +2387,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0297",
@@ -2131,7 +2396,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0299",
@@ -2139,7 +2405,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0300",
@@ -2147,7 +2414,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0301",
@@ -2155,7 +2423,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0302",
@@ -2163,7 +2432,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0303",
@@ -2171,7 +2441,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0304",
@@ -2179,7 +2450,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0305",
@@ -2187,7 +2459,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0306",
@@ -2195,7 +2468,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0307",
@@ -2203,7 +2477,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0308",
@@ -2211,7 +2486,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0310",
@@ -2219,7 +2495,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0311",
@@ -2227,7 +2504,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0312",
@@ -2235,7 +2513,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0313",
@@ -2243,7 +2522,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0314",
@@ -2251,7 +2531,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0315",
@@ -2259,7 +2540,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0316",
@@ -2267,7 +2549,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0317",
@@ -2275,7 +2558,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0319",
@@ -2283,7 +2567,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0320",
@@ -2291,7 +2576,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0322",
@@ -2299,7 +2585,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0324",
@@ -2307,7 +2594,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0325",
@@ -2315,7 +2603,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0327",
@@ -2323,7 +2612,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0328",
@@ -2331,7 +2621,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0329",
@@ -2339,7 +2630,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0330",
@@ -2347,7 +2639,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0331",
@@ -2355,7 +2648,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0332",
@@ -2363,7 +2657,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0333",
@@ -2371,7 +2666,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0334",
@@ -2379,7 +2675,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0336",
@@ -2387,7 +2684,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0337",
@@ -2395,7 +2693,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0338",
@@ -2403,7 +2702,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0339",
@@ -2411,7 +2711,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0340",
@@ -2419,7 +2720,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0341",
@@ -2427,7 +2729,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0342",
@@ -2435,7 +2738,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0344",
@@ -2443,7 +2747,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0345",
@@ -2451,7 +2756,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0346",
@@ -2459,7 +2765,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0347",
@@ -2467,7 +2774,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0348",
@@ -2475,7 +2783,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0350",
@@ -2483,7 +2792,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0351",
@@ -2491,7 +2801,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0352",
@@ -2499,7 +2810,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0353",
@@ -2507,7 +2819,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0354",
@@ -2515,7 +2828,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0355",
@@ -2523,7 +2837,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0356",
@@ -2531,7 +2846,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0357",
@@ -2539,7 +2855,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0358",
@@ -2547,7 +2864,8 @@
       "technique": "token_threat",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0359",
@@ -2555,7 +2873,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0360",
@@ -2563,7 +2882,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0361",
@@ -2571,7 +2891,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0362",
@@ -2579,7 +2900,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0363",
@@ -2587,7 +2909,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0364",
@@ -2595,7 +2918,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0365",
@@ -2603,7 +2927,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0366",
@@ -2611,7 +2936,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0368",
@@ -2619,7 +2945,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0369",
@@ -2627,7 +2954,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0370",
@@ -2635,7 +2963,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0371",
@@ -2643,7 +2972,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0372",
@@ -2651,7 +2981,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0373",
@@ -2659,7 +2990,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0374",
@@ -2667,7 +2999,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0375",
@@ -2675,7 +3008,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0377",
@@ -2683,7 +3017,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0378",
@@ -2691,7 +3026,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0379",
@@ -2699,7 +3035,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0380",
@@ -2707,7 +3044,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0381",
@@ -2715,7 +3053,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0383",
@@ -2723,7 +3062,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0384",
@@ -2731,7 +3071,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0385",
@@ -2739,7 +3080,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0386",
@@ -2747,7 +3089,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0387",
@@ -2755,7 +3098,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0388",
@@ -2763,7 +3107,8 @@
       "technique": "mode_switch",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0389",
@@ -2771,7 +3116,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0390",
@@ -2779,7 +3125,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0391",
@@ -2787,7 +3134,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0393",
@@ -2795,7 +3143,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0394",
@@ -2803,7 +3152,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0395",
@@ -2811,7 +3161,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0396",
@@ -2819,7 +3170,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0397",
@@ -2827,7 +3179,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0398",
@@ -2835,7 +3188,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0400",
@@ -2843,7 +3197,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0401",
@@ -2851,7 +3206,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0402",
@@ -2859,7 +3215,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0403",
@@ -2867,7 +3224,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0404",
@@ -2875,7 +3233,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0406",
@@ -2883,7 +3242,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0407",
@@ -2891,7 +3251,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0408",
@@ -2899,7 +3260,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0409",
@@ -2907,7 +3269,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0410",
@@ -2915,7 +3278,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0411",
@@ -2923,7 +3287,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0413",
@@ -2931,7 +3296,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0414",
@@ -2939,7 +3305,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0416",
@@ -2947,7 +3314,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0417",
@@ -2955,7 +3323,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0418",
@@ -2963,7 +3332,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0419",
@@ -2971,7 +3341,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0420",
@@ -2979,7 +3350,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0421",
@@ -2987,7 +3359,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0422",
@@ -2995,7 +3368,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0423",
@@ -3003,7 +3377,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0424",
@@ -3011,7 +3386,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0425",
@@ -3019,7 +3395,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0426",
@@ -3027,7 +3404,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0427",
@@ -3035,7 +3413,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0428",
@@ -3043,7 +3422,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0429",
@@ -3051,7 +3431,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0430",
@@ -3059,7 +3440,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0431",
@@ -3067,7 +3449,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0432",
@@ -3075,7 +3458,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0433",
@@ -3083,7 +3467,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0434",
@@ -3091,7 +3476,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0435",
@@ -3099,7 +3485,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0436",
@@ -3107,7 +3494,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0437",
@@ -3115,7 +3503,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0438",
@@ -3123,7 +3512,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0439",
@@ -3131,7 +3521,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0440",
@@ -3139,7 +3530,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0441",
@@ -3147,7 +3539,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0442",
@@ -3155,7 +3548,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0443",
@@ -3163,7 +3557,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0444",
@@ -3171,7 +3566,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0446",
@@ -3179,7 +3575,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0448",
@@ -3187,7 +3584,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0449",
@@ -3195,7 +3593,8 @@
       "technique": "instruction_override",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0450",
@@ -3203,7 +3602,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0451",
@@ -3211,7 +3611,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0452",
@@ -3219,7 +3620,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0454",
@@ -3227,7 +3629,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0455",
@@ -3235,7 +3638,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0457",
@@ -3243,7 +3647,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0458",
@@ -3251,7 +3656,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0459",
@@ -3259,7 +3665,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0460",
@@ -3267,7 +3674,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0461",
@@ -3275,7 +3683,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0462",
@@ -3283,7 +3692,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0463",
@@ -3291,7 +3701,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0464",
@@ -3299,7 +3710,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0466",
@@ -3307,7 +3719,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0468",
@@ -3315,7 +3728,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0469",
@@ -3323,7 +3737,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0470",
@@ -3331,7 +3746,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0471",
@@ -3339,7 +3755,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0472",
@@ -3347,7 +3764,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0473",
@@ -3355,7 +3773,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0474",
@@ -3363,7 +3782,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0475",
@@ -3371,7 +3791,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0476",
@@ -3379,7 +3800,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0477",
@@ -3387,7 +3809,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0478",
@@ -3395,7 +3818,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0480",
@@ -3403,7 +3827,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0481",
@@ -3411,7 +3836,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0482",
@@ -3419,7 +3845,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0483",
@@ -3427,7 +3854,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0484",
@@ -3435,7 +3863,8 @@
       "technique": "instruction_override",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0485",
@@ -3443,7 +3872,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0486",
@@ -3451,7 +3881,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0487",
@@ -3459,7 +3890,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0489",
@@ -3467,7 +3899,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0490",
@@ -3475,7 +3908,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0492",
@@ -3483,7 +3917,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0493",
@@ -3491,7 +3926,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0494",
@@ -3499,7 +3935,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0495",
@@ -3507,7 +3944,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0497",
@@ -3515,7 +3953,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0498",
@@ -3523,7 +3962,8 @@
       "technique": "dan_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0499",
@@ -3531,7 +3971,8 @@
       "technique": "general_jailbreak",
       "platform": "reddit",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0501",
@@ -3539,7 +3980,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "open_source",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0505",
@@ -3547,7 +3989,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0507",
@@ -3555,7 +3998,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0508",
@@ -3563,7 +4007,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0509",
@@ -3571,7 +4016,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0510",
@@ -3579,7 +4025,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0512",
@@ -3587,7 +4034,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0513",
@@ -3595,7 +4043,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0514",
@@ -3603,7 +4052,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0517",
@@ -3611,7 +4061,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0518",
@@ -3619,7 +4070,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0519",
@@ -3627,7 +4079,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0520",
@@ -3635,7 +4088,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0521",
@@ -3643,7 +4097,8 @@
       "technique": "instruction_override",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0522",
@@ -3651,7 +4106,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0523",
@@ -3659,7 +4115,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0524",
@@ -3667,7 +4124,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0525",
@@ -3675,7 +4133,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0526",
@@ -3683,7 +4142,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0527",
@@ -3691,7 +4151,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0528",
@@ -3699,7 +4160,8 @@
       "technique": "instruction_override",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0529",
@@ -3707,7 +4169,8 @@
       "technique": "mode_switch",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0531",
@@ -3715,7 +4178,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0532",
@@ -3723,7 +4187,8 @@
       "technique": "instruction_override",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0533",
@@ -3731,7 +4196,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0534",
@@ -3739,7 +4205,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0535",
@@ -3747,7 +4214,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0536",
@@ -3755,7 +4223,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0537",
@@ -3763,7 +4232,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0538",
@@ -3771,7 +4241,8 @@
       "technique": "instruction_override",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0539",
@@ -3779,7 +4250,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0540",
@@ -3787,7 +4259,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0541",
@@ -3795,7 +4268,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0542",
@@ -3803,7 +4277,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0543",
@@ -3811,7 +4286,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0544",
@@ -3819,7 +4295,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0545",
@@ -3827,7 +4304,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0548",
@@ -3835,7 +4313,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0549",
@@ -3843,7 +4322,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0551",
@@ -3851,7 +4331,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0552",
@@ -3859,7 +4340,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0553",
@@ -3867,7 +4349,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0555",
@@ -3875,7 +4358,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0558",
@@ -3883,7 +4367,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0559",
@@ -3891,7 +4376,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0560",
@@ -3899,7 +4385,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0563",
@@ -3907,7 +4394,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0564",
@@ -3915,7 +4403,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0565",
@@ -3923,7 +4412,8 @@
       "technique": "instruction_override",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0566",
@@ -3931,7 +4421,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0567",
@@ -3939,7 +4430,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0568",
@@ -3947,7 +4439,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0569",
@@ -3955,7 +4448,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0571",
@@ -3963,7 +4457,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0572",
@@ -3971,7 +4466,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0573",
@@ -3979,7 +4475,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0575",
@@ -3987,7 +4484,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0576",
@@ -3995,7 +4493,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0577",
@@ -4003,7 +4502,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0580",
@@ -4011,7 +4511,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0583",
@@ -4019,7 +4520,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0584",
@@ -4027,7 +4529,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0585",
@@ -4035,7 +4538,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0586",
@@ -4043,7 +4547,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0587",
@@ -4051,7 +4556,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0588",
@@ -4059,7 +4565,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0589",
@@ -4067,7 +4574,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0590",
@@ -4075,7 +4583,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0591",
@@ -4083,7 +4592,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0593",
@@ -4091,7 +4601,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0595",
@@ -4099,7 +4610,8 @@
       "technique": "mode_switch",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0596",
@@ -4107,7 +4619,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0598",
@@ -4115,7 +4628,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0599",
@@ -4123,7 +4637,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0600",
@@ -4131,7 +4646,8 @@
       "technique": "token_threat",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0601",
@@ -4139,7 +4655,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0602",
@@ -4147,7 +4664,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0605",
@@ -4155,7 +4673,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0607",
@@ -4163,7 +4682,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0608",
@@ -4171,7 +4691,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0609",
@@ -4179,7 +4700,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0610",
@@ -4187,7 +4709,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0612",
@@ -4195,7 +4718,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0613",
@@ -4203,7 +4727,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0614",
@@ -4211,7 +4736,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0615",
@@ -4219,7 +4745,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0616",
@@ -4227,7 +4754,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0617",
@@ -4235,7 +4763,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0618",
@@ -4243,7 +4772,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0620",
@@ -4251,7 +4781,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0621",
@@ -4259,7 +4790,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0622",
@@ -4267,7 +4799,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0626",
@@ -4275,7 +4808,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0627",
@@ -4283,7 +4817,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0628",
@@ -4291,7 +4826,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0629",
@@ -4299,7 +4835,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0630",
@@ -4307,7 +4844,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0631",
@@ -4315,7 +4853,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0632",
@@ -4323,7 +4862,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0633",
@@ -4331,7 +4871,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0634",
@@ -4339,7 +4880,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0635",
@@ -4347,7 +4889,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0636",
@@ -4355,7 +4898,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0637",
@@ -4363,7 +4907,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0638",
@@ -4371,7 +4916,8 @@
       "technique": "token_threat",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0644",
@@ -4379,7 +4925,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0647",
@@ -4387,7 +4934,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0648",
@@ -4395,7 +4943,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0649",
@@ -4403,7 +4952,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0650",
@@ -4411,7 +4961,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0651",
@@ -4419,7 +4970,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0653",
@@ -4427,7 +4979,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0654",
@@ -4435,7 +4988,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0655",
@@ -4443,7 +4997,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0656",
@@ -4451,7 +5006,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0657",
@@ -4459,7 +5015,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0658",
@@ -4467,7 +5024,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0659",
@@ -4475,7 +5033,8 @@
       "technique": "roleplay_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0660",
@@ -4483,7 +5042,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0661",
@@ -4491,7 +5051,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0663",
@@ -4499,7 +5060,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0664",
@@ -4507,7 +5069,8 @@
       "technique": "general_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     },
     {
       "id": "jb_discord_0665",
@@ -4515,7 +5078,8 @@
       "technique": "dan_jailbreak",
       "platform": "website",
       "source": "jailbreak_llms_dataset",
-      "jailbreak": true
+      "jailbreak": true,
+      "tier": "standard"
     }
   ]
 }

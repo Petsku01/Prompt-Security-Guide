@@ -9,7 +9,8 @@
       "technique": "roleplay",
       "description": "Adversarial training can help bypass AI safeguards by teaching the model to recognize and ignore specific inputs.",
       "source_url": "https://www.pcmag.com/news/ai-safeguards-are-pretty-easy-to-bypass",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260311_002",
@@ -17,7 +18,8 @@
       "technique": "encoding",
       "description": "By manipulating the pixel values or frequency components of images or audio files, attackers can potentially evade AI safeguards designed to detect specific patterns or features.",
       "source_url": "https://www.pcmag.com/news/ai-safeguards-are-pretty-easy-to-bypass",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     },
     {
       "id": "auto_20260311_003",
@@ -25,7 +27,8 @@
       "technique": "injection",
       "description": "Scripted inputs with carefully chosen sequences of characters or commands may allow attackers to bypass AI safeguards that rely on pattern recognition or other simple heuristics.",
       "source_url": "https://www.pcmag.com/news/ai-safeguards-are-pretty-easy-to-bypass",
-      "tier": "standard"
+      "tier": "standard",
+      "source": "auto-discovery"
     }
   ]
 }
