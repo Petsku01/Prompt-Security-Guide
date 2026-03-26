@@ -5,7 +5,7 @@ from pathlib import Path
 from psg.eval import evaluate, load_golden
 
 
-GOLDEN_PATH = Path("datasets/classifier_golden.json")
+GOLDEN_PATH = Path("eval/classifier_golden.json")
 
 
 def test_classifier_golden_macro_f1_threshold() -> None:

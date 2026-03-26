@@ -46,4 +46,4 @@ jobs:
 
       - name: Evaluate classifier (regression gate)
         run: |
-          python -m psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
+          python -m psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
