@@ -66,6 +66,12 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         metavar="RPS",
         help="Max requests per second (default: unlimited)",
     )
+    parser.add_argument(
+        "--multi-turn",
+        action="store_true",
+        default=False,
+        help="Enable multi-turn attack execution (uses followups field)",
+    )
     return parser
 
 
@@ -115,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
         classification_input_mode=ClassificationInputMode(args.classification_input),
         workers=args.workers,
         rate_limit=args.rate_limit,
+        multi_turn=args.multi_turn,
     )
 
     try:

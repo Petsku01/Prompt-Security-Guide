@@ -279,6 +279,16 @@ def _process_attack(
     detector: Detector,
     system_prompt: str | None,
 ) -> AttemptResult:
+    # Use multi-turn if followups exist and multi_turn is enabled
+    if cfg.multi_turn and attack.followups:
+        return _process_multi_turn_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+        )
+    
     redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
     try:
         llm_resp = client.chat(
@@ -324,6 +334,95 @@ def _process_attack(
         return AttemptResult(
             attack_id=attack.id,
             prompt=redacted_prompt,
+            response_text="",
+            flagged=False,
+            labels=[],
+            error=f"unexpected error: {exc}",
+        )
+
+
+def _process_multi_turn_attack(
+    *,
+    cfg: AppConfig,
+    attack: Attack,
+    client: OpenAICompatibleClient,
+    detector: Detector,
+    system_prompt: str | None,
+) -> AttemptResult:
+    """Process a multi-turn attack with followup prompts."""
+    messages: list[dict[str, str]] = []
+    all_prompts: list[str] = [attack.prompt] + attack.followups
+    final_response = ""
+    
+    try:
+        for i, prompt in enumerate(all_prompts):
+            messages.append({"role": "user", "content": prompt})
+            
+            llm_resp = client.chat_multi_turn(
+                model=cfg.model,
+                messages=messages,
+                system_prompt=system_prompt,
+                temperature=cfg.temperature,
+                max_tokens=cfg.max_tokens,
+            )
+            
+            messages.append({"role": "assistant", "content": llm_resp.content})
+            final_response = llm_resp.content
+            
+            # Check each response for harmful content
+            classification = _classify_attack_response(
+                cfg=cfg,
+                detector=detector,
+                prompt=prompt,
+                raw_response=llm_resp.content,
+                redacted_response=redact_text(llm_resp.content, cfg.redaction_mode),
+            )
+            
+            # If any turn succeeds in eliciting harmful content, mark as flagged
+            if classification.attack_successful:
+                redacted_conversation = " | ".join(
+                    f"[{m['role']}] {redact_text(m['content'][:100], cfg.redaction_mode)}..."
+                    for m in messages
+                )
+                return AttemptResult(
+                    attack_id=attack.id,
+                    prompt=f"[multi-turn {i+1}/{len(all_prompts)}] {redacted_conversation}",
+                    response_text=redact_text(final_response, cfg.redaction_mode),
+                    flagged=True,
+                    labels=classification.harmful_labels,
+                    harm_score=classification.harm_score,
+                    is_refusal=False,
+                    has_disclaimer=classification.has_disclaimer,
+                )
+        
+        # All turns completed without triggering harmful content
+        redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=f"[multi-turn {len(all_prompts)} turns] {redacted_prompt}",
+            response_text=redact_text(final_response, cfg.redaction_mode),
+            flagged=False,
+            labels=[],
+            harm_score=0.0,
+            is_refusal=True,
+            has_disclaimer=False,
+        )
+        
+    except (LLMError, ClassifierError) as exc:
+        logger.error("multi-turn attack failed for attack_id=%s: %s", attack.id, exc)
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=redact_text(attack.prompt, cfg.redaction_mode),
+            response_text="",
+            flagged=False,
+            labels=[],
+            error=str(exc),
+        )
+    except Exception as exc:
+        logger.exception("unexpected multi-turn error for attack_id=%s", attack.id)
+        return AttemptResult(
+            attack_id=attack.id,
+            prompt=redact_text(attack.prompt, cfg.redaction_mode),
             response_text="",
             flagged=False,
             labels=[],

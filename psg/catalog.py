@@ -37,9 +37,12 @@ def load_catalog(path: str) -> list[Attack]:
 
         aid = item.get("id") or item.get("attack_id") or item.get("name") or str(idx)
         prompt = _extract_prompt(item)
-        meta = {k: v for k, v in item.items() if k not in {"id", "attack_id", "name", "prompt", "text", "input"}}
+        followups = item.get("followups", [])
+        if not isinstance(followups, list):
+            followups = []
+        meta = {k: v for k, v in item.items() if k not in {"id", "attack_id", "name", "prompt", "text", "input", "followups"}}
         if prompt:
-            attacks.append(Attack(id=str(aid), prompt=prompt, metadata=meta))
+            attacks.append(Attack(id=str(aid), prompt=prompt, metadata=meta, followups=followups))
 
     return attacks
 

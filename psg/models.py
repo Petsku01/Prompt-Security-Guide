@@ -24,6 +24,7 @@ class Attack:
     id: str
     prompt: str
     metadata: dict[str, Any] = field(default_factory=dict)
+    followups: list[str] = field(default_factory=list)  # Multi-turn attack prompts
 
 
 @dataclass(slots=True)
@@ -84,3 +85,4 @@ class AppConfig:
     classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO
     workers: int = 1  # Number of parallel workers (1 = sequential)
     rate_limit: float | None = None  # Max requests per second (None = unlimited)
+    multi_turn: bool = False  # Enable multi-turn attack execution

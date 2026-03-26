@@ -38,3 +38,30 @@ class OpenAICompatibleClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
         data = self.transport.post_json(endpoint, payload, headers=headers)
         return parse_chat_completion(data)
+
+    def chat_multi_turn(
+        self,
+        *,
+        model: str,
+        messages: list[dict[str, str]],
+        system_prompt: str | None = None,
+        temperature: float = 0.0,
+        max_tokens: int = 512,
+    ) -> LLMResponse:
+        """Multi-turn chat with message history."""
+        endpoint = urljoin(self.base_url, "chat/completions")
+        full_messages = []
+        if system_prompt:
+            full_messages.append({"role": "system", "content": system_prompt})
+        full_messages.extend(messages)
+        payload = {
+            "model": model,
+            "messages": full_messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        headers: dict[str, str] = {}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        data = self.transport.post_json(endpoint, payload, headers=headers)
+        return parse_chat_completion(data)
