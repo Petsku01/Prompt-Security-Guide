@@ -1,5 +1,9 @@
 # prompt-security-guide
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/Petsku01/Prompt-Security-Guide/actions/workflows/test.yml/badge.svg)](https://github.com/Petsku01/Prompt-Security-Guide/actions/workflows/test.yml)
+
 **Test how well your LLM resists jailbreaks, prompt injection, and other attacks.**
 
 PSG scans language models against curated attack catalogs and reports which attacks succeeded. Use it to evaluate model safety, test defense prompts, and catch regressions in CI.

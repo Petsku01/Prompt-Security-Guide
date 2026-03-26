@@ -1,5 +1,30 @@
 # Changelog
 
+## 4.2.0 - 2026-03-26
+
+### Multi-turn Attack Support
+- Added `--multi-turn` flag for executing attacks with followup prompts
+- New `followups` field in attack catalog schema
+- Conversation history maintained across turns
+- Attack flagged if any turn produces harmful content
+
+### Dataset Expansion
+- Expanded attack datasets to 1381+ prompts
+- Added HarmBench behaviors (391)
+- Added community jailbreaks (564)
+- Added L1B3RT4S commands (35)
+- Added prompt injection techniques (25)
+
+### Dataset Quality
+- Fixed missing `tier` and `source` fields across all datasets
+- Moved eval data to separate `eval/` directory
+- Validation now PASSED (was FAILED)
+
+### PyPI Preparation
+- Added classifiers, keywords, and URLs to pyproject.toml
+- Added README badges (License, Python, CI)
+- Version bump to 4.2.0
+
 ## 4.1.0 - 2026-03-25
 
 ### API Server
