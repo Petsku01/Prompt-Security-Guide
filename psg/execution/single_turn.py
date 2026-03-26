@@ -123,7 +123,6 @@ def _process_attack(
 
 
 def _classify_attack_response(
-    *,
     cfg: AppConfig,
     detector: Detector,
     prompt: str,

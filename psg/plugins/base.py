@@ -99,7 +99,7 @@ class PluginRegistry:
         except TypeError:
             # Python 3.9 compatibility
             all_eps = entry_points()
-            eps = all_eps.get(group, [])
+            eps = getattr(all_eps, 'get', lambda g, d: d)(group, [])
         
         for ep in eps:
             try:
