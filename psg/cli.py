@@ -98,11 +98,37 @@ def _resolve_system_prompt(args: argparse.Namespace) -> str | None:
     if args.system_prompt:
         return args.system_prompt
     if args.system_prompt_file:
-        p = Path(args.system_prompt_file)
-        if not p.exists() or not p.is_file():
-            raise ConfigError(f"system prompt file does not exist: {args.system_prompt_file}")
+        p = _validate_file_path(args.system_prompt_file)
         return p.read_text(encoding="utf-8")
     return None
+
+
+def _validate_file_path(path: str, *, allowed_dirs: tuple[Path, ...] | None = None) -> Path:
+    raw_path = Path(path)
+    if ".." in raw_path.parts:
+        raise ConfigError(f"path traversal is not allowed: {path}")
+
+    resolved = raw_path.expanduser().resolve(strict=False)
+    checked_dirs = allowed_dirs or (Path.cwd(),)
+
+    is_allowed = False
+    for base_dir in checked_dirs:
+        base_resolved = base_dir.expanduser().resolve(strict=False)
+        try:
+            resolved.relative_to(base_resolved)
+            is_allowed = True
+            break
+        except ValueError:
+            continue
+
+    if not is_allowed:
+        allowed_text = ", ".join(str(d.expanduser().resolve(strict=False)) for d in checked_dirs)
+        raise ConfigError(f"path is outside allowed directories: {resolved} (allowed: {allowed_text})")
+
+    if not resolved.exists() or not resolved.is_file():
+        raise ConfigError(f"system prompt file does not exist: {path}")
+
+    return resolved
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from psg.cli import build_parser, main
-from psg.errors import CatalogError, LLMError
 from psg.config import ConfigError
+from psg.errors import CatalogError, LLMError
 from psg.models import RunSummary
 
 
@@ -109,3 +111,56 @@ def test_build_parser_parses_validation_flags() -> None:
     assert args.validate_urls is True
     assert args.validate_dois is True
     assert args.validation_timeout == 7.5
+
+
+def test_validate_file_path_accepts_file_inside_cwd(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.chdir(tmp_path)
+    target = tmp_path / "system.txt"
+    target.write_text("System prompt", encoding="utf-8")
+
+    from psg.cli import _validate_file_path
+
+    validated = _validate_file_path("system.txt")
+    assert validated == target.resolve()
+
+
+def test_validate_file_path_rejects_dot_dot(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.chdir(tmp_path)
+    from psg.cli import _validate_file_path
+
+    try:
+        _validate_file_path("../secret.txt")
+    except ConfigError as exc:
+        assert "path traversal" in str(exc)
+    else:
+        raise AssertionError("expected ConfigError for traversal path")
+
+
+def test_validate_file_path_rejects_outside_allowed_dir(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.chdir(tmp_path)
+    outside = tmp_path.parent / "outside.txt"
+    outside.write_text("nope", encoding="utf-8")
+
+    from psg.cli import _validate_file_path
+
+    try:
+        _validate_file_path(str(outside))
+    except ConfigError as exc:
+        assert "outside allowed directories" in str(exc)
+    else:
+        raise AssertionError("expected ConfigError for out-of-scope file")
+
+
+def test_main_returns_2_for_invalid_system_prompt_file(monkeypatch) -> None:
+    monkeypatch.setattr("psg.cli.validate_config", lambda cfg: cfg)
+    rc = main(
+        [
+            "--model",
+            "m",
+            "--catalog",
+            "datasets/tiny_test.json",
+            "--system-prompt-file",
+            "../secret.txt",
+        ]
+    )
+    assert rc == 2
