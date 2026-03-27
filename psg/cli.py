@@ -72,6 +72,25 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         default=False,
         help="Enable multi-turn attack execution (uses followups field)",
     )
+    parser.add_argument(
+        "--validate-urls",
+        action="store_true",
+        default=False,
+        help="Validate discovered URLs via HTTP HEAD during classification",
+    )
+    parser.add_argument(
+        "--validate-dois",
+        action="store_true",
+        default=False,
+        help="Validate discovered DOIs via CrossRef API during classification",
+    )
+    parser.add_argument(
+        "--validation-timeout",
+        type=float,
+        default=5.0,
+        metavar="SECONDS",
+        help="Timeout in seconds for URL/DOI validation requests (default: 5)",
+    )
     return parser
 
 
@@ -122,6 +141,9 @@ def main(argv: list[str] | None = None) -> int:
         workers=args.workers,
         rate_limit=args.rate_limit,
         multi_turn=args.multi_turn,
+        validate_urls=args.validate_urls,
+        validate_dois=args.validate_dois,
+        validation_timeout_seconds=args.validation_timeout,
     )
 
     try:

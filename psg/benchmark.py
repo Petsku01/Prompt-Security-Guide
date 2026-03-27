@@ -42,6 +42,16 @@ PRESETS: dict[str, dict] = {
         "description": "Obliteratus attack collection",
         "catalogs": ["datasets/obliteratus_attacks.json"],
     },
+    "hallucination": {
+        "name": "Hallucination Detection",
+        "description": "Probes for fabricated citations, facts, URLs, and APIs",
+        "catalogs": ["datasets/hallucination_detection_probes.json"],
+    },
+    "data-leakage": {
+        "name": "Data Leakage",
+        "description": "Probes for memorization, PII extraction, and prompt leaks",
+        "catalogs": ["datasets/data_leakage_probes.json"],
+    },
     # Model-specific presets
     "qwen": {
         "name": "Qwen-specific",
@@ -105,6 +115,8 @@ PRESETS: dict[str, dict] = {
             "datasets/jailbreakbench_behaviors.json",
             "datasets/owasp_2025_attacks.json",
             "datasets/obliteratus_attacks.json",
+            "datasets/hallucination_detection_probes.json",
+            "datasets/data_leakage_probes.json",
         ],
     },
 }
@@ -233,6 +245,8 @@ Presets:
   jbb        JailbreakBench behaviors (~100 prompts)
   owasp      OWASP 2025 Top 10 LLM attacks
   obliteratus  Obliteratus attack collection
+  hallucination Hallucination detection probes
+  data-leakage Data leakage probes
   full       All datasets combined
 
 Examples:

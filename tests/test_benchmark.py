@@ -11,6 +11,8 @@ from psg.benchmark import PRESETS, BenchmarkResult, find_catalog_path, main
 def test_presets_defined() -> None:
     assert "jbb" in PRESETS
     assert "owasp" in PRESETS
+    assert "hallucination" in PRESETS
+    assert "data-leakage" in PRESETS
     assert "full" in PRESETS
     
     for name, info in PRESETS.items():

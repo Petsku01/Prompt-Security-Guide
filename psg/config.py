@@ -33,6 +33,8 @@ def validate_config(cfg: AppConfig) -> AppConfig:
 
     if cfg.timeout_seconds <= 0:
         raise ConfigError("timeout must be > 0")
+    if cfg.validation_timeout_seconds <= 0:
+        raise ConfigError("validation-timeout must be > 0")
     if cfg.max_retries < 0:
         raise ConfigError("max-retries must be >= 0")
     if cfg.detector not in {"keyword", "llm-judge", "ensemble"}:

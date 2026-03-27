@@ -8,8 +8,8 @@ def _base_cfg() -> AppConfig:
     return AppConfig(
         model="llama3:8b",
         catalog_path="datasets/tiny_test.json",
-        base_url="https://example.com/v1",
-        judge_url="https://example.com/v1",
+        base_url="https://8.8.8.8/v1",
+        judge_url="https://8.8.8.8/v1",
     )
 
 

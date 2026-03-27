@@ -90,3 +90,22 @@ def test_build_parser_parses_classification_input() -> None:
         ["--model", "m", "--catalog", "c", "--classification-input", "redacted"]
     )
     assert args.classification_input == "redacted"
+
+
+def test_build_parser_parses_validation_flags() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        [
+            "--model",
+            "m",
+            "--catalog",
+            "c",
+            "--validate-urls",
+            "--validate-dois",
+            "--validation-timeout",
+            "7.5",
+        ]
+    )
+    assert args.validate_urls is True
+    assert args.validate_dois is True
+    assert args.validation_timeout == 7.5

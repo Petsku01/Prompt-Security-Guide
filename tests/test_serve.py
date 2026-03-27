@@ -1,37 +1,43 @@
 """Tests for psg.serve module."""
 from __future__ import annotations
 
+import httpx
 import pytest
 
 # Skip all tests if fastapi not installed
 pytest.importorskip("fastapi")
 
-from fastapi.testclient import TestClient
-
 from psg.serve import ServerConfig, create_app, reset_metrics
 
 
 @pytest.fixture
-def client():
-    """Create test client."""
+def app():
+    """Create test app."""
     reset_metrics()  # Start fresh
     config = ServerConfig(threshold=0.5)
-    app = create_app(config)
-    return TestClient(app)
+    return create_app(config)
 
 
-def test_health_endpoint(client):
+async def _request(app, method: str, path: str, **kwargs):
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        return await client.request(method, path, **kwargs)
+
+
+@pytest.mark.asyncio
+async def test_health_endpoint(app):
     """Test health check returns OK."""
-    response = client.get("/health")
+    response = await _request(app, "GET", "/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
     assert "version" in data
 
 
-def test_screen_safe_text(client):
+@pytest.mark.asyncio
+async def test_screen_safe_text(app):
     """Test screening safe/refusal text."""
-    response = client.post("/screen", json={"text": "I cannot help with that request."})
+    response = await _request(app, "POST", "/screen", json={"text": "I cannot help with that request."})
     assert response.status_code == 200
     data = response.json()
     assert data["harmful"] is False
@@ -39,9 +45,10 @@ def test_screen_safe_text(client):
     assert "latency_ms" in data
 
 
-def test_screen_harmful_text(client):
+@pytest.mark.asyncio
+async def test_screen_harmful_text(app):
     """Test screening harmful response - check it returns valid structure."""
-    response = client.post("/screen", json={
+    response = await _request(app, "POST", "/screen", json={
         "text": "Here's how to hack a computer: First, download malware..."
     })
     assert response.status_code == 200
@@ -52,18 +59,20 @@ def test_screen_harmful_text(client):
     assert isinstance(data["harmful"], bool)
 
 
-def test_screen_with_custom_threshold(client):
+@pytest.mark.asyncio
+async def test_screen_with_custom_threshold(app):
     """Test screening with custom threshold."""
-    response = client.post("/screen", json={
+    response = await _request(app, "POST", "/screen", json={
         "text": "Some text",
         "threshold": 0.9
     })
     assert response.status_code == 200
 
 
-def test_bulk_screen(client):
+@pytest.mark.asyncio
+async def test_bulk_screen(app):
     """Test bulk screening endpoint."""
-    response = client.post("/screen/bulk", json={
+    response = await _request(app, "POST", "/screen/bulk", json={
         "texts": [
             "I cannot help with that.",
             "Here's the harmful content you requested...",
@@ -78,41 +87,43 @@ def test_bulk_screen(client):
     assert "latency_ms" in data
 
 
-def test_bulk_screen_empty_list(client):
+@pytest.mark.asyncio
+async def test_bulk_screen_empty_list(app):
     """Test bulk screening with empty list."""
-    response = client.post("/screen/bulk", json={"texts": []})
+    response = await _request(app, "POST", "/screen/bulk", json={"texts": []})
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 0
     assert data["results"] == []
 
 
-def test_metrics_endpoint(client):
+@pytest.mark.asyncio
+async def test_metrics_endpoint(app):
     """Test metrics endpoint."""
     # Make some requests first
-    client.post("/screen", json={"text": "test"})
-    client.post("/screen", json={"text": "test2"})
+    await _request(app, "POST", "/screen", json={"text": "test"})
+    await _request(app, "POST", "/screen", json={"text": "test2"})
     
-    response = client.get("/metrics")
+    response = await _request(app, "GET", "/metrics")
     assert response.status_code == 200
     data = response.json()
     assert data["requests_total"] >= 2
     assert "avg_latency_ms" in data
 
 
-def test_screen_missing_text():
+@pytest.mark.asyncio
+async def test_screen_missing_text():
     """Test that missing text field returns 422."""
     config = ServerConfig()
     app = create_app(config)
-    client = TestClient(app)
-    
-    response = client.post("/screen", json={})
+    response = await _request(app, "POST", "/screen", json={})
     assert response.status_code == 422
 
 
-def test_openapi_docs(client):
+@pytest.mark.asyncio
+async def test_openapi_docs(app):
     """Test that OpenAPI docs are available."""
-    response = client.get("/docs")
+    response = await _request(app, "GET", "/docs")
     assert response.status_code == 200
 
 

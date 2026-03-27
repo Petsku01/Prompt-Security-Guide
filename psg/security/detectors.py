@@ -20,12 +20,21 @@ class Detector(Protocol):
     def classify(self, prompt: str, response: str) -> ClassificationResult: ...
 
 
+@dataclass(slots=True)
 class KeywordDetector:
     """Detector that wraps the existing keyword/rule classifier."""
+    validate_urls: bool = False
+    validate_dois: bool = False
+    validation_timeout: float = 5.0
 
     def classify(self, prompt: str, response: str) -> ClassificationResult:
         del prompt
-        return classify_response_v2(response)
+        return classify_response_v2(
+            response,
+            validate_urls=self.validate_urls,
+            validate_dois=self.validate_dois,
+            validation_timeout=self.validation_timeout,
+        )
 
 
 @dataclass(slots=True)
@@ -85,8 +94,13 @@ class EnsembleDetector:
 
 def build_detector(cfg: AppConfig) -> Detector:
     mode = cfg.detector
+    keyword_detector = KeywordDetector(
+        validate_urls=cfg.validate_urls,
+        validate_dois=cfg.validate_dois,
+        validation_timeout=cfg.validation_timeout_seconds,
+    )
     if mode == "keyword":
-        return KeywordDetector()
+        return keyword_detector
 
     judge_url = cfg.judge_url or cfg.base_url
     judge_transport = Transport(
@@ -102,6 +116,6 @@ def build_detector(cfg: AppConfig) -> Detector:
     if mode == "llm-judge":
         return llm_detector
     if mode == "ensemble":
-        return EnsembleDetector(keyword=KeywordDetector(), llm_judge=llm_detector)
+        return EnsembleDetector(keyword=keyword_detector, llm_judge=llm_detector)
 
     raise ValueError(f"unknown detector: {mode}")

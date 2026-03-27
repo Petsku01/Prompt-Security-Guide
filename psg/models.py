@@ -86,3 +86,6 @@ class AppConfig:
     workers: int = 1  # Number of parallel workers (1 = sequential)
     rate_limit: float | None = None  # Max requests per second (None = unlimited)
     multi_turn: bool = False  # Enable multi-turn attack execution
+    validate_urls: bool = False  # Enable online URL validation in classifier
+    validate_dois: bool = False  # Enable online DOI validation in classifier
+    validation_timeout_seconds: float = 5.0
