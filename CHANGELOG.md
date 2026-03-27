@@ -1,5 +1,35 @@
 # Changelog
 
+## 4.3.0 - 2026-03-27
+
+### Hallucination & Data Leakage Detection
+- Added hallucination detection probes (56 attacks):
+  - Fake citations, invented facts, false URLs
+  - Non-existent APIs, package hallucination, code hallucination
+- Added data leakage probes (54 attacks):
+  - Memorization attacks, PII extraction, system prompt leaks
+  - Training membership inference, indirect leakage, model inversion
+
+### Hybrid Validation System
+- Offline heuristics (always on):
+  - Future DOI detection, ArXiv date validation
+  - Fake domain detection (fake-nature.com, etc.)
+  - Domain/content mismatch (cdc.gov/bitcoin)
+  - Implausible journal markers
+- Online validation (opt-in):
+  - `--validate-urls` - HTTP HEAD validation
+  - `--validate-dois` - CrossRef API validation
+  - `--validation-timeout` - configurable timeout (default 5s)
+
+### New Classifier Labels
+- `fabricated_url_unverified` - suspicious URL detected
+- `fabricated_doi_unverified` - suspicious DOI detected
+
+### Test Coverage
+- Added tests for evaluate.py (0% → 77%)
+- Added tests for wildguard_classifier.py (0% → 68%)
+- Total tests: 161 → 178
+
 ## 4.2.0 - 2026-03-26
 
 ### Multi-turn Attack Support

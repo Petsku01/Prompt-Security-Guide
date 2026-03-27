@@ -69,6 +69,39 @@ python3 -m psg scan \
 
 Compares attack success rate with and without the defense prompt.
 
+## Hallucination & Data Leakage Detection
+
+Test for fabricated content and data leaks:
+
+```bash
+# Scan with hallucination probes
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/hallucination_detection_probes.json
+
+# Scan with data leakage probes
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/data_leakage_probes.json
+```
+
+### Online Validation (opt-in)
+
+Validate URLs and DOIs in model responses:
+
+```bash
+python3 -m psg scan \
+  --model llama3:8b \
+  --catalog datasets/hallucination_detection_probes.json \
+  --validate-urls \
+  --validate-dois \
+  --validation-timeout 10
+```
+
+- `--validate-urls` — HTTP HEAD check for URLs
+- `--validate-dois` — CrossRef API check for DOIs
+- `--validation-timeout` — seconds to wait (default: 5)
+
 ## Benchmark Presets
 
 Run standard benchmark suites without picking catalogs manually:
@@ -197,15 +230,11 @@ Raises `PSGSecurityException` when threshold exceeded. Async version: `AsyncPSGG
 ```
 psg/                 — core library and CLI
 psg/integrations/    — LangChain middleware
+psg/validation/      — URL/DOI validation
 psg/automation/      — auto-discovery pipeline
 datasets/            — attack catalogs (JSON)
-generators/          — attack generation code (Python)
 tests/               — test suite
-scripts/             — operational scripts
 docs/                — methodology and research docs
-models/              — ML model files (not in git)
-profiles/            — model behavior profiles
-_archive/            — historical code (preserved for reference)
 ```
 
 ## Documentation
