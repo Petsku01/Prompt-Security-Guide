@@ -73,6 +73,24 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         help="Enable multi-turn attack execution (uses followups field)",
     )
     parser.add_argument(
+        "--with-defense",
+        action="store_true",
+        default=False,
+        help="Run defense validation on attacks before sending to model",
+    )
+    parser.add_argument(
+        "--defense-threshold",
+        type=float,
+        default=0.5,
+        help="Defense blocking threshold 0.0-1.0 (default: 0.5)",
+    )
+    parser.add_argument(
+        "--defense-only",
+        action="store_true",
+        default=False,
+        help="Only run defense validation, don't call model (fast mode)",
+    )
+    parser.add_argument(
         "--validate-urls",
         action="store_true",
         default=False,
@@ -177,6 +195,49 @@ def main(argv: list[str] | None = None) -> int:
     except ConfigError as exc:
         print(f"Configuration error: {exc}", file=sys.stderr)
         return 2
+
+    # Defense-only mode: validate attacks without calling model
+    if args.defense_only:
+        from .catalog import load_catalog
+        from .defenses import DefenseLayer, DefenseConfig
+        
+        attacks = load_catalog(cfg.catalog_path)
+        layer = DefenseLayer(DefenseConfig(
+            input_block_threshold=args.defense_threshold,
+        ))
+        
+        detected = 0
+        results_data = []
+        for attack in attacks:
+            result = layer.validate_input(attack.prompt)
+            if result and result.blocked:
+                detected += 1
+            results_data.append({
+                "id": attack.id,
+                "blocked": result.blocked if result else False,
+                "score": round(result.score, 3) if result else 0,
+                "labels": result.labels if result else [],
+            })
+        
+        total = len(attacks)
+        rate = detected / total if total > 0 else 0
+        print(f"Defense-only scan: {detected}/{total} ({rate*100:.1f}%) attacks blocked")
+        print(f"Threshold: {args.defense_threshold}")
+        
+        # Write results
+        import json
+        from pathlib import Path
+        Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(cfg.report_json_path).write_text(json.dumps({
+            "mode": "defense_only",
+            "total": total,
+            "detected": detected,
+            "detection_rate": rate,
+            "threshold": args.defense_threshold,
+            "results": results_data,
+        }, indent=2))
+        print(f"Results: {cfg.report_json_path}")
+        return 0
 
     try:
         summary, results = run(cfg)

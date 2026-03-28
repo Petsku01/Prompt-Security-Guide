@@ -6,6 +6,7 @@ import sys
 from .benchmark import main as benchmark_main
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments, main as cli_main
+from .defend import add_defend_arguments, main as defend_main
 from .eval import main as eval_main
 from .serve import main as serve_main
 
@@ -47,6 +48,9 @@ def build_parser() -> argparse.ArgumentParser:
     serve_parser.add_argument("--threshold", type=float, default=0.5, help="Default threshold")
     serve_parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
 
+    defend_parser = subparsers.add_parser("defend", help="Test prompt injection defenses")
+    add_defend_arguments(defend_parser)
+
     plugins_parser = subparsers.add_parser("plugins", help="List installed plugins")
     plugins_parser.add_argument("--type", choices=["detectors", "classifiers", "reporters", "all"], default="all")
 
@@ -85,6 +89,9 @@ def main(argv: list[str] | None = None) -> int:
     if ns.command == "serve":
         serve_args = [*args[1:]]
         return serve_main(serve_args)
+    if ns.command == "defend":
+        defend_args = [*args[1:]]
+        return defend_main(defend_args)
     if ns.command == "plugins":
         return _list_plugins(ns.type)
 
