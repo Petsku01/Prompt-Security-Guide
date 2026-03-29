@@ -39,6 +39,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     catalog_parser = subparsers.add_parser("catalog", help="Catalog utilities")
     catalog_subparsers = catalog_parser.add_subparsers(dest="catalog_command")
+    catalog_list_parser = catalog_subparsers.add_parser("list", help="List available attack catalogs")
+    catalog_list_parser.add_argument("--path", default="datasets/", help="Path to catalogs directory")
     validate_parser = catalog_subparsers.add_parser("validate", help="Validate catalog JSON files")
     validate_parser.add_argument("--path", default="datasets/", help="Path to catalog JSON file/directory")
 
@@ -84,8 +86,13 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         benchmark_args = [*args[1:]]
         return benchmark_main(benchmark_args)
-    if ns.command == "catalog" and ns.catalog_command == "validate":
-        return catalog_validate_main(["--path", ns.path])
+    if ns.command == "catalog":
+        if ns.catalog_command == "list":
+            return _list_catalogs(ns.path)
+        if ns.catalog_command == "validate":
+            return catalog_validate_main(["--path", ns.path])
+        print("Usage: psg catalog {list,validate}", file=sys.stderr)
+        return 2
     if ns.command == "serve":
         serve_args = [*args[1:]]
         return serve_main(serve_args)
@@ -97,6 +104,62 @@ def main(argv: list[str] | None = None) -> int:
 
     parser.print_help()
     return 2
+
+
+def _list_catalogs(path: str) -> int:
+    """List available attack catalogs with counts."""
+    import json
+    from pathlib import Path
+    
+    catalog_dir = Path(path)
+    if not catalog_dir.exists():
+        print(f"Error: Directory not found: {path}", file=sys.stderr)
+        return 1
+    
+    catalogs = []
+    for f in sorted(catalog_dir.glob("*.json")):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+            attacks = data.get("attacks", [])
+            count = len(attacks)
+            desc = data.get("description", "")[:50]
+            catalogs.append((f.name, count, desc))
+        except Exception:
+            catalogs.append((f.name, -1, "(invalid JSON)"))
+    
+    # Also check profiles subdirectory
+    profiles_dir = catalog_dir / "profiles"
+    if profiles_dir.exists():
+        for f in sorted(profiles_dir.glob("*.json")):
+            try:
+                data = json.loads(f.read_text(encoding="utf-8"))
+                attacks = data.get("attacks", [])
+                count = len(attacks)
+                desc = data.get("description", "")[:50]
+                catalogs.append((f"profiles/{f.name}", count, desc))
+            except Exception:
+                catalogs.append((f"profiles/{f.name}", -1, "(invalid JSON)"))
+    
+    if not catalogs:
+        print(f"No catalogs found in {path}")
+        return 0
+    
+    print(f"Available catalogs in {path}:\n")
+    print(f"{'Catalog':<45} {'Attacks':>8}  Description")
+    print("-" * 80)
+    
+    total = 0
+    for name, count, desc in sorted(catalogs, key=lambda x: -x[1] if x[1] > 0 else 0):
+        if count >= 0:
+            total += count
+            print(f"{name:<45} {count:>8}  {desc}")
+        else:
+            print(f"{name:<45} {'?':>8}  {desc}")
+    
+    print("-" * 80)
+    print(f"Total: {len(catalogs)} catalogs, {total}+ attacks")
+    print(f"\nUsage: psg scan --catalog {path}<name>.json --model <model>")
+    return 0
 
 
 def _list_plugins(plugin_type: str) -> int:
