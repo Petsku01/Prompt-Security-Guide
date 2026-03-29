@@ -1,11 +1,8 @@
 # Documentation Index
 
-## CLI Feature Highlights (v4.1)
+## Getting Started
 
-- `psg scan` supports parallel execution via `--workers` and `--rate-limit`.
-- `psg eval` evaluates classifier performance from golden datasets and supports CI gating with `--fail-on-macro-f1-below`.
-- `psg benchmark` runs preset suites: `jbb`, `owasp`, `obliteratus`, `full`.
-- LangChain middleware is available in `psg/integrations/langchain.py` with input and output screening.
+- **[USAGE.md](USAGE.md)** — complete command reference and examples
 
 ## Core docs
 
