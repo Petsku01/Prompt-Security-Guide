@@ -6,6 +6,10 @@
 
 **CLI tool for testing LLM security against jailbreaks, prompt injection, and other attacks.**
 
+<p align="center">
+  <img src="docs/assets/demo.svg" alt="PSG Demo" width="700">
+</p>
+
 PSG scans language models against curated attack catalogs and reports which attacks succeeded. Use it to evaluate model safety, test defense prompts, and catch regressions in CI.
 
 ## Quick Start

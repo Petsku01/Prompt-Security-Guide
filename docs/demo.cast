@@ -1,0 +1,2 @@
+{"version": 2, "width": 80, "height": 20, "timestamp": 1774803920, "env": {"SHELL": null, "TERM": null}}
+[0.004012, "o", "$ psg scan --model llama3:8b --catalog datasets/tiny_test.json --allow-insecure-http\r\n"]

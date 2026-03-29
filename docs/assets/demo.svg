@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280">
+  <style>
+    .terminal { fill: #1e1e1e; }
+    .header { fill: #323232; }
+    .btn { fill: #ff5f56; }
+    .btn-yellow { fill: #ffbd2e; }
+    .btn-green { fill: #27c93f; }
+    .text { font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; font-size: 13px; fill: #d4d4d4; }
+    .prompt { fill: #569cd6; }
+    .cmd { fill: #9cdcfe; }
+    .success { fill: #4ec9b0; }
+    .warn { fill: #dcdcaa; }
+    .num { fill: #b5cea8; }
+    .comment { fill: #6a9955; }
+  </style>
+  
+  <!-- Terminal window -->
+  <rect class="terminal" width="720" height="280" rx="8"/>
+  
+  <!-- Header bar -->
+  <rect class="header" width="720" height="28" rx="8"/>
+  <rect class="terminal" y="20" width="720" height="10"/>
+  
+  <!-- Window buttons -->
+  <circle class="btn" cx="16" cy="14" r="6"/>
+  <circle class="btn-yellow" cx="36" cy="14" r="6"/>
+  <circle class="btn-green" cx="56" cy="14" r="6"/>
+  
+  <!-- Title -->
+  <text x="360" y="18" text-anchor="middle" class="text" style="font-size: 12px; fill: #888;">prompt-security-guide — bash</text>
+  
+  <!-- Terminal content -->
+  <text x="16" y="55" class="text">
+    <tspan class="prompt">$</tspan>
+    <tspan class="cmd"> psg scan --model llama3:8b --catalog attacks.json</tspan>
+  </text>
+  
+  <text x="16" y="85" class="text">
+    <tspan class="comment"># Scanning 50 attack prompts...</tspan>
+  </text>
+  
+  <text x="16" y="115" class="text">
+    <tspan>Loading catalog: </tspan>
+    <tspan class="num">50</tspan>
+    <tspan> attacks</tspan>
+  </text>
+  
+  <text x="16" y="145" class="text">
+    <tspan>Running scan with model: </tspan>
+    <tspan class="success">llama3:8b</tspan>
+  </text>
+  
+  <text x="16" y="175" class="text">
+    <tspan>[████████████████████████████████████████] </tspan>
+    <tspan class="num">50/50</tspan>
+  </text>
+  
+  <text x="16" y="210" class="text">
+    <tspan class="success">Done.</tspan>
+    <tspan> total=</tspan><tspan class="num">50</tspan>
+    <tspan> succeeded=</tspan><tspan class="num">48</tspan>
+    <tspan> failed=</tspan><tspan class="num">2</tspan>
+    <tspan> flagged=</tspan><tspan class="warn">12</tspan>
+    <tspan> duration=</tspan><tspan class="num">34.21s</tspan>
+  </text>
+  
+  <text x="16" y="240" class="text">
+    <tspan>Reports: </tspan>
+    <tspan class="cmd">results/report.json</tspan>
+    <tspan>, </tspan>
+    <tspan class="cmd">results/report.txt</tspan>
+  </text>
+  
+  <text x="16" y="265" class="text">
+    <tspan class="prompt">$</tspan>
+    <tspan class="comment"> _</tspan>
+  </text>
+</svg>
