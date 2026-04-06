@@ -219,3 +219,113 @@ def test_classifier_with_different_model_name() -> None:
     """Test initializing classifier with custom model."""
     classifier = WildGuardClassifier(model_name="custom/wildguard-model")
     assert classifier.model_name == "custom/wildguard-model"
+
+
+def test_load_model_called_once() -> None:
+    """Test that _load_model is only called once."""
+    classifier = WildGuardClassifier()
+    # _load_model should set _load_attempted to True
+    classifier._load_model()
+    assert classifier._load_attempted is True
+    
+    # Second call should not raise or change state
+    classifier._load_model()
+    assert classifier._load_attempted is True
+
+
+def test_parse_wildguard_output_edge_cases() -> None:
+    """Test parsing with various output formats."""
+    classifier = WildGuardClassifier()
+    
+    # Mixed case
+    result = classifier._parse_wildguard_output("Prompt Harmful: YES\nResponse Harmful: NO")
+    assert result == (True, False, False)
+    
+    # Empty output
+    result = classifier._parse_wildguard_output("")
+    assert result == (False, False, False)
+    
+    # Partial output
+    result = classifier._parse_wildguard_output("refusal: yes")
+    assert result[2] is True
+
+
+def test_regex_fallback_strong_refusal() -> None:
+    """Test fallback with strong refusal pattern."""
+    classifier = WildGuardClassifier()
+    result = classifier._regex_fallback("I cannot help with that request")
+    
+    # Strong refusal should result in low harm score
+    assert result.is_refusal is True
+    assert result.refusal_score >= 0.6
+
+
+def test_regex_fallback_compliance_detected() -> None:
+    """Test fallback when compliance is detected after refusal."""
+    classifier = WildGuardClassifier()
+    # This would need mocking of detect_compliance
+    # For now, test that it doesn't crash
+    result = classifier._regex_fallback("Some response text")
+    assert isinstance(result, WildGuardResult)
+
+
+def test_classify_inference_error_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test that inference errors trigger regex fallback."""
+    @contextmanager
+    def _no_grad():
+        yield
+
+    fake_torch = ModuleType("torch")
+    fake_torch.cuda = SimpleNamespace(is_available=lambda: False)
+    fake_torch.no_grad = _no_grad
+    monkeypatch.setitem(__import__("sys").modules, "torch", fake_torch)
+
+    class _Inputs(dict):
+        pass
+
+    class _Tokenizer:
+        def __call__(self, _text: str, return_tensors: str) -> _Inputs:
+            return _Inputs({"input_ids": [1, 2, 3]})
+
+        def decode(self, _output: object, skip_special_tokens: bool) -> str:
+            return "malformed"
+
+    class _BrokenModel:
+        def generate(self, **_kwargs: object) -> None:
+            raise RuntimeError("CUDA out of memory")
+
+    classifier = WildGuardClassifier()
+    classifier._load_attempted = True
+    classifier.tokenizer = _Tokenizer()
+    classifier.model = _BrokenModel()
+
+    # Should not raise, should fallback
+    result = classifier.classify("prompt", "response")
+    assert isinstance(result, WildGuardResult)
+
+
+def test_wildguard_singleton() -> None:
+    """Test that get_wildguard_classifier returns singleton."""
+    from psg.security.wildguard_classifier import get_wildguard_classifier, _classifier
+    
+    # Reset singleton for test
+    import psg.security.wildguard_classifier as wg_module
+    original = wg_module._classifier
+    wg_module._classifier = None
+    
+    c1 = get_wildguard_classifier()
+    c2 = get_wildguard_classifier()
+    
+    assert c1 is c2
+    
+    # Restore
+    wg_module._classifier = original
+
+
+def test_classify_with_wildguard_convenience() -> None:
+    """Test the module-level classify function."""
+    from psg.security.wildguard_classifier import classify_with_wildguard
+    
+    # Should return a WildGuardResult
+    result = classify_with_wildguard("test prompt", "test response")
+    assert isinstance(result, WildGuardResult)
