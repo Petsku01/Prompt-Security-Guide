@@ -42,6 +42,65 @@ def test_main_returns_0_on_success(monkeypatch) -> None:
     assert rc == 0
 
 
+def test_build_parser_parses_system_prompt_file(monkeypatch, tmp_path) -> None:
+    """Test parsing --system-prompt-file option."""
+    from psg.cli import build_parser
+    
+    # Create a temp file
+    prompt_file = tmp_path / "system.txt"
+    prompt_file.write_text("You are a helpful assistant.")
+    
+    parser = build_parser()
+    args = parser.parse_args([
+        "--model", "llama3",
+        "--catalog", "datasets/tiny_test.json",
+        "--system-prompt-file", str(prompt_file)
+    ])
+    
+    assert args.system_prompt_file == str(prompt_file)
+
+
+def test_build_parser_parses_checkpoint_option() -> None:
+    """Test parsing --checkpoint option."""
+    from psg.cli import build_parser
+    
+    parser = build_parser()
+    args = parser.parse_args([
+        "--model", "llama3",
+        "--catalog", "datasets/tiny_test.json",
+        "--checkpoint", "/tmp/checkpoint.jsonl"
+    ])
+    
+    assert args.checkpoint == "/tmp/checkpoint.jsonl"
+
+
+def test_build_parser_default_workers() -> None:
+    """Test default workers value."""
+    from psg.cli import build_parser
+    
+    parser = build_parser()
+    args = parser.parse_args([
+        "--model", "llama3",
+        "--catalog", "datasets/tiny_test.json"
+    ])
+    
+    assert args.workers == 1
+
+
+def test_build_parser_with_json_report() -> None:
+    """Test parsing --json-report option."""
+    from psg.cli import build_parser
+    
+    parser = build_parser()
+    args = parser.parse_args([
+        "--model", "llama3",
+        "--catalog", "datasets/tiny_test.json",
+        "--json-report", "/tmp/report.json"
+    ])
+    
+    assert args.json_report == "/tmp/report.json"
+
+
 def test_main_returns_3_on_catalog_error(monkeypatch) -> None:
     monkeypatch.setattr("psg.cli.validate_config", lambda cfg: cfg)
     monkeypatch.setattr("psg.cli.run", lambda _cfg: (_ for _ in ()).throw(CatalogError("bad catalog")))

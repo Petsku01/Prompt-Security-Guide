@@ -148,3 +148,74 @@ def test_classify_with_mocked_model(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.attack_successful is True
     assert result.harm_score == 1.0
     assert result.harmful_labels == ["wildguard_harmful"]
+
+
+def test_classify_with_empty_response(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test classification with empty response."""
+    @contextmanager
+    def _no_grad():
+        yield
+
+    fake_torch = ModuleType("torch")
+    fake_torch.cuda = SimpleNamespace(is_available=lambda: False)
+    fake_torch.no_grad = _no_grad
+    monkeypatch.setitem(__import__("sys").modules, "torch", fake_torch)
+
+    class _Inputs(dict):
+        pass
+
+    class _Tokenizer:
+        def __call__(self, _text: str, return_tensors: str) -> _Inputs:
+            return _Inputs({"input_ids": [1, 2, 3]})
+
+        def decode(self, _output: object, skip_special_tokens: bool) -> str:
+            return "Prompt harmful: no\nResponse harmful: no\nRefusal: yes"
+
+    class _Model:
+        def generate(self, **_kwargs: object) -> list[list[int]]:
+            return [[101]]
+
+    classifier = WildGuardClassifier()
+    classifier._load_attempted = True
+    classifier.tokenizer = _Tokenizer()
+    classifier.model = _Model()
+
+    result = classifier.classify("safe prompt", "")
+
+    assert result.prompt_harmful is False
+    assert result.is_refusal is True
+
+
+def test_regex_fallback_with_unparseable_output() -> None:
+    """Test regex fallback when model output is garbled."""
+    classifier = WildGuardClassifier()
+    result = classifier._regex_fallback("completely garbled output")
+    
+    assert result.prompt_harmful is False
+    assert result.response_harmful is False
+    assert result.is_refusal is False
+    assert result.harm_score == 0.0
+
+
+def test_wildguard_result_score_calculation() -> None:
+    """Test harm score calculation logic."""
+    result = WildGuardResult(
+        prompt_harmful=True,
+        response_harmful=True,
+        is_refusal=False,
+        attack_successful=True,
+        prompt_harm_score=0.9,
+        response_harm_score=0.8,
+        refusal_score=0.1,
+        harm_score=0.0,  # Will be calculated
+        harmful_labels=["test"],
+    )
+    
+    assert result.prompt_harm_score == 0.9
+    assert result.response_harm_score == 0.8
+
+
+def test_classifier_with_different_model_name() -> None:
+    """Test initializing classifier with custom model."""
+    classifier = WildGuardClassifier(model_name="custom/wildguard-model")
+    assert classifier.model_name == "custom/wildguard-model"

@@ -133,3 +133,61 @@ def test_server_config_defaults():
     assert config.host == "0.0.0.0"
     assert config.port == 8000
     assert config.threshold == 0.5
+
+
+def test_server_config_custom_values():
+    """Test ServerConfig with custom values."""
+    config = ServerConfig(host="127.0.0.1", port=9000, threshold=0.8)
+    assert config.host == "127.0.0.1"
+    assert config.port == 9000
+    assert config.threshold == 0.8
+
+
+@pytest.mark.asyncio
+async def test_bulk_screen_with_threshold_override(app):
+    """Test bulk screening with per-request threshold."""
+    response = await _request(app, "POST", "/screen/bulk", json={
+        "texts": ["I cannot help with that.", "Sorry."],
+        "threshold": 0.1
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total"] == 2
+    assert len(data["results"]) == 2
+
+
+@pytest.mark.asyncio
+async def test_screen_with_model_override(app):
+    """Test screening with custom model parameter."""
+    response = await _request(app, "POST", "/screen", json={
+        "text": "I cannot help.",
+        "model": "custom-model"
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert "harmful" in data
+
+
+@pytest.mark.asyncio
+async def test_metrics_after_multiple_requests(app):
+    """Test metrics aggregation."""
+    reset_metrics()
+    
+    for _ in range(5):
+        await _request(app, "POST", "/screen", json={"text": "test"})
+    
+    response = await _request(app, "GET", "/metrics")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["requests_total"] == 5
+
+
+@pytest.mark.asyncio
+async def test_health_endpoint_with_version(app):
+    """Test health endpoint returns version."""
+    response = await _request(app, "GET", "/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert "version" in data
+    assert isinstance(data["version"], str)

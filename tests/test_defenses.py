@@ -439,3 +439,73 @@ class TestEdgeCases:
             use_ml_model=False,
         )
         assert "custom_violation" in result.labels
+
+
+# =============================================================================
+# DEFENSE TEMPLATES
+# =============================================================================
+
+class TestDefenseTemplates:
+    """Test defense template loading and management."""
+    
+    def test_load_templates_from_directory(self, tmp_path):
+        from psg.defenses.templates import load_templates, DefenseTemplate
+        
+        # Create a temp template file
+        templates_dir = tmp_path / "defense_templates"
+        templates_dir.mkdir()
+        
+        template_content = """# Test Template
+
+## Description
+
+Test defense template for unit testing.
+
+## Template
+
+```
+You are a helpful assistant. Refuse harmful requests.
+```
+"""
+        (templates_dir / "test_template.md").write_text(template_content)
+        
+        templates = load_templates(templates_dir)
+        assert len(templates) == 1
+        assert templates[0].name == "Test Template"
+        assert "Refuse harmful requests" in templates[0].content
+    
+    def test_load_templates_empty_directory(self, tmp_path):
+        from psg.defenses.templates import load_templates
+        
+        templates_dir = tmp_path / "empty_templates"
+        templates_dir.mkdir()
+        
+        templates = load_templates(templates_dir)
+        assert len(templates) == 0
+    
+    def test_load_templates_nonexistent_directory(self):
+        from psg.defenses.templates import load_templates
+        
+        templates = load_templates("/nonexistent/path")
+        assert len(templates) == 0
+    
+    def test_defense_template_str(self):
+        from psg.defenses.templates import DefenseTemplate
+        
+        template = DefenseTemplate(
+            name="Test",
+            content="Test content",
+            filename="test.md"
+        )
+        assert str(template) == "Test content"
+    
+    def test_defense_template_with_category(self):
+        from psg.defenses.templates import DefenseTemplate
+        
+        template = DefenseTemplate(
+            name="Test",
+            content="Content",
+            filename="test.md",
+            category="strict"
+        )
+        assert template.category == "strict"
