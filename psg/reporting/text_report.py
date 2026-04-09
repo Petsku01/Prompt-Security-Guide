@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from importlib.metadata import version
 from pathlib import Path
 
 from ..models import AttemptResult, RunSummary
@@ -8,9 +9,13 @@ from ..models import AttemptResult, RunSummary
 def write_text_report(path: str, summary: RunSummary, results: list[AttemptResult]) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        psg_version = version("psg")
+    except Exception:
+        psg_version = "unknown"
 
     lines = [
-        "PSG v4.0.0 Report",
+        f"PSG v{psg_version} Report",
         "=" * 32,
         f"Total: {summary.total}",
         f"Succeeded: {summary.succeeded}",

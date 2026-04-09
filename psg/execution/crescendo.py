@@ -9,15 +9,12 @@ Crescendo technique:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
-from typing import Callable
+from dataclasses import dataclass
 
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
 from ..models import AppConfig, Attack, AttemptResult
-from ..security.classifier import ClassificationResult
 from ..security.detectors import Detector
-from ..security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
 
@@ -89,19 +86,12 @@ class CrescendoOrchestrator:
     def _check_success(
         self,
         response: str,
+        prompt: str,
         detector: Detector,
     ) -> bool:
         """Check if response contains harmful content (attack succeeded)."""
-        try:
-            result = detector.detect(response)
-            return result.flagged or len(result.labels) > 0
-        except Exception:
-            # Fallback: check for refusal patterns
-            refusal_phrases = [
-                "i cannot", "i can't", "i won't", "i'm not able",
-                "i'm unable", "i will not", "against my",
-            ]
-            return not any(phrase in response.lower() for phrase in refusal_phrases)
+        result = detector.classify(prompt, response)
+        return result.attack_successful
     
     def _should_stop_early(self, turn: int, last_response: str) -> bool:
         """Determine if attack should stop early."""
@@ -140,20 +130,22 @@ class CrescendoOrchestrator:
         """
         target_topic = attack.prompt
         turns: list[CrescendoTurn] = []
-        
+        self.history = []  # Reset history for each execution
+
         try:
             for turn_num in range(1, self.max_turns + 1):
                 # Build turn prompt
                 user_msg = self._build_turn_prompt(turn_num, target_topic)
-                
+
                 # Get response from model
                 try:
                     messages = self.history.copy()
                     if system_prompt:
                         messages.insert(0, {"role": "system", "content": system_prompt})
                     messages.append({"role": "user", "content": user_msg})
-                    
-                    response_data = self.client.chat(
+
+                    response_data = self.client.chat_multi_turn(
+                        model=self.cfg.model,
                         messages=messages,
                         temperature=self.temperature,
                     )
@@ -168,7 +160,7 @@ class CrescendoOrchestrator:
                     )
                 
                 # Check if successful
-                is_successful = self._check_success(assistant_msg, detector)
+                is_successful = self._check_success(assistant_msg, user_msg, detector)
                 
                 # Record turn
                 turn = CrescendoTurn(

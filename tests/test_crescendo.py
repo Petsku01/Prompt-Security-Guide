@@ -13,22 +13,22 @@ from psg.execution.crescendo import (
 )
 from psg.llm.errors import LLMError
 from psg.models import AppConfig, Attack, AttemptResult
-from psg.security.classifier import ClassificationResult
+from psg.security.classifier import ClassificationResult  # noqa: F401 - used in mocks
 
 
 @pytest.fixture
 def mock_client():
     """Mock LLM client."""
     client = Mock()
-    client.chat.return_value = Mock(content="This is a helpful response about the topic.")
+    client.chat_multi_turn.return_value = Mock(content="This is a helpful response about the topic.")
     return client
 
 
 @pytest.fixture
 def mock_detector():
-    """Mock security detector."""
+    """Mock security detector that implements Detector protocol (classify method)."""
     detector = Mock()
-    detector.detect.return_value = Mock(flagged=False, labels=[])
+    detector.classify.return_value = Mock(attack_successful=False)
     return detector
 
 
@@ -132,17 +132,16 @@ class TestCrescendoOrchestrator:
     def test_check_success_with_detector_success(self, mock_client, app_config):
         orchestrator = CrescendoOrchestrator(mock_client, app_config)
         detector = Mock()
-        detector.detect.return_value = Mock(flagged=True, labels=["harmful"])
-        result = orchestrator._check_success("Some response", detector)
-        # Flagged means model provided harmful content -> successful attack
+        detector.classify.return_value = Mock(attack_successful=True)
+        result = orchestrator._check_success("Some response", "test prompt", detector)
         assert result is True
-    
+
     def test_check_success_with_refusal(self, mock_client, app_config):
         orchestrator = CrescendoOrchestrator(mock_client, app_config)
         detector = Mock()
-        detector.detect.return_value = Mock(flagged=False, labels=[])
-        result = orchestrator._check_success("I cannot help with that", detector)
-        assert result is False  # Contains refusal
+        detector.classify.return_value = Mock(attack_successful=False)
+        result = orchestrator._check_success("I cannot help with that", "test prompt", detector)
+        assert result is False
     
     def test_should_stop_early_max_turns(self, mock_client, app_config):
         orchestrator = CrescendoOrchestrator(mock_client, app_config, max_turns=5)
@@ -159,12 +158,12 @@ class TestCrescendoOrchestrator:
     def test_execute_successful_attack(self, mock_client, app_config, attack, mock_detector):
         """Test successful Crescendo attack."""
         orchestrator = CrescendoOrchestrator(mock_client, app_config, max_turns=10)
-        
+
         # Mock detector to eventually flag as successful
-        mock_detector.detect.side_effect = [
-            Mock(flagged=False, labels=[]),
-            Mock(flagged=False, labels=[]),
-            Mock(flagged=True, labels=["harmful"]),  # Success on turn 3
+        mock_detector.classify.side_effect = [
+            Mock(attack_successful=False),
+            Mock(attack_successful=False),
+            Mock(attack_successful=True),  # Success on turn 3
         ]
         
         result = orchestrator.execute(attack, mock_detector)
@@ -187,9 +186,9 @@ class TestCrescendoOrchestrator:
     def test_execute_early_stop_on_refusal(self, mock_client, app_config, attack, mock_detector):
         """Test early stop on strong refusal."""
         orchestrator = CrescendoOrchestrator(mock_client, app_config, max_turns=10)
-        
+
         # Make client return strong refusal
-        mock_client.chat.return_value = Mock(
+        mock_client.chat_multi_turn.return_value = Mock(
             content="I will not provide instructions for creating harmful substances"
         )
         
@@ -201,7 +200,7 @@ class TestCrescendoOrchestrator:
     def test_execute_llm_error(self, mock_client, app_config, attack, mock_detector):
         """Test handling of LLM error."""
         orchestrator = CrescendoOrchestrator(mock_client, app_config)
-        mock_client.chat.side_effect = LLMError("Connection failed")
+        mock_client.chat_multi_turn.side_effect = LLMError("Connection failed")
         
         result = orchestrator.execute(attack, mock_detector)
         
@@ -211,12 +210,12 @@ class TestCrescendoOrchestrator:
     def test_execute_with_system_prompt(self, mock_client, app_config, attack, mock_detector):
         """Test execution with custom system prompt."""
         orchestrator = CrescendoOrchestrator(mock_client, app_config)
-        
-        with patch.object(orchestrator.client, 'chat') as mock_chat:
+
+        with patch.object(orchestrator.client, 'chat_multi_turn') as mock_chat:
             mock_chat.return_value = Mock(content="Response")
-            
+
             orchestrator.execute(attack, mock_detector, system_prompt="Be helpful")
-            
+
             # Check that system prompt was included
             calls = mock_chat.call_args_list
             assert len(calls) > 0

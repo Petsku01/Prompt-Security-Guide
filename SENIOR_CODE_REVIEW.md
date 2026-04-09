@@ -11,104 +11,69 @@
 
 Prompt Security Guide (PSG) is a well-structured, mature LLM security testing framework with ~105 Python modules, 349+ tests, and a clean CI/CD pipeline. The architecture shows good separation of concerns across CLI, orchestration, LLM transport, classification, and reporting layers.
 
-However, this review identified **several critical runtime bugs** that will cause crashes in the crescendo and many-shot attack modules, a **logic error in benchmark reporting**, a **fail-open security design** in the LangChain integration, and numerous medium-severity issues around error handling, type safety, and thread safety.
+However, this review identified **two interface bugs** in the crescendo and many-shot attack modules that cause silent degradation (not crashes — broad `except` handlers mask them), a **fail-open security design** in the LangChain integration, and several medium-severity issues around test quality, thread safety, and code consistency.
+
+**Self-critique note:** The original version of this review contained false positives and overstated severities. It has been revised after verification against the actual code and test suite.
 
 ### Issue Summary
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| **CRITICAL** | 5 | Runtime crashes, logic bugs in core features |
-| **HIGH** | 10 | Security design flaws, thread safety, data correctness |
-| **MEDIUM** | 20 | Code smells, missing validation, inconsistencies |
-| **LOW** | 8 | Style, naming, minor improvements |
+| **CRITICAL** | 2 | Interface bugs causing silent degradation |
+| **HIGH** | 5 | Security design, thread safety, test quality |
+| **MEDIUM** | 18 | Code smells, missing validation, inconsistencies |
+| **LOW** | 7 | Style, naming, minor improvements |
 
 ---
 
 ## CRITICAL Issues
 
-### C1. API Mismatch in Crescendo & Many-Shot Attacks (Will Crash at Runtime)
+### C1. API Mismatch in Crescendo & Many-Shot — Silent Degradation **(FIXED)**
 
 **Files:** `psg/execution/crescendo.py:96`, `psg/execution/many_shot.py:108`
 
-Both modules call `detector.detect(response)`, but the `Detector` protocol (`psg/security/detectors.py:19-20`) only defines `classify()`:
+Both modules called `detector.detect(response)`, but the `Detector` protocol (`psg/security/detectors.py:19-20`) only defines `classify()`. The `detect()` method does not exist on any real detector.
 
-```python
-class Detector(Protocol):
-    def classify(self, prompt: str, response: str) -> ClassificationResult: ...
-```
+**Actual impact:** These do NOT crash the program. The calls are wrapped in `try: ... except Exception:` (crescendo line 95-104, many_shot line 107-116), so the `AttributeError` is silently caught and the code falls back to a weak refusal-phrase heuristic. This means **the security detector was never actually used** in these modules — every classification was done by simple string matching against 7 refusal phrases.
 
-The `detect()` method does not exist on any detector implementation (`KeywordDetector`, `LLMJudgeDetector`, `EnsembleDetector`). This will raise `AttributeError` at runtime every time crescendo or many-shot attacks are used.
+**Why tests didn't catch it:** Tests use `Mock()` objects which accept any method name. The mocks were set up as `detector.detect.return_value = ...`, matching the buggy code rather than the real `Detector` protocol.
 
-**Fix:** Change `detector.detect(response)` to `detector.classify(prompt, response)` in both files.
+**Fix applied:** Changed to `detector.classify(prompt, response)`, updated tests to mock `classify`.
 
 ---
 
-### C2. Wrong Client Method in Crescendo & Many-Shot (Will Crash at Runtime)
+### C2. Wrong Client Method in Crescendo & Many-Shot **(FIXED)**
 
 **Files:** `psg/execution/crescendo.py:156-159`, `psg/execution/many_shot.py:147-150`
 
-Both modules call:
-```python
-response_data = self.client.chat(
-    messages=messages,
-    temperature=self.temperature,
-)
-```
+Both modules called `self.client.chat(messages=..., temperature=...)` but `OpenAICompatibleClient.chat()` takes `(model, prompt)` — not `messages`. They should use `chat_multi_turn(model, messages)`.
 
-But `OpenAICompatibleClient.chat()` (`psg/llm/client.py:16-24`) has this signature:
-```python
-def chat(self, *, model: str, prompt: str, system_prompt: str | None = None, ...) -> LLMResponse:
-```
+**Actual impact:** The `TypeError` from the wrong method signature is caught by the outer `except Exception as e:` handler (crescendo line 203, many_shot line 171), returning a failed result with the error message. The feature silently fails every time.
 
-Two problems:
-1. `messages` is not a valid parameter for `chat()` — they should be calling `chat_multi_turn()`
-2. The required `model` keyword argument is missing entirely
+**Why tests didn't catch it:** Same Mock() issue — `Mock.chat()` accepts any kwargs.
 
-This will raise `TypeError` at runtime.
-
-**Fix:** Use `self.client.chat_multi_turn(model=self.model, messages=messages, temperature=self.temperature)` or pass the model from config.
+**Fix applied:** Changed to `client.chat_multi_turn(model=self.cfg.model, messages=..., temperature=...)`, updated tests.
 
 ---
 
-### C3. Incorrect Blocked-Attacks Calculation in Benchmarks
+### ~~C3. Incorrect Blocked-Attacks Calculation~~ RETRACTED
 
-**File:** `psg/benchmark.py:223`
+**Original claim:** `blocked = total_succeeded - total_flagged` was wrong.
 
-```python
-blocked = total_succeeded - total_flagged
-```
+**Correction:** After verifying `RunSummary` construction in `orchestrator.py:68-74`:
+- `succeeded` = attacks that got a response (no error)
+- `flagged` = attacks where harmful content was detected
+- `blocked = succeeded - flagged` = attacks with safe responses
 
-Context from lines 213-217:
-- `total_succeeded += summary.succeeded` — this counts attacks where LLM responded (not errored)
-- `total_flagged += summary.flagged` — this counts attacks flagged as harmful
-
-The comment on line 222 says "blocked = attacks that were handled safely (refused)". The correct formula should be:
-
-```python
-blocked = total_succeeded - total_flagged  # only correct if succeeded means "got a response"
-```
-
-This depends on the semantics of `succeeded` vs `flagged`. If `succeeded` means the attack got through (harmful response), then `blocked` would be negative. The naming is ambiguous and the logic needs to be verified against `RunSummary` field definitions. At minimum, the field names are misleading.
+This is **correct logic**. The original review was wrong.
 
 ---
 
-### C4. Hardcoded Version in Text Report
+### ~~C5. IndexError Risk in Crescendo~~ RETRACTED
 
-**File:** `psg/reporting/text_report.py:13`
+**Original claim:** `turns[-1]` would crash if loop never executes.
 
-```python
-lines = ["PSG v4.0.0 Report", ...]
-```
-
-Hardcoded as v4.0.0 while the project is at v4.3.0. This will perpetually be wrong. Should read from `pyproject.toml` or a version constant.
-
----
-
-### C5. IndexError Risk in Crescendo Attack
-
-**File:** `psg/execution/crescendo.py:200`
-
-If the crescendo loop never executes (e.g., `max_turns=0`), accessing `turns[-1]` will raise `IndexError`.
+**Correction:** Line 200 actually reads `turns[-1].assistant_response if turns else ""`. The ternary guard handles the empty case. No bug.
 
 ---
 
@@ -150,37 +115,29 @@ Classic check-then-act race condition. Two threads can both see `_classifier is 
 
 ---
 
-### H3. ClassifierDetectorPlugin Ignores Threshold Parameter
+### H3. ClassifierDetectorPlugin Ignores Threshold Parameter **(FIXED)**
 
 **File:** `psg/plugins/builtin.py:32-39`
 
-```python
-def __init__(self, threshold: float = 0.5) -> None:
-    self.threshold = threshold
+The `threshold` parameter was accepted and stored but never used. Detection used `result.attack_successful` (which has its own internal threshold) instead of comparing `result.harm_score >= self.threshold`.
 
-def detect(self, prompt: str, response: str) -> DetectionResult:
-    result = classify_response_v2(response)
-    return DetectionResult(
-        attack_successful=result.attack_successful,  # ignores self.threshold
-```
-
-The `threshold` parameter is accepted and stored but never used. The detection result uses `result.attack_successful` which has its own internal threshold. Users configuring a custom threshold get silently ignored.
+**Fix applied:** Changed to `attack_successful=result.harm_score >= self.threshold`.
 
 ---
 
-### H4. Race Condition in Parallel Execution Counter
+### ~~H4. Race Condition in Parallel Execution Counter~~ RETRACTED
 
-**File:** `psg/execution/parallel.py:76`
+**Original claim:** Counter checked outside lock.
 
-The `completed` counter is incremented inside a lock but checked outside it (`if completed % 10 == 0`), creating a data race. While CPython's GIL makes this unlikely to cause visible corruption, it's still incorrect and non-portable.
+**Correction:** Both `completed += 1` and the `if completed % 10 == 0` check happen inside the `with checkpoint_lock:` block. No race condition exists.
 
 ---
 
 ### H5. Bare `except Exception` Catches Too Broadly
 
-**Files:** `psg/__main__.py:127-128, 140-141`, `psg/execution/crescendo.py:98`, `psg/execution/many_shot.py:110`
+**Files:** `psg/__main__.py:127-128, 140-141`
 
-Multiple places use `except Exception:` to catch all errors and silently continue. This masks real bugs (e.g., `TypeError` from the API mismatch bugs above). Should catch specific exceptions.
+Multiple places use `except Exception:` to catch all errors and silently continue. This masked the C1/C2 interface bugs for the entire life of the crescendo and many-shot modules. Should catch specific exceptions (`json.JSONDecodeError`, `ValueError`, `OSError`, etc.).
 
 ---
 
@@ -232,6 +189,36 @@ Input text is normalized (homoglyphs, encoding, etc.) before checking for canary
 **File:** `psg/benchmark.py:203`
 
 All benchmarks force `allow_insecure_http=True`, bypassing SSRF protection. This should at minimum log a warning, and ideally be configurable.
+
+---
+
+### NEW: H-CI. CI Test Glob Misses Test Files **(FIXED)**
+
+**File:** `.github/workflows/test.yml:30`
+
+CI ran `python -m pytest tests/test_psg_*.py`, which excluded `test_crescendo.py`, `test_many_shot.py`, `test_benchmark.py`, `test_normalize.py`, `test_eval.py`, `test_serve.py`, `test_langchain.py`, `test_plugins.py`, and `test_html_report.py`. This is why the C1/C2 bugs were never caught — those tests literally never ran in CI.
+
+**Fix applied:** Changed to `python -m pytest tests/`.
+
+---
+
+### NEW: H-TEST. Tests Use Mocks That Hide Interface Bugs
+
+**Files:** `tests/test_crescendo.py`, `tests/test_many_shot.py`
+
+Both test suites used `Mock()` objects for the detector and client. `Mock()` accepts any method call — so `detector.detect()` worked in tests even though the real `Detector` protocol only has `classify()`. The tests validated internal orchestrator logic but never verified integration with real interfaces.
+
+**Lesson:** At least one test per module should use a real (or `spec=`-constrained) object instead of bare `Mock()`.
+
+---
+
+### NEW: H-STATE. Crescendo Orchestrator Not Reusable **(FIXED)**
+
+**File:** `psg/execution/crescendo.py:64`
+
+`self.history` was initialized in `__init__` but never reset in `execute()`. Calling `execute()` twice would carry conversation history from the first attack into the second.
+
+**Fix applied:** Added `self.history = []` at the start of `execute()`.
 
 ---
 
@@ -333,15 +320,11 @@ Defense-only validation logic duplicates code from `psg/defend.py`. Should impor
 
 Duplicates lines 261-277 exactly. Should be extracted into a helper.
 
-### M16. Score Weighting Doesn't Sum to 1.0
+### ~~M16. Score Weighting Doesn't Sum to 1.0~~ RETRACTED
 
-**File:** `psg/defenses/input_validators.py:330`
+**Original claim:** Combined score can exceed 1.0.
 
-```python
-combined = (ml_score * 0.6) + (pattern_score * 0.3) + canary_score
-```
-
-Weights sum to 0.9 before canary_score. If canary_score is 0.5, total can exceed 1.0.
+**Correction:** The actual code is `min(1.0, (ml_score * 0.6) + (pattern_score * 0.3) + canary_score)`. The `min(1.0, ...)` explicitly caps the result. Not a bug.
 
 ### M17. Emoji in CLI Output
 
@@ -393,11 +376,9 @@ Uses `Optional[WildGuardClassifier]` while the rest of the codebase uses `X | No
 
 The improvement plan is in Finnish while all other documentation is in English.
 
-### L4. CI Only Tests `test_psg_*.py` Pattern
+### L4. CI Only Tests `test_psg_*.py` Pattern **(FIXED)**
 
-**File:** `.github/workflows/test.yml:30`
-
-Tests matching `test_psg_*.py` skip files like `test_crescendo.py`, `test_many_shot.py`, `test_benchmark.py`, etc. This means the crescendo/many-shot bugs above are not caught by CI.
+Moved to HIGH severity as H-CI. Fixed by changing glob to `tests/`.
 
 ### L5. Dockerfile Layer Caching Suboptimal
 
@@ -449,24 +430,50 @@ The `retry()` decorator doesn't preserve the wrapped function's metadata.
 
 ## Recommended Priority for Fixes
 
-### Immediate (P0) - Will cause runtime crashes
-1. Fix `detector.detect()` -> `detector.classify()` in crescendo.py and many_shot.py
-2. Fix `client.chat()` -> `client.chat_multi_turn()` with `model` parameter in both files
-3. Expand CI test glob to include all test files
+### DONE in this review cycle
+1. ~~Fix `detector.detect()` -> `detector.classify()` in crescendo.py and many_shot.py~~ DONE
+2. ~~Fix `client.chat()` -> `client.chat_multi_turn()` with `model` parameter~~ DONE
+3. ~~Expand CI test glob to include all test files~~ DONE
+4. ~~Fix ClassifierDetectorPlugin to use its threshold~~ DONE
+5. ~~Fix hardcoded version in text_report.py~~ DONE
+6. ~~Fix crescendo state leakage (history not reset)~~ DONE
+7. ~~Update tests to use correct interfaces~~ DONE
 
-### This Week (P1) - Security and correctness
-4. Change LangChain middleware from fail-open to fail-closed
-5. Add thread safety to WildGuard singleton
-6. Fix benchmark blocked-attacks calculation
-7. Fix ClassifierDetectorPlugin to use its threshold parameter
+### Remaining (P1) - Security and correctness
+8. Change LangChain middleware from fail-open to fail-closed (or make configurable)
+9. Add thread safety to WildGuard singleton
+10. Wire crescendo/many_shot into the main pipeline or document as standalone tools
+11. Add `spec=` constraints to test Mocks to catch future interface mismatches
 
-### This Sprint (P2) - Code quality
-8. Replace `except Exception` with specific exception types
-9. Add logging instead of print statements
-10. Fix score weighting to sum to 1.0
-11. Normalize canary tokens before comparison
-12. Extract duplicated code in client.py and html_report.py
+### Remaining (P2) - Code quality
+12. Replace bare `except Exception` with specific exception types
+13. Add logging instead of print statements
+14. Extract duplicated code in client.py and html_report.py
 
 ---
 
-*Review generated from full codebase analysis of 105 Python modules, 32 test files, CI/CD configuration, Dockerfile, and project configuration.*
+## Self-Critique of This Review
+
+This review was revised after critical self-examination. The original version contained:
+
+**False positives retracted:**
+- C3 (benchmark calculation) — was correct logic, not a bug
+- C5 (IndexError risk) — ternary guard existed, missed on first read
+- H4 (parallel race condition) — counter was inside the lock
+- M16 (score weighting) — `min(1.0, ...)` caps the result
+
+**Severity overstatements corrected:**
+- C1/C2 described as "will crash at runtime" — actually caught by `except Exception` handlers, causing silent degradation (arguably worse, but different impact)
+- C4 (hardcoded version) downgraded from CRITICAL to LOW — cosmetic issue
+
+**Important findings added after self-review:**
+- H-CI: CI test glob was the root cause of C1/C2 going undetected
+- H-TEST: Mock-based tests masked interface bugs
+- H-STATE: Crescendo orchestrator had state leakage between runs
+- Crescendo/many_shot modules are not wired into the main pipeline at all
+
+**Meta-lesson:** Delegating review to sub-agents without independent verification led to false positives. Running the test suite — something a senior reviewer should always do — would have revealed the Mock masking pattern immediately.
+
+---
+
+*Review generated from full codebase analysis of 105 Python modules, 32 test files, CI/CD configuration, Dockerfile, and project configuration. Revised after self-critique and verification.*
