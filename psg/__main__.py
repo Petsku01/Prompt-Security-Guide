@@ -124,7 +124,7 @@ def _list_catalogs(path: str) -> int:
             count = len(attacks)
             desc = data.get("description", "")[:50]
             catalogs.append((f.name, count, desc))
-        except Exception:
+        except (json.JSONDecodeError, OSError, ValueError):
             catalogs.append((f.name, -1, "(invalid JSON)"))
     
     # Also check profiles subdirectory
@@ -137,7 +137,7 @@ def _list_catalogs(path: str) -> int:
                 count = len(attacks)
                 desc = data.get("description", "")[:50]
                 catalogs.append((f"profiles/{f.name}", count, desc))
-            except Exception:
+            except (json.JSONDecodeError, OSError, ValueError):
                 catalogs.append((f"profiles/{f.name}", -1, "(invalid JSON)"))
     
     if not catalogs:

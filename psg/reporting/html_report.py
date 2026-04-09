@@ -239,68 +239,18 @@ def _generate_rows(results: list[AttemptResult]) -> str:
     return '\n'.join(rows)
 
 
-def write_html_report(
-    path: str,
-    summary: RunSummary,
-    results: list[AttemptResult],
-    model: str = "unknown",
-    catalog: str = "unknown",
-) -> None:
-    """Write HTML dashboard report.
-    
-    Args:
-        path: Output file path
-        summary: Run summary statistics
-        results: List of attempt results
-        model: Model name
-        catalog: Catalog name
-    """
-    p = Path(path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    
-    failed = sum(1 for r in results if r.error)
-    defended = summary.total - summary.flagged - failed
-    defense_rate = round((defended / summary.total * 100) if summary.total > 0 else 0, 1)
-    progress_class = "danger" if defense_rate < 70 else ""
-    
-    html_content = HTML_TEMPLATE.substitute(
-        total=summary.total,
-        defended=defended,
-        flagged=summary.flagged,
-        failed=failed,
-        defense_rate=defense_rate,
-        progress_class=progress_class,
-        results_rows=_generate_rows(results),
-        duration=round(summary.duration_seconds, 2),
-        model=_escape(model),
-        catalog=_escape(catalog),
-    )
-    
-    p.write_text(html_content, encoding="utf-8")
-
-
 def generate_html_string(
     summary: RunSummary,
     results: list[AttemptResult],
     model: str = "unknown",
     catalog: str = "unknown",
 ) -> str:
-    """Generate HTML report as string.
-    
-    Args:
-        summary: Run summary statistics
-        results: List of attempt results
-        model: Model name
-        catalog: Catalog name
-        
-    Returns:
-        HTML content as string
-    """
+    """Generate HTML report as string."""
     failed = sum(1 for r in results if r.error)
     defended = summary.total - summary.flagged - failed
     defense_rate = round((defended / summary.total * 100) if summary.total > 0 else 0, 1)
     progress_class = "danger" if defense_rate < 70 else ""
-    
+
     return HTML_TEMPLATE.substitute(
         total=summary.total,
         defended=defended,
@@ -312,4 +262,20 @@ def generate_html_string(
         duration=round(summary.duration_seconds, 2),
         model=_escape(model),
         catalog=_escape(catalog),
+    )
+
+
+def write_html_report(
+    path: str,
+    summary: RunSummary,
+    results: list[AttemptResult],
+    model: str = "unknown",
+    catalog: str = "unknown",
+) -> None:
+    """Write HTML dashboard report to file."""
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(
+        generate_html_string(summary, results, model, catalog),
+        encoding="utf-8",
     )

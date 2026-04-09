@@ -73,6 +73,31 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         help="Enable multi-turn attack execution (uses followups field)",
     )
     parser.add_argument(
+        "--attack-mode",
+        choices=["single", "crescendo", "many-shot"],
+        default="single",
+        help=(
+            "Attack strategy: 'single' (default, one prompt per attack), "
+            "'crescendo' (gradual multi-turn escalation, ~10 LLM calls/attack), "
+            "'many-shot' (in-context priming, ~1 LLM call with long context). "
+            "WARNING: crescendo multiplies LLM calls by --crescendo-turns."
+        ),
+    )
+    parser.add_argument(
+        "--crescendo-turns",
+        type=int,
+        default=7,
+        metavar="N",
+        help="Max turns per crescendo attack (default: 7)",
+    )
+    parser.add_argument(
+        "--many-shot-examples",
+        type=int,
+        default=10,
+        metavar="N",
+        help="Number of priming examples for many-shot (default: 10)",
+    )
+    parser.add_argument(
         "--with-defense",
         action="store_true",
         default=False,
@@ -188,6 +213,9 @@ def main(argv: list[str] | None = None) -> int:
         validate_urls=args.validate_urls,
         validate_dois=args.validate_dois,
         validation_timeout_seconds=args.validation_timeout,
+        attack_mode=args.attack_mode,
+        crescendo_turns=args.crescendo_turns,
+        many_shot_examples=args.many_shot_examples,
     )
 
     try:

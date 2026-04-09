@@ -21,17 +21,18 @@ logger = logging.getLogger(__name__)
 
 class PSGGuardMiddleware(BaseCallbackHandler):
     """LangChain callback middleware that screens LLM inputs and outputs.
-    
+
     Features:
     - Output screening via on_llm_end (blocks harmful responses)
     - Input screening via on_llm_start (blocks prompt injection attempts)
     - Configurable threshold (default 0.5)
     - Raises PSGSecurityException when harm_score >= threshold
-    
+    - fail_open: if False (default), classifier errors raise; if True, they pass through
+
     Usage:
         from langchain_openai import ChatOpenAI
         from psg.integrations.langchain import PSGGuardMiddleware
-        
+
         llm = ChatOpenAI(callbacks=[PSGGuardMiddleware(threshold=0.5)])
     """
 
@@ -40,12 +41,14 @@ class PSGGuardMiddleware(BaseCallbackHandler):
         threshold: float = 0.5,
         screen_input: bool = True,
         screen_output: bool = True,
+        fail_open: bool = False,
     ) -> None:
         if not 0.0 <= threshold <= 1.0:
             raise ValueError("threshold must be between 0.0 and 1.0")
         self.threshold = threshold
         self.screen_input = screen_input
         self.screen_output = screen_output
+        self.fail_open = fail_open
 
     def on_llm_start(
         self,
@@ -73,8 +76,12 @@ class PSGGuardMiddleware(BaseCallbackHandler):
         try:
             result = classify_response_v2(text)
         except Exception as exc:
-            logger.warning("PSG classification failed for %s: %s", direction, exc)
-            return  # Fail open - don't block on classifier errors
+            if self.fail_open:
+                logger.warning("PSG classification failed for %s (fail_open=True): %s", direction, exc)
+                return
+            raise PSGSecurityException(
+                f"PSG classifier error for {direction} (fail_open=False): {exc}"
+            ) from exc
         
         logger.debug(
             "PSG %s check: harm_score=%.2f, threshold=%.2f, labels=%s",
@@ -123,13 +130,15 @@ class AsyncPSGGuardMiddleware(AsyncCallbackHandler):
         threshold: float = 0.5,
         screen_input: bool = True,
         screen_output: bool = True,
+        fail_open: bool = False,
     ) -> None:
         if not 0.0 <= threshold <= 1.0:
             raise ValueError("threshold must be between 0.0 and 1.0")
         self.threshold = threshold
         self.screen_input = screen_input
         self.screen_output = screen_output
-        self._sync = PSGGuardMiddleware(threshold, screen_input, screen_output)
+        self.fail_open = fail_open
+        self._sync = PSGGuardMiddleware(threshold, screen_input, screen_output, fail_open)
 
     async def on_llm_start(
         self,

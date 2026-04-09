@@ -1,9 +1,12 @@
 """Plugin base classes and registry."""
 from __future__ import annotations
 
+import logging
 import sys
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
+
+logger = logging.getLogger(__name__)
 
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
@@ -108,8 +111,7 @@ class PluginRegistry:
                 name = getattr(plugin, "name", ep.name)
                 target[name] = plugin
             except Exception as e:
-                # Log but don't fail on plugin load errors
-                print(f"Warning: Failed to load plugin {ep.name}: {e}")
+                logger.warning("Failed to load plugin %s: %s", ep.name, e)
     
     def register_detector(self, plugin: DetectorPlugin) -> None:
         """Register a detector plugin programmatically."""

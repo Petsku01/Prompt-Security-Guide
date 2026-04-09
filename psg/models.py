@@ -89,3 +89,6 @@ class AppConfig:
     validate_urls: bool = False  # Enable online URL validation in classifier
     validate_dois: bool = False  # Enable online DOI validation in classifier
     validation_timeout_seconds: float = 5.0
+    attack_mode: str = "single"  # single, crescendo, many-shot
+    crescendo_turns: int = 7
+    many_shot_examples: int = 10

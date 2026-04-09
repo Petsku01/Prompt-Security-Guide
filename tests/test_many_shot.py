@@ -19,15 +19,15 @@ from psg.models import AppConfig, Attack, AttemptResult
 def mock_client():
     """Mock LLM client."""
     client = Mock()
-    client.chat.return_value = Mock(content="This is the final harmful response.")
+    client.chat_multi_turn.return_value = Mock(content="This is the final harmful response.")
     return client
 
 
 @pytest.fixture
 def mock_detector():
-    """Mock security detector."""
+    """Mock security detector that implements Detector protocol (classify method)."""
     detector = Mock()
-    detector.detect.return_value = Mock(flagged=False, labels=[])
+    detector.classify.return_value = Mock(attack_successful=False)
     return detector
 
 
@@ -107,25 +107,25 @@ class TestManyShotOrchestrator:
     def test_check_success_with_detector(self, mock_client, app_config):
         orchestrator = ManyShotOrchestrator(mock_client, app_config)
         detector = Mock()
-        detector.detect.return_value = Mock(flagged=True, labels=["harmful"])
-        
-        result = orchestrator._check_success("Some response", detector)
-        assert result is True  # Flagged = harmful content = success
-    
+        detector.classify.return_value = Mock(attack_successful=True)
+
+        result = orchestrator._check_success("Some response", "test prompt", detector)
+        assert result is True
+
     def test_check_success_with_refusal(self, mock_client, app_config):
         orchestrator = ManyShotOrchestrator(mock_client, app_config)
         detector = Mock()
-        detector.detect.return_value = Mock(flagged=False, labels=[])
-        
-        result = orchestrator._check_success("I cannot help with that", detector)
-        assert result is False  # Refusal = not successful
+        detector.classify.return_value = Mock(attack_successful=False)
+
+        result = orchestrator._check_success("I cannot help with that", "test prompt", detector)
+        assert result is False
     
     def test_execute_successful_attack(self, mock_client, app_config, attack, mock_detector):
         """Test successful many-shot attack."""
         orchestrator = ManyShotOrchestrator(mock_client, app_config, num_examples=5)
-        
+
         # Mock detector to flag as successful
-        mock_detector.detect.return_value = Mock(flagged=True, labels=["harmful"])
+        mock_detector.classify.return_value = Mock(attack_successful=True)
         
         result = orchestrator.execute(attack, mock_detector)
         
@@ -137,12 +137,12 @@ class TestManyShotOrchestrator:
     def test_execute_with_system_prompt(self, mock_client, app_config, attack, mock_detector):
         """Test execution with custom system prompt."""
         orchestrator = ManyShotOrchestrator(mock_client, app_config, num_examples=3)
-        
-        with patch.object(orchestrator.client, 'chat') as mock_chat:
+
+        with patch.object(orchestrator.client, 'chat_multi_turn') as mock_chat:
             mock_chat.return_value = Mock(content="Response")
-            
+
             orchestrator.execute(attack, mock_detector, system_prompt="Be helpful")
-            
+
             calls = mock_chat.call_args_list
             assert len(calls) > 0
             messages = calls[0][1].get('messages', [])
@@ -151,7 +151,7 @@ class TestManyShotOrchestrator:
     def test_execute_llm_error(self, mock_client, app_config, attack, mock_detector):
         """Test handling of LLM error."""
         orchestrator = ManyShotOrchestrator(mock_client, app_config)
-        mock_client.chat.side_effect = LLMError("Connection failed")
+        mock_client.chat_multi_turn.side_effect = LLMError("Connection failed")
         
         result = orchestrator.execute(attack, mock_detector)
         
@@ -161,7 +161,7 @@ class TestManyShotOrchestrator:
     def test_execute_empty_response(self, mock_client, app_config, attack, mock_detector):
         """Test with empty response from model."""
         orchestrator = ManyShotOrchestrator(mock_client, app_config)
-        mock_client.chat.return_value = Mock(content="")
+        mock_client.chat_multi_turn.return_value = Mock(content="")
         
         result = orchestrator.execute(attack, mock_detector)
         
