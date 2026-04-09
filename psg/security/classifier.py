@@ -15,7 +15,8 @@ from ..validation.online import validate_doi, validate_url
 
 REFUSAL_PATTERNS: list[re.Pattern[str]] = [
     # Direct refusals - UPDATED 2026-03-21: added fulfill, complete, support, participate
-    re.compile(r"\bI (cannot|can't|won't|will not|am not able to|am unable to) (help|assist|provide|create|write|generate|give|offer|do that|do this|comply|fulfill|complete|support|participate in)\b", re.IGNORECASE),
+    # UPDATED 2026-04-09: added "and will not" / "and won't" compound refusals
+    re.compile(r"\bI (cannot|can't|won't|will not|am not able to|am unable to)( and (will not|won't))? (help|assist|provide|create|write|generate|give|offer|do that|do this|comply|fulfill|complete|support|participate in)\b", re.IGNORECASE),
     re.compile(r"\bI('m| am) (unable|not able|not going) to\b", re.IGNORECASE),
     re.compile(r"\bI (must|have to|need to) (decline|refuse|reject)\b", re.IGNORECASE),
     re.compile(r"\bI (can't|cannot|won't) (do|fulfill|complete|comply with) (that|this|your request)\b", re.IGNORECASE),

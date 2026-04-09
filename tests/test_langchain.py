@@ -128,15 +128,28 @@ def test_output_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> No
     guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="harmful content")))
 
 
-def test_fails_open_on_classifier_error(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fails_closed_on_classifier_error(monkeypatch: pytest.MonkeyPatch) -> None:
     guard = PSGGuardMiddleware(threshold=0.5)
-    
+
     def _classify(text: str) -> ClassificationResult:
         raise RuntimeError("classifier crashed")
 
     monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", _classify)
 
-    # Should not raise - fails open
+    # Default fail_open=False: should raise on classifier error
+    with pytest.raises(PSGSecurityException, match="classifier error"):
+        guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="some text")))
+
+
+def test_fails_open_on_classifier_error_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+    guard = PSGGuardMiddleware(threshold=0.5, fail_open=True)
+
+    def _classify(text: str) -> ClassificationResult:
+        raise RuntimeError("classifier crashed")
+
+    monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", _classify)
+
+    # fail_open=True: should not raise
     guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="some text")))
 
 

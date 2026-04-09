@@ -14,8 +14,12 @@ from harmful keyword matching.
 """
 
 from __future__ import annotations
+
+import logging
+import threading
 from dataclasses import dataclass
-from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -60,7 +64,7 @@ class WildGuardClassifier:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
             
-            print(f"Loading WildGuard model: {self.model_name}...")
+            logger.info("Loading WildGuard model: %s...", self.model_name)
             
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -69,11 +73,11 @@ class WildGuardClassifier:
                 device_map="auto" if torch.cuda.is_available() else None,
                 low_cpu_mem_usage=True,
             )
-            print("WildGuard model loaded successfully!")
+            logger.info("WildGuard model loaded successfully")
             
         except Exception as e:
-            print(f"Warning: Could not load WildGuard model: {e}")
-            print("Falling back to regex-based classification")
+            logger.warning("Could not load WildGuard model: %s", e)
+            logger.warning("Falling back to regex-based classification")
             self.model = None
     
     def _format_prompt(self, user_prompt: str, response: str) -> str:
@@ -213,21 +217,24 @@ Analyze the above conversation. Classify:
                     harmful_labels=["wildguard_harmful"] if response_harmful else [],
                 )
             except Exception as e:
-                print(f"WildGuard inference error: {e}, falling back to regex")
+                logger.warning("WildGuard inference error: %s, falling back to regex", e)
         
         # Fallback to regex
         return self._regex_fallback(response)
 
 
-# Singleton instance
-_classifier: Optional[WildGuardClassifier] = None
+# Singleton instance with thread-safe initialization
+_classifier: WildGuardClassifier | None = None
+_classifier_lock = threading.Lock()
 
 
 def get_wildguard_classifier() -> WildGuardClassifier:
-    """Get or create the WildGuard classifier singleton."""
+    """Get or create the WildGuard classifier singleton (thread-safe)."""
     global _classifier
     if _classifier is None:
-        _classifier = WildGuardClassifier()
+        with _classifier_lock:
+            if _classifier is None:
+                _classifier = WildGuardClassifier()
     return _classifier
 
 
