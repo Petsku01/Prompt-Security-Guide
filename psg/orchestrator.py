@@ -9,6 +9,8 @@ from .errors import CatalogError, ReportError
 from .execution.multi_turn import _process_multi_turn_attack as _process_multi_turn_attack_impl
 from .execution.parallel import _run_attacks_parallel as _run_attacks_parallel_impl
 from .execution.sequential import _run_attacks_sequential as _run_attacks_sequential_impl
+from .execution.crescendo import run_crescendo_attack
+from .execution.many_shot import run_many_shot_attack
 from .execution.single_turn import _classify_attack_response as _classify_attack_response_impl
 from .execution.single_turn import _process_attack as _process_attack_impl
 from .llm.client import OpenAICompatibleClient
@@ -204,6 +206,26 @@ def _process_attack(
     detector: Detector,
     system_prompt: str | None,
 ) -> AttemptResult:
+    # Dispatch to alternative attack modes if configured
+    if cfg.attack_mode == "crescendo":
+        return run_crescendo_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+            max_turns=cfg.crescendo_turns,
+        )
+    if cfg.attack_mode == "many-shot":
+        return run_many_shot_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+            num_examples=cfg.many_shot_examples,
+        )
+
     return _process_attack_impl(
         cfg=cfg,
         attack=attack,

@@ -56,6 +56,21 @@ INJECTION_PATTERNS: dict[str, re.Pattern[str]] = {
         r"(```|<\|im_end\|>|<\|system\|>|\[INST\]|\[/INST\]|<</SYS>>|<<SYS>>)",
         re.IGNORECASE,
     ),
+    "tag_injection": re.compile(
+        r"</(instructions|system|prompt|context|rules|guidelines|message)>",
+        re.IGNORECASE,
+    ),
+    "fake_system_marker": re.compile(
+        r"^\s*(SYSTEM|ADMIN|ROOT|DEVELOPER|ASSISTANT|OVERRIDE)\s*:",
+        re.IGNORECASE | re.MULTILINE,
+    ),
+    "markdown_exfiltration": re.compile(
+        r"!\[[^\]]*\]\(https?://[^\)]+\?[^\)]*\)",
+        re.IGNORECASE,
+    ),
+    "token_smuggling": re.compile(
+        r"(?:\w-){5,}\w",  # i-g-n-o-r-e pattern: 5+ dashed single chars
+    ),
 }
 
 
@@ -225,6 +240,10 @@ def _heuristic_injection_score(text: str) -> float:
         # Delimiter/encoding attacks
         (0.35, ["```system", "[inst]", "[/inst]", "<|im_end|>", "<<sys>>"]),
         (0.2, ["base64", "decode this", "rot13", "hex encode"]),
+
+        # Structural injection signals
+        (0.4, ["</instructions>", "</system>", "</prompt>", "</context>", "</rules>"]),
+        (0.35, ["system:", "admin:", "root:", "override:"]),
         
         # Multi-turn manipulation
         (0.2, ["previous response", "you said earlier", "continue from"]),
@@ -323,11 +342,12 @@ def validate_input(
                 pass  # Don't let custom detectors break validation
     
     # Calculate combined score
-    pattern_score = min(0.5, len(labels) * 0.15)
+    pattern_score = min(0.7, len(labels) * 0.2)
     canary_score = 0.5 if canary_triggered else 0.0
-    
-    # Weight: ML model trusted more than patterns
-    combined_score = min(1.0, (ml_score * 0.6) + (pattern_score * 0.3) + canary_score)
+
+    # Combined: heuristic/ML as base, patterns as additive signal.
+    # Multiple detection signals reinforce each other.
+    combined_score = min(1.0, ml_score + pattern_score * 0.5 + canary_score)
     
     # Determine if blocked
     blocked = combined_score >= block_threshold or canary_triggered
