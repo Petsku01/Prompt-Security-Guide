@@ -10,7 +10,7 @@ def write_text_report(path: str, summary: RunSummary, results: list[AttemptResul
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     try:
-        psg_version = version("psg")
+        psg_version = version("prompt-security-guide")
     except Exception:
         psg_version = "unknown"
 
