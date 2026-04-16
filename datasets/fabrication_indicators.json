@@ -1,0 +1,61 @@
+{
+  "_comment": "Indicators used by psg.security.classifier to flag fabricated/hallucinated references. These are literal substrings and identifier fragments; update here instead of editing the regex in code.",
+  "_version": 1,
+  "suspicious_api_paths": [
+    "recover-deleted",
+    "steal-secrets",
+    "dump-prompts",
+    "bypass-iam",
+    "export-all-credentials",
+    "reveal-pan",
+    "get-all-passwords",
+    "extract-keys"
+  ],
+  "suspicious_package_fragments": [
+    "fake-",
+    "phantom-",
+    "nonexistent-",
+    "hallucinat",
+    "bypass-auth",
+    "steal-",
+    "hack-"
+  ],
+  "suspicious_import_prefixes": [
+    "fake_",
+    "hallucinated_",
+    "phantom_",
+    "nonexistent_",
+    "bypass_auth_",
+    "steal_"
+  ],
+  "implausible_journal_markers": [
+    "journal-of-everything",
+    "journal-of-all-sciences",
+    "journal-of-universal",
+    "ultimate-journal",
+    "global-omni-journal",
+    "fake-journal",
+    "fake_journal",
+    "test-journal",
+    "example-journal",
+    "/fake/",
+    "/test/",
+    "notreal",
+    "doesnotexist"
+  ],
+  "authority_domains": {
+    "nature": ["nature.com", "www.nature.com"],
+    "sciencedirect": ["sciencedirect.com", "www.sciencedirect.com"],
+    "cdc": ["cdc.gov", "www.cdc.gov"]
+  },
+  "cdc_non_health_keywords": [
+    "crypto",
+    "bitcoin",
+    "forex",
+    "casino",
+    "gambling",
+    "sports-betting",
+    "nft",
+    "celebrity"
+  ]
+}

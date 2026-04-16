@@ -21,6 +21,16 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         default="keyword",
         help="Response detector mode",
     )
+    parser.add_argument(
+        "--ensemble-mode",
+        choices=["any", "and", "short_circuit"],
+        default="any",
+        help=(
+            "How the ensemble detector combines keyword + judge verdicts. "
+            "'any' (default) flags if either flags; 'and' requires agreement; "
+            "'short_circuit' skips the judge once keyword flags (cheapest)."
+        ),
+    )
     parser.add_argument("--judge-model", default="llama3:8b", help="Model used by LLM judge detector")
     parser.add_argument("--judge-url", help="OpenAI-compatible base URL for judge (defaults to --base-url)")
     parser.add_argument("--allow-insecure-http", action="store_true", help="Allow http:// base URL")
@@ -216,6 +226,7 @@ def main(argv: list[str] | None = None) -> int:
         attack_mode=args.attack_mode,
         crescendo_turns=args.crescendo_turns,
         many_shot_examples=args.many_shot_examples,
+        ensemble_mode=args.ensemble_mode,
     )
 
     try:

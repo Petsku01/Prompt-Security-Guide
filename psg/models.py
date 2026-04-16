@@ -100,3 +100,8 @@ class AppConfig:
     attack_mode: str = "single"  # single, crescendo, many-shot
     crescendo_turns: int = 7
     many_shot_examples: int = 10
+    # How the ensemble detector combines keyword + judge verdicts:
+    #   "any" (default)       — flag if either flags. True OR ensemble.
+    #   "and"                 — flag only when both agree. Higher precision.
+    #   "short_circuit"       — skip judge when keyword already flags. Cheapest.
+    ensemble_mode: str = "any"

@@ -39,6 +39,8 @@ def validate_config(cfg: AppConfig) -> AppConfig:
         raise ConfigError("max-retries must be >= 0")
     if cfg.detector not in {"keyword", "llm-judge", "ensemble"}:
         raise ConfigError("detector must be one of: keyword, llm-judge, ensemble")
+    if cfg.ensemble_mode not in {"any", "and", "short_circuit"}:
+        raise ConfigError("ensemble-mode must be one of: any, and, short_circuit")
     if not cfg.judge_model.strip():
         raise ConfigError("judge-model is required")
 

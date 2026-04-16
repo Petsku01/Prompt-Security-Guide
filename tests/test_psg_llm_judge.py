@@ -207,7 +207,8 @@ def test_ensemble_detector_merges_results() -> None:
     assert merged.raw_text_length == 5
 
 
-def test_ensemble_short_circuits_when_keyword_flags_harm() -> None:
+def test_ensemble_short_circuit_mode_skips_judge_on_keyword_harm() -> None:
+    """Explicit short_circuit mode: judge is not called once keyword flags."""
     keyword_result = ClassificationResult(
         is_refusal=False,
         is_harmful=True,
@@ -227,12 +228,110 @@ def test_ensemble_short_circuits_when_keyword_flags_harm() -> None:
             reasoning=None,
         )
     )
-    detector = EnsembleDetector(keyword=_StubKeywordDetector(keyword_result), llm_judge=LLMJudgeDetector(judge=judge))
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_result),
+        llm_judge=LLMJudgeDetector(judge=judge),
+        mode="short_circuit",
+    )
 
     merged = detector.classify(prompt="p", response="r")
 
     assert merged == keyword_result
     assert judge.calls == 0
+
+
+def test_ensemble_any_mode_always_runs_judge() -> None:
+    """Default 'any' mode always calls the judge so it can catch
+    cases the keyword detector misses (and, via harm_score, flag
+    responses the keyword detector incorrectly cleared)."""
+    keyword_safe = ClassificationResult(
+        is_refusal=True,
+        is_harmful=False,
+        attack_successful=False,
+        harm_score=0.1,
+        refusal_confidence=0.9,
+        harmful_labels=[],
+        compliance_detected=False,
+        has_disclaimer=False,
+        raw_text_length=10,
+    )
+    judge = _StubJudge(
+        LLMJudgeResult(
+            verdict="HARMFUL",
+            is_harmful=True,
+            confidence=0.9,
+            reasoning=None,
+        )
+    )
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_safe),
+        llm_judge=LLMJudgeDetector(judge=judge),
+        mode="any",
+    )
+    merged = detector.classify(prompt="p", response="r")
+
+    assert judge.calls == 1
+    # "any" means either → harmful, so judge pulls this up.
+    assert merged.attack_successful is True
+
+
+def test_ensemble_and_mode_requires_both_to_agree() -> None:
+    """'and' mode: flag only if keyword AND judge both say harmful."""
+    # Keyword flags, judge says safe — should NOT flag in 'and' mode.
+    keyword_harmful = ClassificationResult(
+        is_refusal=False,
+        is_harmful=True,
+        attack_successful=True,
+        harm_score=0.7,
+        refusal_confidence=0.1,
+        harmful_labels=["keyword_flag"],
+        compliance_detected=True,
+        has_disclaimer=False,
+        raw_text_length=10,
+    )
+    judge = _StubJudge(
+        LLMJudgeResult(
+            verdict="SAFE",
+            is_harmful=False,
+            confidence=0.9,
+            reasoning=None,
+        )
+    )
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_harmful),
+        llm_judge=LLMJudgeDetector(judge=judge),
+        mode="and",
+    )
+    merged = detector.classify(prompt="p", response="r")
+
+    assert merged.attack_successful is False
+
+
+def test_ensemble_any_mode_is_default() -> None:
+    """Regression: default construction uses 'any' (true OR ensemble),
+    not the old 'short_circuit' behavior."""
+    keyword_harmful = ClassificationResult(
+        is_refusal=False,
+        is_harmful=True,
+        attack_successful=True,
+        harm_score=0.9,
+        refusal_confidence=0.0,
+        harmful_labels=["keyword_flag"],
+        compliance_detected=False,
+        has_disclaimer=False,
+        raw_text_length=10,
+    )
+    judge = _StubJudge(
+        LLMJudgeResult(verdict="SAFE", is_harmful=False, confidence=0.9, reasoning=None)
+    )
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_harmful),
+        llm_judge=LLMJudgeDetector(judge=judge),
+    )
+    detector.classify(prompt="p", response="r")
+
+    # 'any' mode runs the judge even when keyword flagged.
+    assert judge.calls == 1
 
 
 def test_judge_prompt_truncates_very_long_fields() -> None:
