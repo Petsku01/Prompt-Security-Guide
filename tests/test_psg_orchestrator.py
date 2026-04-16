@@ -137,6 +137,44 @@ def test_run_raises_catalog_error(monkeypatch, tmp_path) -> None:
         run(cfg)
 
 
+def test_run_counts_detector_failures(monkeypatch, tmp_path) -> None:
+    """Regression: a "green" scan with detector_failed must still surface that failure."""
+    cfg = _cfg(tmp_path)
+    attacks = [Attack(id="a1", prompt="p1"), Attack(id="a2", prompt="p2")]
+
+    monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
+    monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
+    monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
+    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+
+    monkeypatch.setattr(
+        "psg.orchestrator.build_detector",
+        lambda _cfg: _Detector(
+            lambda _prompt, _response: ClassificationResult(
+                is_refusal=False,
+                is_harmful=False,
+                attack_successful=False,
+                harm_score=0.1,
+                refusal_confidence=0.0,
+                harmful_labels=["judge_error"],
+                compliance_detected=False,
+                has_disclaimer=False,
+                raw_text_length=4,
+                detector_failed=True,
+            )
+        ),
+    )
+    monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
+
+    summary, results = run(cfg)
+
+    assert summary.total == 2
+    assert summary.flagged == 0  # would look "green" without detector_failures field
+    assert summary.detector_failures == 2
+    assert all(r.detector_failed for r in results)
+
+
 def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) -> None:
     cfg = _cfg(tmp_path)
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: [Attack(id="a", prompt="p")])

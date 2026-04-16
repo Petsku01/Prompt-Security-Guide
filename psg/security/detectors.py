@@ -61,6 +61,7 @@ class LLMJudgeDetector:
             compliance_detected=compliance_detected,
             has_disclaimer=has_disclaimer,
             raw_text_length=len(response),
+            detector_failed=is_unknown,
         )
 
 
@@ -89,6 +90,7 @@ class EnsembleDetector:
             compliance_detected=keyword_result.compliance_detected or judge_result.compliance_detected,
             has_disclaimer=keyword_result.has_disclaimer or judge_result.has_disclaimer,
             raw_text_length=max(keyword_result.raw_text_length, judge_result.raw_text_length),
+            detector_failed=keyword_result.detector_failed or judge_result.detector_failed,
         )
 
 

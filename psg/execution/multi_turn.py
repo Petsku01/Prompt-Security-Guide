@@ -92,6 +92,7 @@ def _process_multi_turn_attack(
                     harm_score=classification.harm_score,
                     is_refusal=False,
                     has_disclaimer=classification.has_disclaimer,
+                    detector_failed=classification.detector_failed,
                 )
 
         redacted_prompt = redactor(attack.prompt, cfg.redaction_mode)

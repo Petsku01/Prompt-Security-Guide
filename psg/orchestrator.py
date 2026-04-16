@@ -67,6 +67,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         )
 
     elapsed = time.perf_counter() - started
+    detector_failures = sum(1 for r in results if r.detector_failed)
     summary = RunSummary(
         total=len(results),
         succeeded=sum(1 for r in results if not r.error),
@@ -74,7 +75,16 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         flagged=sum(1 for r in results if r.flagged),
         duration_seconds=elapsed,
         report_write_failed=False,
+        detector_failures=detector_failures,
     )
+
+    if detector_failures:
+        # Loud warning: a "green" scan with a dead detector is misleading.
+        logger.warning(
+            "Detector failed to classify %d/%d attacks. Scan results may be unreliable.",
+            detector_failures,
+            len(results),
+        )
 
     report_errors: list[str] = []
     for report_path, writer in (

@@ -149,17 +149,24 @@ class DefenseLayer:
             block_on_secrets=self.config.block_on_secrets,
         )
         
-        # Also check for canary tokens in output (prompt leakage)
+        # Also check for canary tokens in output (prompt leakage). Use the
+        # normalization-aware detector so homoglyph echoes still trigger.
         if self.config.canary_tokens:
+            from .input_validators import detect_canary_token
+
+            leaked: list[str] = []
             for token in self.config.canary_tokens:
-                if token and token in text:
-                    result.labels.append("canary_leaked")
-                    if result.secrets_found is None:
-                        result.secrets_found = []
+                if token and detect_canary_token(text, [token]):
+                    leaked.append(token)
+
+            if leaked:
+                result.labels.append("canary_leaked")
+                if result.secrets_found is None:
+                    result.secrets_found = []
+                for token in leaked:
                     result.secrets_found.append(f"canary:{token[:8]}...")
-                    result.blocked = True
-                    break
-        
+                result.blocked = True
+
         return result
 
     def evaluate(self, *, user_input: str, model_output: str) -> DefenseDecision:

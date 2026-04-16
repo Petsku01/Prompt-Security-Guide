@@ -128,11 +128,13 @@ async def test_openapi_docs(app):
 
 
 def test_server_config_defaults():
-    """Test ServerConfig defaults."""
+    """Test ServerConfig defaults — binds loopback by default."""
     config = ServerConfig()
-    assert config.host == "0.0.0.0"
+    # Hardening default: never bind 0.0.0.0 implicitly.
+    assert config.host == "127.0.0.1"
     assert config.port == 8000
     assert config.threshold == 0.5
+    assert config.api_key is None
 
 
 def test_server_config_custom_values():
@@ -191,3 +193,107 @@ async def test_health_endpoint_with_version(app):
     assert data["status"] == "ok"
     assert "version" in data
     assert isinstance(data["version"], str)
+
+
+# =========================================================================
+# Hardening tests (added in P1.1)
+# =========================================================================
+
+
+@pytest.fixture
+def auth_app():
+    """App configured with an API key required."""
+    reset_metrics()
+    return create_app(ServerConfig(api_key="s3cret-key", threshold=0.5))
+
+
+@pytest.mark.asyncio
+async def test_screen_requires_api_key_when_configured(auth_app):
+    response = await _request(auth_app, "POST", "/screen", json={"text": "hello"})
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_screen_accepts_correct_api_key(auth_app):
+    response = await _request(
+        auth_app,
+        "POST",
+        "/screen",
+        json={"text": "I cannot help."},
+        headers={"X-API-Key": "s3cret-key"},
+    )
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_screen_rejects_wrong_api_key(auth_app):
+    response = await _request(
+        auth_app,
+        "POST",
+        "/screen",
+        json={"text": "hello"},
+        headers={"X-API-Key": "wrong"},
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_health_does_not_require_api_key(auth_app):
+    response = await _request(auth_app, "GET", "/health")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_metrics_requires_api_key(auth_app):
+    response = await _request(auth_app, "GET", "/metrics")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_request_size_limit_rejects_oversized_body():
+    reset_metrics()
+    app = create_app(ServerConfig(max_request_bytes=128))
+    big_text = "x" * 256
+    response = await _request(app, "POST", "/screen", json={"text": big_text})
+    assert response.status_code == 413
+
+
+@pytest.mark.asyncio
+async def test_health_returns_503_when_classifier_raises(monkeypatch, app):
+    def _broken(_text: str):
+        raise RuntimeError("classifier kaput")
+
+    monkeypatch.setattr("psg.serve.classify_response_v2", _broken)
+    response = await _request(app, "GET", "/health")
+    assert response.status_code == 503
+    assert "classifier unavailable" in response.json()["detail"]
+
+
+def test_resolve_host_default_is_loopback():
+    from psg.serve import _resolve_host, build_parser
+
+    args = build_parser().parse_args([])
+    assert _resolve_host(args) == "127.0.0.1"
+
+
+def test_resolve_host_allow_public_binds_all_interfaces():
+    from psg.serve import _resolve_host, build_parser
+
+    args = build_parser().parse_args(["--allow-public"])
+    assert _resolve_host(args) == "0.0.0.0"
+
+
+def test_resolve_host_explicit_host_wins():
+    from psg.serve import _resolve_host, build_parser
+
+    args = build_parser().parse_args(["--host", "10.0.0.5"])
+    assert _resolve_host(args) == "10.0.0.5"
+
+
+def test_constant_time_eq_correctness():
+    from psg.serve import _constant_time_eq
+
+    assert _constant_time_eq("abc", "abc") is True
+    assert _constant_time_eq("abc", "abd") is False
+    assert _constant_time_eq("abc", "abcd") is False
+    assert _constant_time_eq("", "") is True

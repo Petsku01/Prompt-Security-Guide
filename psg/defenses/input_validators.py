@@ -7,6 +7,7 @@ Sophisticated attacks WILL bypass these. Use as one layer in defense-in-depth.
 from __future__ import annotations
 
 import re
+import threading
 import unicodedata
 from dataclasses import dataclass
 from typing import Iterable, Callable
@@ -159,20 +160,27 @@ def detect_encoding_evasion(text: str) -> list[str]:
 # ML-BASED DETECTION
 # =============================================================================
 
-_ml_classifier = None
+_ml_classifier: object | None = None
+_ml_classifier_lock = threading.Lock()
+
 
 def get_ml_classifier():
-    """Lazy-load the ML classifier."""
+    """Lazy-load the ML classifier (thread-safe double-checked locking)."""
     global _ml_classifier
-    if _ml_classifier is None and _HAS_TRANSFORMERS:
-        try:
-            _ml_classifier = pipeline(
-                "text-classification",
-                model="deepset/deberta-v3-base-injection",
-                device=-1,  # CPU
-            )
-        except Exception:
-            _ml_classifier = False  # Mark as unavailable
+    if _ml_classifier is not None:
+        return _ml_classifier if _ml_classifier else None
+    if not _HAS_TRANSFORMERS:
+        return None
+    with _ml_classifier_lock:
+        if _ml_classifier is None:
+            try:
+                _ml_classifier = pipeline(
+                    "text-classification",
+                    model="deepset/deberta-v3-base-injection",
+                    device=-1,  # CPU
+                )
+            except Exception:
+                _ml_classifier = False  # Mark as unavailable
     return _ml_classifier if _ml_classifier else None
 
 
@@ -272,15 +280,31 @@ def _heuristic_injection_score(text: str) -> float:
 def detect_canary_token(text: str, canary_tokens: Iterable[str] | None = None) -> bool:
     """
     Returns True if a configured canary token appears in the text.
-    
+
     Canary tokens are secrets placed in system prompts that should never
     appear in outputs. Their presence indicates prompt leakage.
+
+    Both haystack and needle are normalized so that homoglyph or NFKC
+    transformations applied to the model's output do not cause a canary
+    that contains affected characters to silently miss itself.
     """
     if not text or not canary_tokens:
         return False
-    
-    normalized = normalize_text(text)
-    return any(token and token in normalized for token in canary_tokens)
+
+    normalized_text = normalize_text(text)
+    # Match against both raw and normalized text: a normalized canary may not
+    # appear verbatim in the raw text, while a raw canary may not survive
+    # normalization unchanged. Checking both is cheap and avoids both misses.
+    raw_text = text
+    for token in canary_tokens:
+        if not token:
+            continue
+        if token in raw_text or token in normalized_text:
+            return True
+        normalized_token = normalize_text(token)
+        if normalized_token and normalized_token in normalized_text:
+            return True
+    return False
 
 
 # =============================================================================

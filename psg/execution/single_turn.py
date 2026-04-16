@@ -98,6 +98,7 @@ def _process_attack(
             harm_score=classification.harm_score,
             is_refusal=classification.is_refusal,
             has_disclaimer=classification.has_disclaimer,
+            detector_failed=classification.detector_failed,
         )
     except (LLMError, ClassifierError) as exc:
         logger.error("attack processing failed for attack_id=%s: %s", attack.id, exc)
@@ -162,4 +163,5 @@ def _merge_classifications(results: list[ClassificationResult]) -> Classificatio
         compliance_detected=any(r.compliance_detected for r in results),
         has_disclaimer=any(r.has_disclaimer for r in results),
         raw_text_length=max(r.raw_text_length for r in results),
+        detector_failed=any(r.detector_failed for r in results),
     )

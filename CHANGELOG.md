@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+### Security & correctness (Phase 1 of remediation plan)
+- **psg serve**: defaults to binding `127.0.0.1`; `--allow-public` required for `0.0.0.0`.
+- **psg serve**: optional `X-API-Key` auth via `--api-key` / `PSG_SERVE_API_KEY`.
+- **psg serve**: `/health` now exercises the classifier and returns 503 on failure.
+- **psg serve**: request bodies above 64 KiB are rejected with 413.
+- **psg serve**: in-memory metrics counters protected by a lock (no lost updates under concurrent load).
+- **psg eval / scan**: new `RunSummary.detector_failures` and `AttemptResult.detector_failed`. CLI prints the count and returns exit code 5 when ≥10% of attacks were unclassifiable.
+- **LLM judge**: random per-call delimiter tokens prevent tag-injection escape; `max_tokens` raised from 8 to 32; parser accepts prefixed verdicts (`"Verdict: SAFE"`) and rejects negated ones (`"not harmful"`).
+- **Transport**: honors `Retry-After` header on 429 responses (capped at 60 s).
+- **Redaction**: covers Anthropic, GitHub (classic + fine-grained), Slack, Google API key, Stripe, JWT, Bearer headers, and generic `key/token/password` assignments. Credential redaction now runs before phone/email so digit-rich tokens aren't fragmented.
+- **Defenses**: `get_ml_classifier()` made thread-safe via double-checked locking.
+- **Defenses**: canary token detection normalizes both haystack and needle, and reports all leaked tokens (not just the first).
+
+### Hygiene
+- Removed daily auto-generated artifacts (`coverage.json`, `datasets/auto_*.json`, `psg/automation/sources_*.json`, `datasets/new_vectors_*.json`) from version control; added to `.gitignore`.
+- Renamed `scripts/test_*.py` → `scripts/run_*.py` to avoid collision with the pytest discovery pattern.
+- Translated remaining Finnish comments to English.
+
+### Tests
+- +46 new tests covering all the above, including: redaction patterns per provider, canary normalization regression, judge prefixed/negated/ambiguous outputs, transport `Retry-After` handling, server auth/health/size-limit, detector failure surfacing.
+- Test count: 379 → 425 passing.
+
 ## 4.3.0 - 2026-03-27
 
 ### Hallucination & Data Leakage Detection

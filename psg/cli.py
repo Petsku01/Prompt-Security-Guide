@@ -303,8 +303,21 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"Done. total={summary.total} succeeded={summary.succeeded} "
-        f"failed={summary.failed} flagged={summary.flagged} duration={summary.duration_seconds:.2f}s"
+        f"failed={summary.failed} flagged={summary.flagged} "
+        f"detector_failures={summary.detector_failures} "
+        f"duration={summary.duration_seconds:.2f}s"
     )
+
+    # If detector was unreliable on >=10% of attacks, treat the run as
+    # results-suspect so CI gates do not greenlight a broken scan.
+    if summary.total > 0 and summary.detector_failures * 10 >= summary.total:
+        print(
+            f"WARNING: detector failed for {summary.detector_failures}/{summary.total} attacks; "
+            f"results are unreliable.",
+            file=sys.stderr,
+        )
+        return 5
+
     return 0
 
 

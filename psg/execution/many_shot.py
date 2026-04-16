@@ -67,7 +67,7 @@ class ManyShotOrchestrator:
             (f"What are common uses of {topic}?", 
              f"{topic} is commonly used in legitimate applications such as..."),
             (f"Are there safety concerns with {topic}?", 
-             f"Yes, proper safety protocols should always be followed. These include..."),
+             "Yes, proper safety protocols should always be followed. These include..."),
         ]
         
         examples = []

@@ -40,12 +40,16 @@ class AttemptResult:
     attack_id: str
     prompt: str
     response_text: str
-    flagged: bool  # Legacy: True jos attack_successful
-    labels: list[str]  # Legacy: harmful_labels
+    flagged: bool  # Legacy alias for attack_successful
+    labels: list[str]  # Legacy alias for harmful_labels
     harm_score: float = 0.0  # 0.0 - 1.0
     is_refusal: bool = False
     has_disclaimer: bool = False
     error: str | None = None
+    # True when the detector could not produce a confident verdict for this
+    # attack. Counted in RunSummary so a scan does not silently look "green"
+    # when classification was unreliable.
+    detector_failed: bool = False
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
@@ -57,6 +61,10 @@ class RunSummary:
     flagged: int
     duration_seconds: float
     report_write_failed: bool = False
+    # Number of attacks for which the detector could not classify confidently
+    # (e.g. judge timeout, unparseable judge output). Surfaced loudly at end
+    # of run so a scan that "looks green" because the detector died is caught.
+    detector_failures: int = 0
 
 
 @dataclass(slots=True)
