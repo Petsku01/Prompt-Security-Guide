@@ -306,7 +306,7 @@ def test_classify_inference_error_fallback(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_wildguard_singleton() -> None:
     """Test that get_wildguard_classifier returns singleton."""
-    from psg.security.wildguard_classifier import get_wildguard_classifier, _classifier
+    from psg.security.wildguard_classifier import get_wildguard_classifier
     
     # Reset singleton for test
     import psg.security.wildguard_classifier as wg_module

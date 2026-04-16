@@ -8,7 +8,6 @@ between layers that unit tests with bare Mock() objects cannot.
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -17,15 +16,12 @@ import pytest
 from psg.catalog import load_catalog
 from psg.checkpoint import JSONLCheckpoint
 from psg.execution.crescendo import CrescendoOrchestrator, run_crescendo_attack
-from psg.execution.many_shot import ManyShotOrchestrator, run_many_shot_attack
-from psg.execution.single_turn import _process_attack, _classify_attack_response
-from psg.execution.multi_turn import _process_multi_turn_attack
+from psg.execution.many_shot import run_many_shot_attack
+from psg.execution.single_turn import _process_attack
 from psg.llm.client import OpenAICompatibleClient
 from psg.llm.transport import Transport
-from psg.models import AppConfig, Attack, ClassificationInputMode
+from psg.models import AppConfig, Attack
 from psg.orchestrator import run
-from psg.reporting.json_report import write_json_report
-from psg.reporting.text_report import write_text_report
 from psg.security.detectors import KeywordDetector, build_detector
 
 

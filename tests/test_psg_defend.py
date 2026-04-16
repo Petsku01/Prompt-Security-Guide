@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import json
-import sys
-from io import StringIO
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -102,7 +100,7 @@ class TestCmdValidate:
         args.json = True
         args.no_ml = True
 
-        rc = cmd_validate(args)
+        cmd_validate(args)
         captured = capsys.readouterr()
         # JSON output should be parseable
         if captured.out:
@@ -215,11 +213,11 @@ class TestCmdInfo:
         # Create args with required attributes
         args = MagicMock(spec=[])
         args.json = False
-        
+
         # Just run and verify it doesn't crash
         try:
             rc = cmd_info(args)
-            captured = capsys.readouterr()
+            capsys.readouterr()
             assert rc in [0, 1]
         except (KeyError, AttributeError):
             pass  # Acceptable if config loading fails
@@ -228,10 +226,10 @@ class TestCmdInfo:
         """Test info command outputs valid JSON."""
         args = MagicMock()
         args.json = True
-        
+
         # Just run and verify it doesn't crash
         try:
-            rc = cmd_info(args)
+            cmd_info(args)
             captured = capsys.readouterr()
             # If output exists, should be valid JSON
             if captured.out:

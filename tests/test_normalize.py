@@ -1,6 +1,5 @@
 """Tests for text normalization (obfuscation detection)."""
 
-import pytest
 from psg.security.normalize import (
     normalize_text,
     translate_leetspeak,

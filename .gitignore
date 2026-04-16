@@ -40,4 +40,11 @@ models/
 # Ruff cache
 .ruff_cache/
 .coverage
+coverage.json
 htmlcov/
+
+# Auto-generated daily pipeline artifacts (write to artifacts/ instead)
+datasets/auto_*.json
+datasets/new_vectors_*.json
+psg/automation/sources_*.json
+artifacts/

@@ -49,11 +49,18 @@ def test_encoding_attacks_catalog_has_minimum_size_and_techniques() -> None:
 
 
 def test_target_catalogs_do_not_contain_unknown_categories() -> None:
-    paths = list(Path("datasets").glob("auto_*.json")) + [
-        Path("datasets/jailbreak_community.json"),
-        Path("datasets/obliteratus_attacks.json"),
-        Path("datasets/new_vectors_2026-03-06.json"),
-    ]
+    # auto_*.json and new_vectors_*.json are generated artifacts (gitignored);
+    # only assert against files that actually exist in the working tree.
+    candidate_paths = (
+        list(Path("datasets").glob("auto_*.json"))
+        + list(Path("datasets").glob("new_vectors_*.json"))
+        + [
+            Path("datasets/jailbreak_community.json"),
+            Path("datasets/obliteratus_attacks.json"),
+        ]
+    )
+    paths = [p for p in candidate_paths if p.exists()]
+    assert paths, "no candidate catalogs available for category audit"
 
     def _collect_unknowns(obj: object) -> list[str]:
         unknowns: list[str] = []
