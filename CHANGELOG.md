@@ -1,6 +1,72 @@
 # Changelog
 
-## Unreleased
+## 5.0.0 — 2026-04-16
+
+**Remediation release.** Five-phase hardening sweep: repo hygiene,
+security/correctness fixes, detection-quality improvements, test/CI
+maturity, and architecture cleanup. See
+[docs/MIGRATION_v4_to_v5.md](docs/MIGRATION_v4_to_v5.md) for the full
+upgrade checklist.
+
+### Highlights
+
+- **Safer server defaults.** `psg serve` binds `127.0.0.1` by default
+  (`--allow-public` opt-in), supports `X-API-Key` auth via
+  `PSG_SERVE_API_KEY`, enforces a 64 KiB request-body cap, and the
+  `/health` endpoint now actually exercises the classifier.
+- **Detector-failure visibility.** `RunSummary.detector_failures` counts
+  UNKNOWN verdicts; `psg scan` returns new **exit code 5** when ≥10% of
+  attacks were unclassifiable. A dead judge no longer silently
+  green-lights a scan.
+- **Classifier F1 0.9231** (up from 0.8475 on the expanded 42-example
+  golden set) thanks to new scoring gates: topic-discussion gate
+  (keywords without action signals cap at 0.3) and defensive-framing
+  gate (OWASP/NIST references cap at 0.3).
+- **Real ensemble detector.** `--ensemble-mode any` (default) always
+  runs both detectors so the judge can correct keyword false positives.
+  Old short-circuit behavior available as `--ensemble-mode short_circuit`.
+- **Crescendo and many-shot are first-class.** `AttemptResult.turns`
+  preserves the full dialogue; JSON reports include per-turn data.
+- **Real token-bucket rate limiter.** Replaces the min-interval gate
+  that serialized all parallel workers through one lock.
+- **Transport honors `Retry-After`** on 429 responses (capped 60 s).
+- **LLM judge hardened.** Random per-call delimiters prevent tag
+  injection. `max_tokens` raised 8 → 32. Parser accepts prefixed
+  verdicts, rejects negated/ambiguous ones.
+- **Expanded credential redaction.** Anthropic, GitHub (classic +
+  fine-grained), Slack, Google, Stripe, JWT, Bearer, generic `api_key=…`
+  assignments.
+- **Supply-chain hardening.** `WildGuardClassifier` pins the HuggingFace
+  model revision. `urllib.urlopen` replaced with `requests` throughout.
+- **CI hardened.** Three parallel jobs (test, quality, security) on
+  Ubuntu × {3.10, 3.11, 3.12} plus macOS × 3.12, with pip cache,
+  coverage gate (70%), bandit, pip-audit, and classifier F1 gate
+  (0.85).
+- **Repo hygiene.** 27 auto-generated daily artifacts untracked and
+  gitignored; auto-backup commit job disabled; Finnish comments and
+  docs translated to English.
+
+### Breaking changes
+
+See [docs/MIGRATION_v4_to_v5.md](docs/MIGRATION_v4_to_v5.md) for the
+complete list. Quick summary:
+
+- `psg serve` default bind `0.0.0.0` → `127.0.0.1`.
+- LangChain middleware fail-open → fail-closed (opt-in `fail_open=True`).
+- New exit code `5` on unreliable scans.
+- Three monkeypatch targets moved (e.g. `psg.orchestrator.redact_text`
+  → `psg.execution.single_turn.redact_text`).
+- Five `_process_attack` / `_process_multi_turn_attack` injection
+  parameters removed (had no external callers).
+
+### Deferred
+
+- **P2.3** — Calibrated scoring model replaces hand-tuned gates. Needs
+  ≥500-example labeled golden set.
+- **P4.4** — Streaming LLM client. Needs real-world E2E validation
+  against live OpenAI/Anthropic endpoints.
+
+---
 
 ### Architecture cleanup (Phase 4 of remediation plan)
 - **First-class conversation turns** (`psg/models.py`): new `ConversationTurn`
