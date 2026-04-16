@@ -372,7 +372,9 @@ def build_parser() -> argparse.ArgumentParser:
 def _resolve_host(args: argparse.Namespace) -> str:
     if args.host:
         return args.host
-    return "0.0.0.0" if args.allow_public else "127.0.0.1"
+    # Literal "0.0.0.0" is only returned when the caller explicitly passed
+    # --allow-public; the main() path also logs a warning before binding.
+    return "0.0.0.0" if args.allow_public else "127.0.0.1"  # nosec B104
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -405,7 +407,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Starting PSG server on {config.host}:{config.port}")
     print(f"Default threshold: {config.threshold}")
     print(f"X-API-Key auth: {auth_state}")
-    if host == "0.0.0.0":
+    if host == "0.0.0.0":  # nosec B104 — string comparison, warn only
         print(
             "WARNING: binding to 0.0.0.0 exposes this server on all interfaces.",
             file=sys.stderr,

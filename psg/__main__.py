@@ -45,9 +45,23 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("--path", default="datasets/", help="Path to catalog JSON file/directory")
 
     serve_parser = subparsers.add_parser("serve", help="Start screening API server")
-    serve_parser.add_argument("--host", default="0.0.0.0", help="Host to bind (default: 0.0.0.0)")
+    serve_parser.add_argument(
+        "--host",
+        default=None,
+        help="Host to bind (default: 127.0.0.1; use --allow-public for all interfaces)",
+    )
+    serve_parser.add_argument(
+        "--allow-public",
+        action="store_true",
+        help="Bind to 0.0.0.0 (all interfaces). Use only on trusted networks.",
+    )
     serve_parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
     serve_parser.add_argument("--threshold", type=float, default=0.5, help="Default threshold")
+    serve_parser.add_argument(
+        "--api-key",
+        default=None,
+        help="Require this X-API-Key on /screen, /screen/bulk, /metrics.",
+    )
     serve_parser.add_argument("--reload", action="store_true", help="Enable auto-reload")
 
     defend_parser = subparsers.add_parser("defend", help="Test prompt injection defenses")

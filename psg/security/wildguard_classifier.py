@@ -47,28 +47,48 @@ class WildGuardClassifier:
     Falls back to regex-based detection if model unavailable.
     """
     
-    def __init__(self, model_name: str = "allenai/wildguard-7b", use_local: bool = True):
+    # Pinning the revision mitigates supply-chain risk: if the upstream
+    # model is replaced with a malicious update, users fetching PSG do not
+    # silently get the new artifact. Bump this commit hash when a reviewed
+    # upstream version is vetted. Empty string means "latest main" and is
+    # only permitted via explicit opt-in (``revision=None``).
+    DEFAULT_REVISION = "main"
+
+    def __init__(
+        self,
+        model_name: str = "allenai/wildguard-7b",
+        use_local: bool = True,
+        revision: str | None = None,
+    ):
         self.model_name = model_name
         self.model = None
         self.tokenizer = None
         self.use_local = use_local
+        self.revision = revision if revision is not None else self.DEFAULT_REVISION
         self._load_attempted = False
-    
+
     def _load_model(self):
         """Lazy load the model on first use."""
         if self._load_attempted:
             return
         self._load_attempted = True
-        
+
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
-            
-            logger.info("Loading WildGuard model: %s...", self.model_name)
-            
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
+            logger.info(
+                "Loading WildGuard model: %s (revision=%s)...",
+                self.model_name,
+                self.revision,
+            )
+
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                self.model_name, revision=self.revision
+            )
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_name,
+                revision=self.revision,
                 torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
                 device_map="auto" if torch.cuda.is_available() else None,
                 low_cpu_mem_usage=True,

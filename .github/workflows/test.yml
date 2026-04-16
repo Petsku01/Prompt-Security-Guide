@@ -6,11 +6,21 @@ on:
   pull_request:
 
 jobs:
+  # --------------------------------------------------------------------------
+  # Main test matrix: ubuntu on 3.10/3.11/3.12, plus one macOS job on 3.12.
+  # Uses pip cache for speed. Uploads coverage artifact from the last job.
+  # --------------------------------------------------------------------------
   test:
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }} / py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         python-version: ['3.10', '3.11', '3.12']
+        include:
+          - os: macos-latest
+            python-version: '3.12'
 
     steps:
       - name: Checkout
@@ -20,30 +30,89 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+          pip install fastapi uvicorn httpx  # serve/test deps not in dev extra
 
-      - name: Run tests
-        run: python -m pytest tests/
+      - name: Run tests with coverage
+        run: python -m pytest tests/ --cov=psg --cov-report=term --cov-report=xml --cov-fail-under=70
+
+      - name: Upload coverage.xml
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: warn
 
       - name: CLI smoke test
         run: |
           python -m psg --help
           python -m psg catalog validate --path datasets/obliteratus_attacks.json
 
-      - name: Lint with ruff
-        run: |
-          pip install ruff
-          ruff check psg/ tests/
+  # --------------------------------------------------------------------------
+  # Lint, type-check, and classifier regression gate. Run once on Python 3.12
+  # rather than per matrix cell — they're not OS-sensitive.
+  # --------------------------------------------------------------------------
+  quality:
+    name: lint / types / classifier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
-      - name: Type check with mypy
+      - name: Install dependencies
         run: |
-          pip install mypy types-requests
-          mypy psg/ --ignore-missing-imports
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install types-requests
 
-      - name: Evaluate classifier (regression gate)
+      - name: Ruff
+        run: ruff check psg/ tests/
+
+      - name: Mypy
+        run: mypy psg/ --ignore-missing-imports
+
+      - name: Classifier regression gate
+        run: python -m psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
+
+  # --------------------------------------------------------------------------
+  # Security checks. bandit for code-level issues; pip-audit for CVEs in
+  # dependencies. Both are non-blocking review signals today (||: true) —
+  # promote to required once the repo is clean.
+  # --------------------------------------------------------------------------
+  security:
+    name: security (bandit + pip-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install tools
         run: |
-          python -m psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
+          python -m pip install --upgrade pip
+          pip install bandit pip-audit
+          pip install -e "."
+
+      - name: Bandit (skip low/medium confidence)
+        # -ll = only report medium+ severity, medium+ confidence.
+        # Exits non-zero only on findings so CI catches regressions.
+        run: bandit -r psg/ -ll
+
+      - name: pip-audit (fail on any known CVE in declared deps)
+        # Audit the project's declared dependencies rather than the installed
+        # environment so pip-audit doesn't trip on our own editable install.
+        run: pip-audit --strict .

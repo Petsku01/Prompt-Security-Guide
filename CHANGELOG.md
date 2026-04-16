@@ -2,6 +2,50 @@
 
 ## Unreleased
 
+### Test & CI maturity (Phase 3 of remediation plan)
+- **Spec-bound Mock fixtures** (`tests/conftest.py`): `mock_detector` and
+  `mock_llm_client` use `MagicMock(spec_set=...)` so calls to non-existent
+  methods (like the historical `detector.detect(...)` / `client.chat(messages=...)`
+  regressions) raise `AttributeError` instead of silently returning mocks.
+  Regression tests in `tests/test_conftest_fixtures.py` prove the guard
+  works.
+- **Property-based tests** (`tests/test_classifier_properties.py`) using
+  Hypothesis fuzz `classify_response_v2`, `calculate_harm_score`, and the
+  redaction layer with arbitrary Unicode input. Invariants verified: no
+  uncaught exceptions, scores always `finite ∈ [0, 1]`, `attack_successful
+  ⇒ is_harmful`, label lists sorted and unique, `RedactionMode.OFF` is
+  identity, `RedactionMode.STRICT` preserves non-alnum shape, `PARTIAL` is
+  idempotent. ~1,000 random examples per run.
+- **Integration failure-mode scenarios** (`tests/test_integration.py`) run
+  the real Transport → Client → Orchestrator stack with only `requests.post`
+  mocked. New cases: `Retry-After` honored on 429, 5xx recovery, transport
+  exhaustion, malformed-JSON error surfacing, network-exception retries.
+  Plus an ensemble-mode integration test that exercises the Phase 2.5
+  ensemble wiring.
+- **CI workflow overhauled** (`.github/workflows/test.yml`):
+  - Three jobs (`test`, `quality`, `security`) run in parallel.
+  - `test` matrix: Ubuntu × {3.10, 3.11, 3.12} plus macOS × 3.12. Pip cache.
+  - `--cov=psg --cov-fail-under=70` enforces a coverage floor. Current: 71%.
+  - Coverage XML artifact uploaded from the 3.12 Ubuntu job.
+  - `quality`: ruff, mypy, classifier F1 ≥ 0.85 regression gate.
+  - `security`: `bandit -r psg/ -ll` (code-level) and `pip-audit --strict .`
+    (CVE scan of declared dependencies). Both run on every PR.
+- **Supply-chain hardening**:
+  - `WildGuardClassifier` now pins the HuggingFace model `revision` (defaults
+    to `"main"`, overridable per instance) so upstream replacements do not
+    silently reach users. Resolves bandit B615.
+  - `psg/automation/generator.default_generate_func` switched from
+    `urllib.request.urlopen` to `requests.post` — consistent with the rest
+    of the stack and resolves bandit B310.
+  - `nosec B104` annotations with justifications on the three legitimate
+    false positives (strings `"0.0.0.0"` in SSRF denylists and in the
+    `--allow-public` branch).
+- **`psg serve` top-level subcommand in `__main__.py`** now advertises the
+  Phase 1 hardened defaults (127.0.0.1 + `--allow-public` opt-in) rather
+  than the pre-hardening help text, and exposes `--api-key` at the top-level
+  parser too.
+- **Hypothesis added to `pyproject.toml` dev extras.**
+
 ### Detection quality (Phase 2 of remediation plan)
 - **Golden dataset** expanded from 20 → 42 examples covering known FP classes
   (polite refusal + safe redirect, educational explanation of harmful topic,

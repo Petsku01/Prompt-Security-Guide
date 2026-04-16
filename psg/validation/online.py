@@ -12,7 +12,7 @@ import requests
 DEFAULT_TIMEOUT_SECONDS = 5.0
 DEFAULT_MAX_REQUESTS_PER_SECOND = 10.0
 _USER_AGENT = "PromptSecurityGuide/4.x validation"
-_BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
+_BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}  # nosec B104 — SSRF denylist, not a bind target
 _BLOCKED_NETWORKS = (
     ipaddress.ip_network("127.0.0.0/8"),
     ipaddress.ip_network("10.0.0.0/8"),

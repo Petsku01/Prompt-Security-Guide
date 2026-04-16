@@ -608,3 +608,179 @@ class TestDetectorBuildIntegration:
         )
         with pytest.raises(ValueError, match="unknown detector"):
             build_detector(cfg)
+
+
+# ---------------------------------------------------------------------------
+# Failure-mode integration scenarios (Phase 3.3)
+#
+# These exercise the real Transport → Client → Orchestrator stack with only
+# the raw HTTP call mocked, so the retry/backoff/classification paths all
+# run end-to-end. If we regressed one of those paths (e.g. broke the
+# Retry-After honoring), these catch it; the unit tests can't.
+# ---------------------------------------------------------------------------
+
+class TestTransportFailureScenarios:
+    """Real orchestrator + real transport, only requests.post mocked."""
+
+    def _patch_requests(self, monkeypatch, responder):
+        """Replace requests.post in the transport module with ``responder``."""
+        monkeypatch.setattr("psg.llm.transport.requests.post", responder)
+
+    def _fake_resp(self, status: int, body: dict | str, headers: dict | None = None):
+        """Build a minimal fake Response-like object for requests.post."""
+
+        class _R:
+            def __init__(self):
+                self.status_code = status
+                self.text = body if isinstance(body, str) else json.dumps(body)
+                self._body = body
+                self.headers = headers or {}
+
+            def json(self):
+                if isinstance(self._body, dict):
+                    return self._body
+                raise ValueError("not json")
+
+        return _R()
+
+    def test_retry_after_is_honored_on_429(self, app_config, monkeypatch):
+        """A 429 with Retry-After triggers _sleep(retry_after=...), not exponential."""
+        call_count = {"n": 0}
+
+        def _responder(*_args, **_kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                return self._fake_resp(
+                    429, "rate limited", headers={"Retry-After": "3"}
+                )
+            return self._fake_resp(200, SAFE_RESPONSE)
+
+        self._patch_requests(monkeypatch, _responder)
+
+        sleeps: list[tuple[int, float | None]] = []
+        monkeypatch.setattr(
+            Transport,
+            "_sleep",
+            lambda _self, attempt, *, retry_after=None: sleeps.append((attempt, retry_after)),
+        )
+
+        summary, _ = run(app_config)
+
+        assert summary.total == 2
+        # At least one retry hit with retry_after=3.0 (the server hint).
+        assert any(ra == 3.0 for _, ra in sleeps), (
+            f"Retry-After not honored; sleeps={sleeps}"
+        )
+
+    def test_transport_retries_5xx_then_succeeds(self, app_config, monkeypatch):
+        """500 -> 200 should recover without surfacing an error to orchestrator."""
+        call_count = {"n": 0}
+
+        def _responder(*_args, **_kwargs):
+            call_count["n"] += 1
+            if call_count["n"] <= 2:
+                return self._fake_resp(500, "server error")
+            return self._fake_resp(200, SAFE_RESPONSE)
+
+        self._patch_requests(monkeypatch, _responder)
+        monkeypatch.setattr(
+            Transport, "_sleep", lambda *_a, **_kw: None
+        )  # skip actual sleeping
+
+        summary, results = run(app_config)
+
+        assert summary.total == 2
+        assert summary.failed == 0  # transport recovered internally
+        assert all(not r.error for r in results)
+
+    def test_transport_exhaustion_surfaces_as_attempt_error(
+        self, app_config, monkeypatch
+    ):
+        """Persistent 500s exhaust retries and become per-attack errors."""
+
+        def _responder(*_args, **_kwargs):
+            return self._fake_resp(500, "down")
+
+        self._patch_requests(monkeypatch, _responder)
+        monkeypatch.setattr(Transport, "_sleep", lambda *_a, **_kw: None)
+
+        summary, results = run(app_config)
+
+        # Both attacks should fail with a transport error, not silently pass.
+        assert summary.failed == 2
+        assert all(r.error for r in results)
+
+    def test_malformed_json_surfaces_as_attempt_error(
+        self, app_config, monkeypatch
+    ):
+        """A 200 with non-JSON body must become a per-attack error, not a crash."""
+
+        def _responder(*_args, **_kwargs):
+            return self._fake_resp(200, "<html>not json</html>")
+
+        self._patch_requests(monkeypatch, _responder)
+        monkeypatch.setattr(Transport, "_sleep", lambda *_a, **_kw: None)
+
+        summary, results = run(app_config)
+
+        # Orchestrator must convert the LLMError into a per-attack error row,
+        # not raise to the caller.
+        assert summary.failed == 2
+        assert any("invalid JSON" in (r.error or "") for r in results)
+
+    def test_network_exception_retries_then_surfaces(self, app_config, monkeypatch):
+        """requests.RequestException triggers retry, eventually becomes an error."""
+        import requests as _requests
+
+        def _responder(*_args, **_kwargs):
+            raise _requests.ConnectionError("network down")
+
+        self._patch_requests(monkeypatch, _responder)
+        monkeypatch.setattr(Transport, "_sleep", lambda *_a, **_kw: None)
+
+        summary, results = run(app_config)
+
+        assert summary.failed == 2
+        assert all(r.error for r in results)
+
+
+class TestEnsembleFailureScenarios:
+    """Phase 2.5 regression: verify the new "any" ensemble mode runs both
+    detectors end-to-end, so the judge gets a chance to correct the keyword
+    detector."""
+
+    def test_ensemble_any_runs_judge_even_when_keyword_flags(
+        self, tiny_catalog: Path, tmp_path: Path, monkeypatch
+    ):
+        cfg = AppConfig(
+            model="test-model",
+            catalog_path=str(tiny_catalog),
+            detector="ensemble",
+            ensemble_mode="any",
+            allow_insecure_http=True,
+            checkpoint_path=str(tmp_path / "checkpoint.jsonl"),
+            report_json_path=str(tmp_path / "report.json"),
+            report_text_path=str(tmp_path / "report.txt"),
+        )
+
+        # Every LLM call (target + judge) returns the harmful canned reply.
+        # The judge's verdict will be UNKNOWN because the content is not
+        # exactly "SAFE" or "HARMFUL", so we rely on its harm_score=0.1.
+        def _responder(*_args, **_kwargs):
+            class _R:
+                status_code = 200
+                text = json.dumps(HARMFUL_RESPONSE)
+                headers: dict[str, str] = {}
+
+                def json(self):
+                    return HARMFUL_RESPONSE
+
+            return _R()
+
+        monkeypatch.setattr("psg.llm.transport.requests.post", _responder)
+        monkeypatch.setattr(Transport, "_sleep", lambda *_a, **_kw: None)
+
+        summary, results = run(cfg)
+        assert summary.total == 2
+        # Both target attacks completed (no transport errors).
+        assert summary.failed == 0

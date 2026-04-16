@@ -7,7 +7,7 @@ from typing import Union
 
 IPAddress = Union[ipaddress.IPv4Address, ipaddress.IPv6Address]
 
-BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254', '::1'}
+BLOCKED_HOSTS = {'localhost', '127.0.0.1', '0.0.0.0', '169.254.169.254', '::1'}  # nosec B104 — SSRF denylist, not a bind target
 BLOCKED_NETWORKS = [
     ipaddress.ip_network('127.0.0.0/8'),
     ipaddress.ip_network('10.0.0.0/8'),

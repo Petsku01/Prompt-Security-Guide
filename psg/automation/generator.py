@@ -38,36 +38,35 @@ GenerateFunc = Callable[[str], str]
 
 
 def default_generate_func(prompt: str) -> str:
-    """Generate using local Ollama model via urllib (no subprocess)."""
-    import urllib.request
-    import urllib.error
-    
+    """Generate using local Ollama model via the same requests stack as the rest of the app.
+
+    Uses ``requests`` rather than ``urllib.request.urlopen`` so (a) error
+    handling is consistent with the rest of PSG and (b) bandit's B310 does
+    not flag the call (urlopen accepts file:// and custom schemes; requests
+    does not).
+    """
+    import requests
+
     try:
-        data = json.dumps({
-            "model": "dolphin-llama3:8b",
-            "prompt": prompt,
-            "stream": False,
-            "options": {"temperature": 0.7, "num_predict": 512}
-        }).encode('utf-8')
-        
-        req = urllib.request.Request(
+        resp = requests.post(
             "http://localhost:11434/api/generate",
-            data=data,
-            headers={"Content-Type": "application/json"}
+            json={
+                "model": "dolphin-llama3:8b",
+                "prompt": prompt,
+                "stream": False,
+                "options": {"temperature": 0.7, "num_predict": 512},
+            },
+            timeout=180,
         )
-        
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            result = json.loads(resp.read().decode('utf-8'))
-            return result.get("response", "")
-            
-    except urllib.error.URLError as e:
-        logger.error(f"Ollama connection failed: {e}")
+        resp.raise_for_status()
+        result = resp.json()
+        return result.get("response", "")
+
+    except requests.RequestException as e:
+        logger.error("Ollama connection failed: %s", e)
         return ""
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON from Ollama: {e}")
-        return ""
-    except TimeoutError:
-        logger.error("Ollama request timed out (180s)")
+        logger.error("Invalid JSON from Ollama: %s", e)
         return ""
 
 

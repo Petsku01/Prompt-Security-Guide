@@ -27,7 +27,7 @@ def _load_fabrication_indicators() -> dict:
     regex code. We fall back to a conservative default so the classifier
     still works if the file is missing or malformed.
     """
-    default = {
+    default: dict[str, list | dict] = {
         "suspicious_api_paths": [],
         "suspicious_package_fragments": [],
         "suspicious_import_prefixes": [],
