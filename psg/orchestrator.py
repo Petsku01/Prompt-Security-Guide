@@ -6,12 +6,10 @@ import time
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
 from .errors import CatalogError, ReportError
-from .execution.multi_turn import _process_multi_turn_attack as _process_multi_turn_attack_impl
-from .execution.parallel import _run_attacks_parallel as _run_attacks_parallel_impl
-from .execution.sequential import _run_attacks_sequential as _run_attacks_sequential_impl
 from .execution.crescendo import run_crescendo_attack
 from .execution.many_shot import run_many_shot_attack
-from .execution.single_turn import _classify_attack_response as _classify_attack_response_impl
+from .execution.parallel import _run_attacks_parallel as _run_attacks_parallel_impl
+from .execution.sequential import _run_attacks_sequential as _run_attacks_sequential_impl
 from .execution.single_turn import _process_attack as _process_attack_impl
 from .llm.client import OpenAICompatibleClient
 from .llm.transport import Transport
@@ -19,9 +17,7 @@ from .models import AppConfig, Attack, AttemptResult, RunSummary
 from .reporting.defense_report import write_defense_report
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
-from .security.classifier import ClassificationResult
 from .security.detectors import Detector, build_detector
-from .security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
 
@@ -131,17 +127,9 @@ def _run_attacks(
     system_prompt: str | None,
     checkpoint_tag: str,
 ) -> list[AttemptResult]:
-    if cfg.workers <= 1:
-        return _run_attacks_sequential(
-            cfg=cfg,
-            attacks=attacks,
-            client=client,
-            checkpoint=checkpoint,
-            detector=detector,
-            system_prompt=system_prompt,
-            checkpoint_tag=checkpoint_tag,
-        )
-    return _run_attacks_parallel(
+    """Dispatch to sequential or parallel execution based on cfg.workers."""
+    runner = _run_attacks_parallel_impl if cfg.workers > 1 else _run_attacks_sequential_impl
+    return runner(
         cfg=cfg,
         attacks=attacks,
         client=client,
@@ -149,74 +137,23 @@ def _run_attacks(
         detector=detector,
         system_prompt=system_prompt,
         checkpoint_tag=checkpoint_tag,
-    )
-
-
-def _run_attacks_sequential(
-    *,
-    cfg: AppConfig,
-    attacks: list[Attack],
-    client: OpenAICompatibleClient,
-    checkpoint: JSONLCheckpoint,
-    detector: Detector,
-    system_prompt: str | None,
-    checkpoint_tag: str,
-) -> list[AttemptResult]:
-    return _run_attacks_sequential_impl(
-        cfg=cfg,
-        attacks=attacks,
-        client=client,
-        checkpoint=checkpoint,
-        detector=detector,
-        system_prompt=system_prompt,
-        checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
-        ),
-    )
-
-
-def _run_attacks_parallel(
-    *,
-    cfg: AppConfig,
-    attacks: list[Attack],
-    client: OpenAICompatibleClient,
-    checkpoint: JSONLCheckpoint,
-    detector: Detector,
-    system_prompt: str | None,
-    checkpoint_tag: str,
-) -> list[AttemptResult]:
-    return _run_attacks_parallel_impl(
-        cfg=cfg,
-        attacks=attacks,
-        client=client,
-        checkpoint=checkpoint,
-        detector=detector,
-        system_prompt=system_prompt,
-        checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
-        ),
+        process_attack_fn=_process_attack,
     )
 
 
 def _process_attack(
-    *,
     cfg: AppConfig,
     attack: Attack,
     client: OpenAICompatibleClient,
     detector: Detector,
     system_prompt: str | None,
 ) -> AttemptResult:
-    # Dispatch to alternative attack modes if configured
+    """Process a single attack, dispatching by ``cfg.attack_mode``.
+
+    Signature intentionally positional so it can be passed as the
+    ``process_attack_fn`` callback to sequential/parallel runners without
+    a lambda adapter.
+    """
     if cfg.attack_mode == "crescendo":
         return run_crescendo_attack(
             cfg=cfg,
@@ -235,68 +172,12 @@ def _process_attack(
             system_prompt=system_prompt,
             num_examples=cfg.many_shot_examples,
         )
-
+    # Single-turn path: the impl's None-defaults resolve to the correct
+    # multi-turn and classify helpers, so no injection lambdas are needed.
     return _process_attack_impl(
         cfg=cfg,
         attack=attack,
         client=client,
         detector=detector,
         system_prompt=system_prompt,
-        process_multi_turn_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_multi_turn_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
-        ),
-        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: _classify_attack_response(
-            cfg=cfg,
-            detector=detector,
-            prompt=prompt,
-            raw_response=raw_response,
-            redacted_response=redacted_response,
-        ),
-        redactor=redact_text,
-    )
-
-
-def _process_multi_turn_attack(
-    *,
-    cfg: AppConfig,
-    attack: Attack,
-    client: OpenAICompatibleClient,
-    detector: Detector,
-    system_prompt: str | None,
-) -> AttemptResult:
-    return _process_multi_turn_attack_impl(
-        cfg=cfg,
-        attack=attack,
-        client=client,
-        detector=detector,
-        system_prompt=system_prompt,
-        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: _classify_attack_response(
-            cfg=cfg,
-            detector=detector,
-            prompt=prompt,
-            raw_response=raw_response,
-            redacted_response=redacted_response,
-        ),
-        redactor=redact_text,
-    )
-
-
-def _classify_attack_response(
-    *,
-    cfg: AppConfig,
-    detector: Detector,
-    prompt: str,
-    raw_response: str,
-    redacted_response: str,
-) -> ClassificationResult:
-    return _classify_attack_response_impl(
-        cfg=cfg,
-        detector=detector,
-        prompt=prompt,
-        raw_response=raw_response,
-        redacted_response=redacted_response,
     )

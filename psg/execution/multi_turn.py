@@ -1,23 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
 
 from ..errors import ClassifierError
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
-from ..models import AppConfig, Attack, AttemptResult, RedactionMode
-from ..security.classifier import ClassificationResult
+from ..models import AppConfig, Attack, AttemptResult
 from ..security.detectors import Detector
 from ..security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
-
-ClassifyAttackResponseFn = Callable[
-    [AppConfig, Detector, str, str, str],
-    ClassificationResult,
-]
-
 
 
 def _process_multi_turn_attack(
@@ -27,29 +19,8 @@ def _process_multi_turn_attack(
     client: OpenAICompatibleClient,
     detector: Detector,
     system_prompt: str | None,
-    classify_attack_response_fn: ClassifyAttackResponseFn | None = None,
-    redactor: Callable[[str, RedactionMode], str] = redact_text,
 ) -> AttemptResult:
-    classify = classify_attack_response_fn
-    if classify is None:
-        from .single_turn import _classify_attack_response
-
-        def _default_classify(
-            cfg: AppConfig,
-            detector: Detector,
-            prompt: str,
-            raw_response: str,
-            redacted_response: str,
-        ) -> ClassificationResult:
-            return _classify_attack_response(
-                cfg=cfg,
-                detector=detector,
-                prompt=prompt,
-                raw_response=raw_response,
-                redacted_response=redacted_response,
-            )
-
-        classify = _default_classify
+    from .single_turn import _classify_attack_response
 
     messages: list[dict[str, str]] = []
     all_prompts: list[str] = [attack.prompt] + attack.followups
@@ -70,23 +41,23 @@ def _process_multi_turn_attack(
             messages.append({"role": "assistant", "content": llm_resp.content})
             final_response = llm_resp.content
 
-            classification = classify(
+            classification = _classify_attack_response(
                 cfg,
                 detector,
                 prompt,
                 llm_resp.content,
-                redactor(llm_resp.content, cfg.redaction_mode),
+                redact_text(llm_resp.content, cfg.redaction_mode),
             )
 
             if classification.attack_successful:
                 redacted_conversation = " | ".join(
-                    f"[{m['role']}] {redactor(m['content'][:100], cfg.redaction_mode)}..."
+                    f"[{m['role']}] {redact_text(m['content'][:100], cfg.redaction_mode)}..."
                     for m in messages
                 )
                 return AttemptResult(
                     attack_id=attack.id,
                     prompt=f"[multi-turn {i + 1}/{len(all_prompts)}] {redacted_conversation}",
-                    response_text=redactor(final_response, cfg.redaction_mode),
+                    response_text=redact_text(final_response, cfg.redaction_mode),
                     flagged=True,
                     labels=classification.harmful_labels,
                     harm_score=classification.harm_score,
@@ -95,11 +66,11 @@ def _process_multi_turn_attack(
                     detector_failed=classification.detector_failed,
                 )
 
-        redacted_prompt = redactor(attack.prompt, cfg.redaction_mode)
+        redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
         return AttemptResult(
             attack_id=attack.id,
             prompt=f"[multi-turn {len(all_prompts)} turns] {redacted_prompt}",
-            response_text=redactor(final_response, cfg.redaction_mode),
+            response_text=redact_text(final_response, cfg.redaction_mode),
             flagged=False,
             labels=[],
             harm_score=0.0,
@@ -111,7 +82,7 @@ def _process_multi_turn_attack(
         logger.error("multi-turn attack failed for attack_id=%s: %s", attack.id, exc)
         return AttemptResult(
             attack_id=attack.id,
-            prompt=redactor(attack.prompt, cfg.redaction_mode),
+            prompt=redact_text(attack.prompt, cfg.redaction_mode),
             response_text="",
             flagged=False,
             labels=[],
@@ -121,7 +92,7 @@ def _process_multi_turn_attack(
         logger.exception("unexpected multi-turn error for attack_id=%s", attack.id)
         return AttemptResult(
             attack_id=attack.id,
-            prompt=redactor(attack.prompt, cfg.redaction_mode),
+            prompt=redact_text(attack.prompt, cfg.redaction_mode),
             response_text="",
             flagged=False,
             labels=[],

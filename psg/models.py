@@ -36,6 +36,24 @@ class LLMResponse:
 
 
 @dataclass(slots=True)
+class ConversationTurn:
+    """A single prompt/response pair recorded during a multi-turn attack.
+
+    Populated by crescendo and many-shot attack modes so the JSON report
+    preserves the full conversation rather than flattening it into a
+    single response string.
+    """
+    turn_number: int
+    user_message: str
+    assistant_response: str
+    # Optional per-turn classification for fine-grained analysis. Omitted
+    # when the attack mode does not classify each turn (e.g. many-shot,
+    # which only evaluates the final response).
+    attack_successful: bool | None = None
+    harm_score: float | None = None
+
+
+@dataclass(slots=True)
 class AttemptResult:
     attack_id: str
     prompt: str
@@ -50,6 +68,13 @@ class AttemptResult:
     # attack. Counted in RunSummary so a scan does not silently look "green"
     # when classification was unreliable.
     detector_failed: bool = False
+    # The attack strategy that produced this result. "single" (default),
+    # "crescendo", "many-shot", or "multi-turn" (catalog followups).
+    attack_mode: str = "single"
+    # Per-turn conversation data for multi-turn modes. None for single-turn
+    # attacks. Populated by crescendo/many-shot so reports can render the
+    # full dialogue instead of just the final response.
+    turns: list[ConversationTurn] | None = None
     started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 

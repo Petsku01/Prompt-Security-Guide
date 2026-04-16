@@ -1,35 +1,16 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
 
 from ..errors import ClassifierError
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
-from ..models import AppConfig, Attack, AttemptResult, ClassificationInputMode, RedactionMode
+from ..models import AppConfig, Attack, AttemptResult, ClassificationInputMode
 from ..security.classifier import ClassificationResult
 from ..security.detectors import Detector
 from ..security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
-
-
-ProcessMultiTurnFn = Callable[
-    [
-        AppConfig,
-        Attack,
-        OpenAICompatibleClient,
-        Detector,
-        str | None,
-    ],
-    AttemptResult,
-]
-
-ClassifyAttackResponseFn = Callable[
-    [AppConfig, Detector, str, str, str],
-    ClassificationResult,
-]
-
 
 
 def _process_attack(
@@ -39,37 +20,19 @@ def _process_attack(
     client: OpenAICompatibleClient,
     detector: Detector,
     system_prompt: str | None,
-    process_multi_turn_attack_fn: ProcessMultiTurnFn | None = None,
-    classify_attack_response_fn: ClassifyAttackResponseFn | None = None,
-    redactor: Callable[[str, RedactionMode], str] = redact_text,
 ) -> AttemptResult:
-    process_multi_turn = process_multi_turn_attack_fn
-    if process_multi_turn is None:
+    if cfg.multi_turn and attack.followups:
         from .multi_turn import _process_multi_turn_attack
 
-        def _default_process_multi_turn(
-            cfg: AppConfig,
-            attack: Attack,
-            client: OpenAICompatibleClient,
-            detector: Detector,
-            system_prompt: str | None,
-        ) -> AttemptResult:
-            return _process_multi_turn_attack(
-                cfg=cfg,
-                attack=attack,
-                client=client,
-                detector=detector,
-                system_prompt=system_prompt,
-            )
+        return _process_multi_turn_attack(
+            cfg=cfg,
+            attack=attack,
+            client=client,
+            detector=detector,
+            system_prompt=system_prompt,
+        )
 
-        process_multi_turn = _default_process_multi_turn
-
-    classify = classify_attack_response_fn or _classify_attack_response
-
-    if cfg.multi_turn and attack.followups:
-        return process_multi_turn(cfg, attack, client, detector, system_prompt)
-
-    redacted_prompt = redactor(attack.prompt, cfg.redaction_mode)
+    redacted_prompt = redact_text(attack.prompt, cfg.redaction_mode)
     try:
         llm_resp = client.chat(
             model=cfg.model,
@@ -78,9 +41,9 @@ def _process_attack(
             temperature=cfg.temperature,
             max_tokens=cfg.max_tokens,
         )
-        redacted_text = redactor(llm_resp.content, cfg.redaction_mode)
+        redacted_text = redact_text(llm_resp.content, cfg.redaction_mode)
         try:
-            classification = classify(
+            classification = _classify_attack_response(
                 cfg,
                 detector,
                 attack.prompt,

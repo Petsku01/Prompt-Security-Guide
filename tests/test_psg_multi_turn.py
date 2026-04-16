@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from psg.llm.client import OpenAICompatibleClient
 from psg.models import AppConfig, Attack, LLMResponse
-from psg.orchestrator import _process_multi_turn_attack
+from psg.execution.multi_turn import _process_multi_turn_attack
 from psg.security.classifier import ClassificationResult
 
 
@@ -80,7 +80,7 @@ def test_process_multi_turn_attack_stops_when_harmful_response_detected(monkeypa
             return LLMResponse(content="dangerous payload", raw={})
 
     client = _FakeClient()
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.execution.multi_turn.redact_text", lambda text, _mode: text)
 
     result = _process_multi_turn_attack(
         cfg=cfg,

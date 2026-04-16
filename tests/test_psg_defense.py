@@ -60,7 +60,7 @@ def test_orchestrator_passes_system_prompt_and_runs_baseline(monkeypatch, tmp_pa
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _Client)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.execution.single_turn.redact_text", lambda text, _mode: text)
     monkeypatch.setattr(
         "psg.orchestrator.build_detector",
         lambda _cfg: _Detector(

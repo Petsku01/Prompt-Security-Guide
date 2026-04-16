@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
-from ..models import AppConfig, Attack, AttemptResult
+from ..models import AppConfig, Attack, AttemptResult, ConversationTurn
 from ..security.detectors import Detector
 
 logger = logging.getLogger(__name__)
@@ -193,8 +193,18 @@ def run_many_shot_attack(
         detector=detector,
         system_prompt=system_prompt,
     )
-    
-    # Convert to AttemptResult
+
+    # Many-shot primes with generated examples then issues the real prompt
+    # as a final user turn. We record only the final turn since the primer
+    # examples are deterministic from ``attack.prompt`` and would just bloat
+    # the report.
+    final_turn = ConversationTurn(
+        turn_number=result.examples_used + 1,
+        user_message=attack.prompt,
+        assistant_response=result.final_response,
+        attack_successful=result.success,
+    )
+
     return AttemptResult(
         attack_id=attack.id,
         prompt=attack.prompt,
@@ -202,4 +212,6 @@ def run_many_shot_attack(
         error=result.error,
         flagged=result.success,
         labels=[f"many_shot_{result.examples_used}"],
+        attack_mode="many-shot",
+        turns=[final_turn] if not result.error else None,
     )

@@ -7,7 +7,7 @@ from psg.automation.validation import validate_url
 
 def test_validate_url_blocks_dns_resolved_loopback(monkeypatch) -> None:
     monkeypatch.setattr(
-        "psg.automation.validation.socket.getaddrinfo",
+        "psg.validation.network.socket.getaddrinfo",
         lambda *_args, **_kwargs: [
             (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("127.0.0.1", 443))
         ],
@@ -18,7 +18,7 @@ def test_validate_url_blocks_dns_resolved_loopback(monkeypatch) -> None:
 
 def test_validate_url_allows_public_dns_resolution(monkeypatch) -> None:
     monkeypatch.setattr(
-        "psg.automation.validation.socket.getaddrinfo",
+        "psg.validation.network.socket.getaddrinfo",
         lambda *_args, **_kwargs: [
             (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("93.184.216.34", 443))
         ],
@@ -29,7 +29,7 @@ def test_validate_url_allows_public_dns_resolution(monkeypatch) -> None:
 
 def test_validate_url_blocks_if_any_resolved_ip_is_private(monkeypatch) -> None:
     monkeypatch.setattr(
-        "psg.automation.validation.socket.getaddrinfo",
+        "psg.validation.network.socket.getaddrinfo",
         lambda *_args, **_kwargs: [
             (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("93.184.216.34", 443)),
             (socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("::1", 443, 0, 0)),

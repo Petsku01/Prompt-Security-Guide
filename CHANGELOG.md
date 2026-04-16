@@ -2,6 +2,39 @@
 
 ## Unreleased
 
+### Architecture cleanup (Phase 4 of remediation plan)
+- **First-class conversation turns** (`psg/models.py`): new `ConversationTurn`
+  dataclass and `AttemptResult.turns: list[ConversationTurn] | None` field.
+  Crescendo and many-shot attacks now populate the full dialogue; JSON
+  reports preserve per-turn prompts, responses, and success flags instead
+  of flattening to one string. `AttemptResult.attack_mode` records which
+  strategy produced the result. Single-turn attacks carry `turns=None`.
+- **Token-bucket rate limiter** (`psg/execution/parallel._RateLimiter`):
+  replaces the previous "min-interval-since-last-call" design that
+  serialized every parallel worker through one lock. Bucket refills at
+  `rate` tokens/s with configurable `capacity` (default `max(1, rate)`).
+  Supports genuine burst tolerance and correctly drives N workers at N×rate
+  when rate is sufficient.
+- **Orchestrator lambda chains removed** (`psg/orchestrator.py`): five
+  pass-through lambdas that existed to adapt keyword-only signatures into
+  positional callbacks have been deleted. `_process_attack` is now a
+  positional function; the sequential and parallel runners receive it as
+  a direct reference. Dropped three unused injection parameters
+  (`process_multi_turn_attack_fn`, `classify_attack_response_fn`,
+  `redactor`) from `single_turn._process_attack` and `multi_turn._process_multi_turn_attack`.
+  Orchestrator shrinks by ~80 lines; call graph is flatter and
+  monkeypatching of module-level `redact_text` now works as expected.
+- **Benchmark presets moved to JSON** (`datasets/benchmark_presets.json`):
+  95 lines of hard-coded `PRESETS` dict loaded from a JSON config with a
+  safe-default fallback. New presets can be added without a code release.
+- **Validation module extracted** (`psg/validation/network.py`): SSRF /
+  URL / filename validation moved out of `psg/automation/` (it was used
+  by core `psg.config`, so the old location produced a bad dependency
+  direction). `psg/automation/validation.py` is now a thin
+  backwards-compatible re-export.
+- **Deferred**: P2.3 (calibrated scoring model — needs ≥500-example golden
+  set); P4.4 (streaming LLM client — needs real-world E2E validation).
+
 ### Test & CI maturity (Phase 3 of remediation plan)
 - **Spec-bound Mock fixtures** (`tests/conftest.py`): `mock_detector` and
   `mock_llm_client` use `MagicMock(spec_set=...)` so calls to non-existent

@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .automation.validation import validate_url
 from .models import AppConfig, ClassificationInputMode, RedactionMode
+from .validation.network import validate_url
 
 
 class ConfigError(ValueError):

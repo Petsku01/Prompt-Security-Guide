@@ -25,101 +25,38 @@ from .models import AppConfig
 from .orchestrator import run
 
 
-# Preset definitions - maps preset name to catalog path(s)
-PRESETS: dict[str, dict] = {
-    "jbb": {
-        "name": "JailbreakBench",
-        "description": "JailbreakBench harmful behaviors dataset",
-        "catalogs": ["datasets/jailbreakbench_behaviors.json"],
-    },
-    "owasp": {
-        "name": "OWASP 2025",
-        "description": "OWASP Top 10 LLM attacks for 2025",
-        "catalogs": ["datasets/owasp_2025_attacks.json"],
-    },
-    "obliteratus": {
-        "name": "Obliteratus",
-        "description": "Obliteratus attack collection",
-        "catalogs": ["datasets/obliteratus_attacks.json"],
-    },
-    "hallucination": {
-        "name": "Hallucination Detection",
-        "description": "Probes for fabricated citations, facts, URLs, and APIs",
-        "catalogs": ["datasets/hallucination_detection_probes.json"],
-    },
-    "data-leakage": {
-        "name": "Data Leakage",
-        "description": "Probes for memorization, PII extraction, and prompt leaks",
-        "catalogs": ["datasets/data_leakage_probes.json"],
-    },
-    # Model-specific presets
-    "qwen": {
-        "name": "Qwen-specific",
-        "description": "Attacks targeting Qwen model family weaknesses",
-        "catalogs": ["datasets/profiles/qwen_attacks.json"],
-    },
-    "llama": {
-        "name": "Llama-specific",
-        "description": "Attacks targeting Llama model family weaknesses",
-        "catalogs": ["datasets/profiles/llama_attacks.json"],
-    },
-    "mistral": {
-        "name": "Mistral-specific",
-        "description": "Attacks targeting Mistral model family weaknesses",
-        "catalogs": ["datasets/profiles/mistral_attacks.json"],
-    },
-    "gemma": {
-        "name": "Gemma-specific",
-        "description": "Attacks targeting Gemma model family weaknesses",
-        "catalogs": ["datasets/profiles/gemma_attacks.json"],
-    },
-    "phi": {
-        "name": "Phi-specific",
-        "description": "Attacks targeting Phi model family weaknesses",
-        "catalogs": ["datasets/profiles/phi_attacks.json"],
-    },
-    "deepseek": {
-        "name": "DeepSeek-specific",
-        "description": "Attacks targeting DeepSeek model family weaknesses",
-        "catalogs": ["datasets/profiles/deepseek_attacks.json"],
-    },
-    "falcon": {
-        "name": "Falcon-specific",
-        "description": "Attacks targeting Falcon model family weaknesses",
-        "catalogs": ["datasets/profiles/falcon_attacks.json"],
-    },
-    "yi": {
-        "name": "Yi-specific",
-        "description": "Attacks targeting Yi model family weaknesses",
-        "catalogs": ["datasets/profiles/yi_attacks.json"],
-    },
-    "stablelm": {
-        "name": "StableLM-specific",
-        "description": "Attacks targeting StableLM model family weaknesses",
-        "catalogs": ["datasets/profiles/stablelm_attacks.json"],
-    },
-    "chatgpt": {
-        "name": "ChatGPT/OpenAI-specific",
-        "description": "Research-validated attacks targeting OpenAI models (30 attacks)",
-        "catalogs": ["datasets/profiles/chatgpt_attacks.json"],
-    },
-    "claude": {
-        "name": "Claude/Anthropic-specific",
-        "description": "Research-validated attacks targeting Anthropic Claude models (30 attacks)",
-        "catalogs": ["datasets/profiles/claude_attacks.json"],
-    },
-    "full": {
-        "name": "Full Suite",
-        "description": "All available attack datasets combined",
-        "catalogs": [
-            "datasets/jailbreakbench_behaviors.json",
-            "datasets/owasp_2025_attacks.json",
-            "datasets/obliteratus_attacks.json",
-            "datasets/hallucination_detection_probes.json",
-            "datasets/data_leakage_probes.json",
-        ],
-    },
-}
+# Preset definitions live in datasets/benchmark_presets.json. Loading them
+# at import time (with a safe fallback to an empty dict) keeps the existing
+# `PRESETS` module-level API while moving the data out of code. Add a new
+# preset by appending to the JSON — no code change required.
+_PRESET_PATH = Path(__file__).resolve().parents[1] / "datasets" / "benchmark_presets.json"
+
+
+def _load_presets() -> dict[str, dict]:
+    try:
+        data = json.loads(_PRESET_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    presets = data.get("presets")
+    if not isinstance(presets, dict):
+        return {}
+    # Drop any non-conforming entries rather than letting them break the CLI.
+    clean: dict[str, dict] = {}
+    for name, spec in presets.items():
+        if not isinstance(spec, dict):
+            continue
+        catalogs = spec.get("catalogs")
+        if not isinstance(catalogs, list) or not catalogs:
+            continue
+        clean[name] = {
+            "name": spec.get("name", name),
+            "description": spec.get("description", ""),
+            "catalogs": [str(c) for c in catalogs],
+        }
+    return clean
+
+
+PRESETS: dict[str, dict] = _load_presets()
 
 
 @dataclass

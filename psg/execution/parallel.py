@@ -27,30 +27,56 @@ ProcessAttackFn = Callable[
 
 
 class _RateLimiter:
-    """Simple token bucket rate limiter for controlling request rate."""
+    """Token-bucket rate limiter.
 
-    def __init__(self, rate: float | None) -> None:
+    Maintains a bucket with ``capacity`` tokens that refills at ``rate``
+    tokens/second. ``acquire()`` consumes one token, blocking until one is
+    available. Unlike the previous "min-interval-since-last-call" design,
+    this actually allows bursts up to ``capacity`` and correctly drives N
+    workers at N×rate when ``rate`` is large enough, instead of
+    serializing every call through one lock.
+
+    ``rate=None`` or ``rate<=0`` disables limiting entirely.
+    """
+
+    def __init__(self, rate: float | None, *, capacity: int | None = None) -> None:
         self.rate = rate
+        # Default burst capacity = rate (≈1 second's worth of tokens); callers
+        # that want pure sequential can pass capacity=1.
+        if capacity is not None:
+            self.capacity: float = float(capacity)
+        elif rate is not None and rate > 0:
+            self.capacity = max(1.0, float(rate))
+        else:
+            self.capacity = 1.0
         self.lock = Lock()
-        self.last_request = 0.0
+        self.tokens = self.capacity
+        self.last_refill = time.monotonic()
 
     def acquire(self) -> None:
         if self.rate is None or self.rate <= 0:
             return
 
-        sleep_time = 0.0
-        with self.lock:
-            now = time.perf_counter()
-            min_interval = 1.0 / self.rate
-            next_allowed = self.last_request + min_interval
+        while True:
+            sleep_time = 0.0
+            with self.lock:
+                now = time.monotonic()
+                # Refill: tokens gained since last check, capped at capacity.
+                elapsed = now - self.last_refill
+                if elapsed > 0:
+                    self.tokens = min(
+                        self.capacity, self.tokens + elapsed * self.rate
+                    )
+                    self.last_refill = now
 
-            if now < next_allowed:
-                sleep_time = next_allowed - now
-                self.last_request = next_allowed
-            else:
-                self.last_request = now
+                if self.tokens >= 1.0:
+                    self.tokens -= 1.0
+                    return
 
-        if sleep_time > 0:
+                # Not enough: compute how long we must wait for one token.
+                sleep_time = (1.0 - self.tokens) / self.rate
+
+            # Sleep outside the lock so other threads can refill/acquire.
             time.sleep(sleep_time)
 
 

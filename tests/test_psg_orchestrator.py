@@ -52,7 +52,7 @@ def test_run_success_path(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text.replace("p", "[REDACTED]"))
+    monkeypatch.setattr("psg.execution.single_turn.redact_text", lambda text, _mode: text.replace("p", "[REDACTED]"))
     monkeypatch.setattr(
         "psg.orchestrator.build_detector",
         lambda _cfg: _Detector(
@@ -99,7 +99,7 @@ def test_run_continues_on_partial_failures(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _ClientMixed)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.execution.single_turn.redact_text", lambda text, _mode: text)
 
     def _classify(_prompt: str, response: str):
         if response == "x":
@@ -145,7 +145,7 @@ def test_run_counts_detector_failures(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: attacks)
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.execution.single_turn.redact_text", lambda text, _mode: text)
 
     monkeypatch.setattr(
         "psg.orchestrator.build_detector",
@@ -180,7 +180,7 @@ def test_run_returns_partial_results_on_report_failure(monkeypatch, tmp_path) ->
     monkeypatch.setattr("psg.orchestrator.load_catalog", lambda _p: [Attack(id="a", prompt="p")])
     monkeypatch.setattr("psg.orchestrator.OpenAICompatibleClient", _FakeClient)
     monkeypatch.setattr("psg.orchestrator.JSONLCheckpoint", _FakeCheckpoint)
-    monkeypatch.setattr("psg.orchestrator.redact_text", lambda text, _mode: text)
+    monkeypatch.setattr("psg.execution.single_turn.redact_text", lambda text, _mode: text)
     monkeypatch.setattr(
         "psg.orchestrator.build_detector",
         lambda _cfg: _Detector(
@@ -440,13 +440,18 @@ def test_run_parallel_actually_concurrent(monkeypatch, tmp_path) -> None:
 
 
 def test_rate_limiter_limits_requests(monkeypatch, tmp_path) -> None:
-    """Test that rate limiting actually limits request rate."""
+    """Token bucket enforces the average rate across the full run.
+
+    Rate=20/s with default burst capacity 20 means the first 20 requests
+    are instant; subsequent requests are paced. With 30 total requests
+    the elapsed time must be at least (30 - 20) / 20 = 0.5s.
+    """
     import time
-    
+
     cfg = _cfg(tmp_path)
     cfg.workers = 4
-    cfg.rate_limit = 10.0  # 10 requests per second = 0.1s between requests
-    attacks = [Attack(id=f"a{i}", prompt=f"p{i}") for i in range(5)]
+    cfg.rate_limit = 20.0
+    attacks = [Attack(id=f"a{i}", prompt=f"p{i}") for i in range(30)]
     
     request_times = []
     
@@ -479,10 +484,11 @@ def test_rate_limiter_limits_requests(monkeypatch, tmp_path) -> None:
         ),
     )
     
+    start = time.perf_counter()
     run(cfg)
-    
-    # Check that requests are spaced by at least ~0.08s (allowing some tolerance)
-    assert len(request_times) == 5
-    for i in range(1, len(request_times)):
-        interval = request_times[i] - request_times[i-1]
-        assert interval >= 0.08, f"Request interval {interval:.3f}s is below rate limit"
+    elapsed = time.perf_counter() - start
+
+    # Token-bucket contract: allow burst up to capacity, then enforce
+    # average rate. 30 requests at rate=20 with capacity=20 ⇒ ≥0.5s.
+    assert len(request_times) == 30
+    assert elapsed >= 0.4, f"rate not enforced across run; elapsed={elapsed:.3f}s"

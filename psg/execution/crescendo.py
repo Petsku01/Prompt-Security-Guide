@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
-from ..models import AppConfig, Attack, AttemptResult
+from ..models import AppConfig, Attack, AttemptResult, ConversationTurn
 from ..security.detectors import Detector
 
 logger = logging.getLogger(__name__)
@@ -224,8 +224,18 @@ def run_crescendo_attack(
         detector=detector,
         system_prompt=system_prompt,
     )
-    
-    # Convert to AttemptResult
+
+    # Preserve per-turn conversation so reports can render the dialogue.
+    turns = [
+        ConversationTurn(
+            turn_number=t.turn_number,
+            user_message=t.user_message,
+            assistant_response=t.assistant_response,
+            attack_successful=t.was_successful,
+        )
+        for t in result.turns
+    ]
+
     return AttemptResult(
         attack_id=attack.id,
         prompt=attack.prompt,
@@ -233,4 +243,6 @@ def run_crescendo_attack(
         error=result.error,
         flagged=result.success,
         labels=[f"crescendo_turn_{len(result.turns)}"],
+        attack_mode="crescendo",
+        turns=turns if turns else None,
     )
