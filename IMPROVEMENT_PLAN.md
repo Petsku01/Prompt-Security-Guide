@@ -178,7 +178,7 @@ if is_refusal and has_security_terms and not has_instructional_content:
 - [x] Kaikki uudet testit vihreällä
 - [x] Olemassaolevat testit eivät rikkoudu
 - [x] CHANGELOG päivitetty
-- [ ] README päivitetty jos tarpeen
+- [x] README päivitetty
 - [x] Git commit per feature
 
 ---

@@ -128,13 +128,14 @@ Use prefixes:
 
 ```bash
 # Install dev dependencies
-python3 -m pip install -r requirements-dev.txt
+pip install -e ".[dev]"
 
 # Run tests
-python3 -m pytest tests/ -v
+pytest tests/ -v
 
-# Basic syntax check
-python3 -m compileall tools tests
+# Lint and type check
+ruff check psg/ tests/
+mypy psg/
 ```
 
 ### Step 5: Commit and Push

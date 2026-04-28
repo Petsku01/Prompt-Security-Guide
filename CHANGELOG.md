@@ -17,6 +17,7 @@
 - **ruff lint**: Removed 5 extraneous f-string prefixes in execution modules; cleaned 22 unused imports/variables in tests
 - **mypy**: Fixed `binascii` import reference in `normalize.py`; installed `types-requests` stubs for transport/validation/discovery modules
 - **test coverage**: Added test for ensemble low-confidence behavior (keyword FP → judge still runs)
+- **audit iteration 2**: canary token normalization (case-insensitive), catalog validator alias support (`ID_ALIASES`/`PROMPT_ALIASES`), dead guard removal → assert, silent except → `logging.warning` (ML load/inference), `defend.py` msg-is-dict guard, `_as_labels()` dedup helper, orchestrator lambda dedup, stale `results` alias removed
 
 ### Already Implemented (verified)
 - LangChain middleware: `fail_open=False` by default (code review H1) — was already correct

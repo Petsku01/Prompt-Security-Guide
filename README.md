@@ -95,7 +95,7 @@ pip install -e ".[all]"      # everything
 ```
 psg/        — core library and CLI
 datasets/   — attack catalogs (JSON)
-tests/      — 135 tests
+tests/      — 380+ tests
 docs/       — methodology and research
 ```
 
