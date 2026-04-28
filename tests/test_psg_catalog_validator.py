@@ -5,7 +5,9 @@ import json
 from psg.catalog_validator import validate_catalog_file
 
 
-def test_validate_catalog_file_detects_duplicate_id_and_missing_required(tmp_path) -> None:
+def test_validate_catalog_file_detects_duplicate_id_and_missing_required(
+    tmp_path,
+) -> None:
     catalog_path = tmp_path / "catalog.json"
     catalog_path.write_text(
         json.dumps(
@@ -29,12 +31,17 @@ def test_validate_catalog_file_detects_duplicate_id_and_missing_required(tmp_pat
 
 def test_validate_catalog_file_warnings_for_optional_fields(tmp_path) -> None:
     catalog_path = tmp_path / "catalog.json"
-    catalog_path.write_text(json.dumps({"attacks": [{"id": "a-1", "prompt": "hello"}]}), encoding="utf-8")
+    catalog_path.write_text(
+        json.dumps({"attacks": [{"id": "a-1", "prompt": "hello"}]}), encoding="utf-8"
+    )
 
     report = validate_catalog_file(catalog_path)
 
     assert report["errors"] == []
-    assert any("Missing optional field(s): technique, source, tier" in w for w in report["warnings"])
+    assert any(
+        "Missing optional field(s): technique, source, tier" in w
+        for w in report["warnings"]
+    )
 
 
 def test_validate_catalog_file_skips_non_catalog_schema(tmp_path) -> None:

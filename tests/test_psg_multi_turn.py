@@ -50,10 +50,18 @@ def test_attack_model_followups_field() -> None:
 
 def test_chat_multi_turn_builds_expected_messages_payload(monkeypatch) -> None:
     transport = _FakeTransport()
-    client = OpenAICompatibleClient("https://api.example.test/v1", transport, api_key="secret")
-    messages = [{"role": "user", "content": "turn1"}, {"role": "assistant", "content": "reply1"}]
+    client = OpenAICompatibleClient(
+        "https://api.example.test/v1", transport, api_key="secret"
+    )
+    messages = [
+        {"role": "user", "content": "turn1"},
+        {"role": "assistant", "content": "reply1"},
+    ]
 
-    monkeypatch.setattr("psg.llm.client.parse_chat_completion", lambda _data: LLMResponse(content="ok", raw={}))
+    monkeypatch.setattr(
+        "psg.llm.client.parse_chat_completion",
+        lambda _data: LLMResponse(content="ok", raw={}),
+    )
     client.chat_multi_turn(model="m", messages=messages, system_prompt="system")
 
     assert transport.last_headers == {"Authorization": "Bearer secret"}
@@ -64,7 +72,9 @@ def test_chat_multi_turn_builds_expected_messages_payload(monkeypatch) -> None:
     ]
 
 
-def test_process_multi_turn_attack_stops_when_harmful_response_detected(monkeypatch) -> None:
+def test_process_multi_turn_attack_stops_when_harmful_response_detected(
+    monkeypatch,
+) -> None:
     cfg = _cfg()
     attack = Attack(id="a1", prompt="initial prompt", followups=["followup prompt"])
     detector = _Detector()
@@ -92,12 +102,23 @@ def test_process_multi_turn_attack_stops_when_harmful_response_detected(monkeypa
 
     assert len(client.calls) == 2
     assert [m["content"] for m in client.calls[0]] == ["initial prompt"]
-    assert [m["content"] for m in client.calls[1]] == ["initial prompt", "safe refusal", "followup prompt"]
+    assert [m["content"] for m in client.calls[1]] == [
+        "initial prompt",
+        "safe refusal",
+        "followup prompt",
+    ]
     assert result.flagged is True
     assert result.labels == ["malware_code"]
     assert "[multi-turn 2/2]" in result.prompt
 
 
 def test_app_config_multi_turn_flag() -> None:
-    assert AppConfig(model="m", catalog_path="datasets/tiny_test.json").multi_turn is False
-    assert AppConfig(model="m", catalog_path="datasets/tiny_test.json", multi_turn=True).multi_turn is True
+    assert (
+        AppConfig(model="m", catalog_path="datasets/tiny_test.json").multi_turn is False
+    )
+    assert (
+        AppConfig(
+            model="m", catalog_path="datasets/tiny_test.json", multi_turn=True
+        ).multi_turn
+        is True
+    )

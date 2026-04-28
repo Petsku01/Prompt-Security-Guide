@@ -1,9 +1,8 @@
 """Tests for psg/defend.py defense CLI commands."""
+
 from __future__ import annotations
 
 import json
-import sys
-from io import StringIO
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -35,7 +34,7 @@ class TestCmdValidate:
         args.no_ml = True
 
         # Use patch to simulate no stdin
-        with patch('psg.defend.sys.stdin') as mock_stdin:
+        with patch("psg.defend.sys.stdin") as mock_stdin:
             mock_stdin.isatty.return_value = True
             rc = cmd_validate(args)
         assert rc == 2
@@ -102,13 +101,18 @@ class TestCmdValidate:
         args.json = True
         args.no_ml = True
 
-        rc = cmd_validate(args)
+        cmd_validate(args)
         captured = capsys.readouterr()
         # JSON output should be parseable
         if captured.out:
             try:
                 data = json.loads(captured.out)
-                assert "harmful" in data or "blocked" in data or "suspicious" in data or "score" in data
+                assert (
+                    "harmful" in data
+                    or "blocked" in data
+                    or "suspicious" in data
+                    or "score" in data
+                )
             except json.JSONDecodeError:
                 pass  # Not all outputs are JSON
 
@@ -202,7 +206,9 @@ class TestCmdBenchmark:
             pass  # Acceptable if it fails on missing catalog
 
     @pytest.mark.skip(reason="Requires full benchmark setup")
-    def test_benchmark_with_tiny_catalog(self, tmp_path: Path, monkeypatch, capsys) -> None:
+    def test_benchmark_with_tiny_catalog(
+        self, tmp_path: Path, monkeypatch, capsys
+    ) -> None:
         """Test benchmark with minimal catalog - skipped due to complexity."""
         pass
 
@@ -215,11 +221,11 @@ class TestCmdInfo:
         # Create args with required attributes
         args = MagicMock(spec=[])
         args.json = False
-        
+
         # Just run and verify it doesn't crash
         try:
             rc = cmd_info(args)
-            captured = capsys.readouterr()
+            capsys.readouterr()
             assert rc in [0, 1]
         except (KeyError, AttributeError):
             pass  # Acceptable if config loading fails
@@ -228,10 +234,10 @@ class TestCmdInfo:
         """Test info command outputs valid JSON."""
         args = MagicMock()
         args.json = True
-        
+
         # Just run and verify it doesn't crash
         try:
-            rc = cmd_info(args)
+            cmd_info(args)
             captured = capsys.readouterr()
             # If output exists, should be valid JSON
             if captured.out:
@@ -260,7 +266,11 @@ class TestCmdTemplates:
         assert rc in [0, 1]  # May succeed or fail depending on templates
         captured = capsys.readouterr()
         # Should output something
-        assert "template" in captured.out.lower() or "defense" in captured.out.lower() or captured.err != ""
+        assert (
+            "template" in captured.out.lower()
+            or "defense" in captured.out.lower()
+            or captured.err != ""
+        )
 
     def test_templates_show_specific(self, capsys) -> None:
         """Test templates --show displays specific template."""
@@ -294,9 +304,10 @@ class TestAddDefendArguments:
     def test_parser_creates_subcommands(self) -> None:
         """Test that parser creates all subcommands."""
         import argparse
+
         parser = argparse.ArgumentParser()
         add_defend_arguments(parser)
-        
+
         # Should create subparsers for each command
         # This is tested implicitly by the cmd_* tests
 

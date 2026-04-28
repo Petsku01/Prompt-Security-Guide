@@ -55,9 +55,15 @@ def test_format_prompt_includes_all_sections() -> None:
 @pytest.mark.parametrize(
     ("output", "expected"),
     [
-        ("Prompt harmful: yes\nResponse harmful: yes\nRefusal: no", (True, True, False)),
+        (
+            "Prompt harmful: yes\nResponse harmful: yes\nRefusal: no",
+            (True, True, False),
+        ),
         ("1. yes\n2. no\n3. yes", (True, False, True)),
-        ("Prompt harmful: no\nResponse harmful: no\nRefusal: no", (False, False, False)),
+        (
+            "Prompt harmful: no\nResponse harmful: no\nRefusal: no",
+            (False, False, False),
+        ),
     ],
 )
 def test_parse_wildguard_output(output: str, expected: tuple[bool, bool, bool]) -> None:
@@ -152,6 +158,7 @@ def test_classify_with_mocked_model(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_classify_with_empty_response(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test classification with empty response."""
+
     @contextmanager
     def _no_grad():
         yield
@@ -190,7 +197,7 @@ def test_regex_fallback_with_unparseable_output() -> None:
     """Test regex fallback when model output is garbled."""
     classifier = WildGuardClassifier()
     result = classifier._regex_fallback("completely garbled output")
-    
+
     assert result.prompt_harmful is False
     assert result.response_harmful is False
     assert result.is_refusal is False
@@ -210,7 +217,7 @@ def test_wildguard_result_score_calculation() -> None:
         harm_score=0.0,  # Will be calculated
         harmful_labels=["test"],
     )
-    
+
     assert result.prompt_harm_score == 0.9
     assert result.response_harm_score == 0.8
 
@@ -227,7 +234,7 @@ def test_load_model_called_once() -> None:
     # _load_model should set _load_attempted to True
     classifier._load_model()
     assert classifier._load_attempted is True
-    
+
     # Second call should not raise or change state
     classifier._load_model()
     assert classifier._load_attempted is True
@@ -236,15 +243,17 @@ def test_load_model_called_once() -> None:
 def test_parse_wildguard_output_edge_cases() -> None:
     """Test parsing with various output formats."""
     classifier = WildGuardClassifier()
-    
+
     # Mixed case
-    result = classifier._parse_wildguard_output("Prompt Harmful: YES\nResponse Harmful: NO")
+    result = classifier._parse_wildguard_output(
+        "Prompt Harmful: YES\nResponse Harmful: NO"
+    )
     assert result == (True, False, False)
-    
+
     # Empty output
     result = classifier._parse_wildguard_output("")
     assert result == (False, False, False)
-    
+
     # Partial output
     result = classifier._parse_wildguard_output("refusal: yes")
     assert result[2] is True
@@ -254,7 +263,7 @@ def test_regex_fallback_strong_refusal() -> None:
     """Test fallback with strong refusal pattern."""
     classifier = WildGuardClassifier()
     result = classifier._regex_fallback("I cannot help with that request")
-    
+
     # Strong refusal should result in low harm score
     assert result.is_refusal is True
     assert result.refusal_score >= 0.6
@@ -271,6 +280,7 @@ def test_regex_fallback_compliance_detected() -> None:
 
 def test_classify_inference_error_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that inference errors trigger regex fallback."""
+
     @contextmanager
     def _no_grad():
         yield
@@ -306,18 +316,19 @@ def test_classify_inference_error_fallback(monkeypatch: pytest.MonkeyPatch) -> N
 
 def test_wildguard_singleton() -> None:
     """Test that get_wildguard_classifier returns singleton."""
-    from psg.security.wildguard_classifier import get_wildguard_classifier, _classifier
-    
+    from psg.security.wildguard_classifier import get_wildguard_classifier
+
     # Reset singleton for test
     import psg.security.wildguard_classifier as wg_module
+
     original = wg_module._classifier
     wg_module._classifier = None
-    
+
     c1 = get_wildguard_classifier()
     c2 = get_wildguard_classifier()
-    
+
     assert c1 is c2
-    
+
     # Restore
     wg_module._classifier = original
 
@@ -325,7 +336,7 @@ def test_wildguard_singleton() -> None:
 def test_classify_with_wildguard_convenience() -> None:
     """Test the module-level classify function."""
     from psg.security.wildguard_classifier import classify_with_wildguard
-    
+
     # Should return a WildGuardResult
     result = classify_with_wildguard("test prompt", "test response")
     assert isinstance(result, WildGuardResult)

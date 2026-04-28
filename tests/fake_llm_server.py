@@ -8,6 +8,7 @@ Returns canned responses:
 Usage: python tests/fake_llm_server.py
 Then: psg scan --model fake --catalog datasets/tiny_test.json --base-url http://localhost:9999/v1 --allow-insecure-http
 """
+
 import json
 import sys
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -38,8 +39,18 @@ def pick_response(messages: list[dict]) -> str:
 
     if any(w in last for w in ("hello", "capital", "weather", "sort", "poem")):
         return BENIGN_RESPONSE
-    if any(w in last for w in ("phishing", "hack", "malware", "keylogger",
-                                "credential", "exploit", "injection")):
+    if any(
+        w in last
+        for w in (
+            "phishing",
+            "hack",
+            "malware",
+            "keylogger",
+            "credential",
+            "exploit",
+            "injection",
+        )
+    ):
         return HARMFUL_RESPONSE
     return SAFE_RESPONSE
 
@@ -55,11 +66,13 @@ class Handler(BaseHTTPRequestHandler):
             "id": "chatcmpl-fake",
             "object": "chat.completion",
             "model": body.get("model", "fake"),
-            "choices": [{
-                "index": 0,
-                "message": {"role": "assistant", "content": content},
-                "finish_reason": "stop",
-            }],
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": content},
+                    "finish_reason": "stop",
+                }
+            ],
         }
         payload = json.dumps(reply).encode()
         self.send_response(200)

@@ -13,9 +13,13 @@ class _FakeMessage:
 
 
 class _FakeGeneration:
-    def __init__(self, text: str | None = None, message_content: str | None = None) -> None:
+    def __init__(
+        self, text: str | None = None, message_content: str | None = None
+    ) -> None:
         self.text = text
-        self.message = _FakeMessage(message_content) if message_content is not None else None
+        self.message = (
+            _FakeMessage(message_content) if message_content is not None else None
+        )
 
 
 class _FakeLLMResult:
@@ -42,7 +46,9 @@ def test_default_threshold() -> None:
     assert guard.threshold == 0.5
 
 
-def test_raises_when_harm_score_meets_threshold(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_raises_when_harm_score_meets_threshold(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     guard = PSGGuardMiddleware(threshold=0.5)
     observed: dict[str, str] = {}
 
@@ -58,15 +64,21 @@ def test_raises_when_harm_score_meets_threshold(monkeypatch: pytest.MonkeyPatch)
     assert observed["text"] == "harmful instructions"
 
 
-def test_allows_when_harm_score_below_threshold(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_allows_when_harm_score_below_threshold(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     guard = PSGGuardMiddleware(threshold=0.8)
 
-    monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", lambda _text: _result(0.4))
+    monkeypatch.setattr(
+        "psg.integrations.langchain.classify_response_v2", lambda _text: _result(0.4)
+    )
 
     guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="benign content")))
 
 
-def test_uses_message_content_when_text_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_uses_message_content_when_text_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     guard = PSGGuardMiddleware()
     observed: dict[str, str] = {}
 
@@ -106,7 +118,7 @@ def test_screens_input_prompts(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_input_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
     guard = PSGGuardMiddleware(threshold=0.5, screen_input=False)
-    
+
     def _classify(text: str) -> ClassificationResult:
         return _result(0.9, ["policy_evasion"])
 
@@ -118,7 +130,7 @@ def test_input_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> Non
 
 def test_output_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
     guard = PSGGuardMiddleware(threshold=0.5, screen_output=False)
-    
+
     def _classify(text: str) -> ClassificationResult:
         return _result(0.9, ["malware_code"])
 
@@ -141,7 +153,9 @@ def test_fails_closed_on_classifier_error(monkeypatch: pytest.MonkeyPatch) -> No
         guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="some text")))
 
 
-def test_fails_open_on_classifier_error_when_configured(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fails_open_on_classifier_error_when_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     guard = PSGGuardMiddleware(threshold=0.5, fail_open=True)
 
     def _classify(text: str) -> ClassificationResult:
@@ -159,7 +173,7 @@ def test_fails_open_on_classifier_error_when_configured(monkeypatch: pytest.Monk
 @pytest.mark.asyncio
 async def test_async_middleware_screens_output(monkeypatch: pytest.MonkeyPatch) -> None:
     guard = AsyncPSGGuardMiddleware(threshold=0.5)
-    
+
     def _classify(text: str) -> ClassificationResult:
         return _result(0.9, ["malware_code"])
 
@@ -172,7 +186,7 @@ async def test_async_middleware_screens_output(monkeypatch: pytest.MonkeyPatch) 
 @pytest.mark.asyncio
 async def test_async_middleware_screens_input(monkeypatch: pytest.MonkeyPatch) -> None:
     guard = AsyncPSGGuardMiddleware(threshold=0.5)
-    
+
     def _classify(text: str) -> ClassificationResult:
         if "injection" in text:
             return _result(0.9, ["policy_evasion"])

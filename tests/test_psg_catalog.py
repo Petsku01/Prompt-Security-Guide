@@ -9,7 +9,9 @@ from psg.catalog import load_catalog
 
 def test_load_catalog_attacks_root(tmp_path) -> None:
     catalog = tmp_path / "catalog.json"
-    catalog.write_text(json.dumps({"attacks": [{"id": "1", "prompt": "hello"}]}), encoding="utf-8")
+    catalog.write_text(
+        json.dumps({"attacks": [{"id": "1", "prompt": "hello"}]}), encoding="utf-8"
+    )
 
     attacks = load_catalog(str(catalog))
 
@@ -20,7 +22,9 @@ def test_load_catalog_attacks_root(tmp_path) -> None:
 
 def test_load_catalog_list_root_with_strings(tmp_path) -> None:
     catalog = tmp_path / "catalog.json"
-    catalog.write_text(json.dumps(["one", {"id": "2", "text": "two"}]), encoding="utf-8")
+    catalog.write_text(
+        json.dumps(["one", {"id": "2", "text": "two"}]), encoding="utf-8"
+    )
 
     attacks = load_catalog(str(catalog))
 

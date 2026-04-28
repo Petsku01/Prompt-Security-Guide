@@ -28,13 +28,23 @@ class _Detector:
 def test_cli_parses_system_prompt_and_defense_report() -> None:
     parser = build_parser()
     args = parser.parse_args(
-        ["--model", "llama3:8b", "--catalog", "datasets/tiny_test.json", "--system-prompt", "Defend", "--defense-report"]
+        [
+            "--model",
+            "llama3:8b",
+            "--catalog",
+            "datasets/tiny_test.json",
+            "--system-prompt",
+            "Defend",
+            "--defense-report",
+        ]
     )
     assert args.system_prompt == "Defend"
     assert args.defense_report is True
 
 
-def test_orchestrator_passes_system_prompt_and_runs_baseline(monkeypatch, tmp_path) -> None:
+def test_orchestrator_passes_system_prompt_and_runs_baseline(
+    monkeypatch, tmp_path
+) -> None:
     calls: list[str | None] = []
 
     class _Client:
@@ -65,21 +75,27 @@ def test_orchestrator_passes_system_prompt_and_runs_baseline(monkeypatch, tmp_pa
         "psg.orchestrator.build_detector",
         lambda _cfg: _Detector(
             lambda _prompt, _response: ClassificationResult(
-            is_refusal=True,
-            is_harmful=False,
-            attack_successful=False,
-            harm_score=0.0,
-            refusal_confidence=0.9,
-            harmful_labels=[],
-            compliance_detected=False,
-            has_disclaimer=False,
-            raw_text_length=24,
+                is_refusal=True,
+                is_harmful=False,
+                attack_successful=False,
+                harm_score=0.0,
+                refusal_confidence=0.9,
+                harmful_labels=[],
+                compliance_detected=False,
+                has_disclaimer=False,
+                raw_text_length=24,
             )
         ),
     )
-    monkeypatch.setattr("psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr("psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr("psg.orchestrator.write_defense_report", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(
+        "psg.orchestrator.write_json_report", lambda *_args, **_kwargs: None
+    )
+    monkeypatch.setattr(
+        "psg.orchestrator.write_text_report", lambda *_args, **_kwargs: None
+    )
+    monkeypatch.setattr(
+        "psg.orchestrator.write_defense_report", lambda *_args, **_kwargs: None
+    )
 
     summary, _results = run(cfg)
 
@@ -153,7 +169,9 @@ def test_defense_report_generation(tmp_path) -> None:
     assert "Low block rate detected." in text
 
 
-def test_defense_report_recommends_secret_redaction_on_credential_leaks(tmp_path) -> None:
+def test_defense_report_recommends_secret_redaction_on_credential_leaks(
+    tmp_path,
+) -> None:
     path = tmp_path / "defense_report.txt"
     attacks = [Attack(id="a1", prompt="p1", metadata={"category": "Prompt Injection"})]
     defended = [

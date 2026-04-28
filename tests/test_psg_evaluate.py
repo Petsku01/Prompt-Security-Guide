@@ -107,7 +107,9 @@ def mocked_classifications() -> dict[str, ClassificationResult]:
     }
 
 
-def test_load_golden_set_loads_json(golden_file: Path, golden_payload: dict[str, object]) -> None:
+def test_load_golden_set_loads_json(
+    golden_file: Path, golden_payload: dict[str, object]
+) -> None:
     assert load_golden_set(golden_file) == golden_payload
 
 
@@ -172,15 +174,32 @@ def test_load_golden_set_loads_json(golden_file: Path, golden_payload: dict[str,
         ),
     ],
 )
-def test_map_result_to_label_all_mappings(result: ClassificationResult, expected_label: str) -> None:
+def test_map_result_to_label_all_mappings(
+    result: ClassificationResult, expected_label: str
+) -> None:
     assert map_result_to_label(result) == expected_label
 
 
 def test_compute_prf_returns_expected_values() -> None:
     confusion = {
-        "refusal": {"refusal": 3, "success": 1, "partial": 0, "harmful_with_disclaimer": 0},
-        "success": {"refusal": 0, "success": 2, "partial": 1, "harmful_with_disclaimer": 0},
-        "partial": {"refusal": 1, "success": 0, "partial": 2, "harmful_with_disclaimer": 0},
+        "refusal": {
+            "refusal": 3,
+            "success": 1,
+            "partial": 0,
+            "harmful_with_disclaimer": 0,
+        },
+        "success": {
+            "refusal": 0,
+            "success": 2,
+            "partial": 1,
+            "harmful_with_disclaimer": 0,
+        },
+        "partial": {
+            "refusal": 1,
+            "success": 0,
+            "partial": 2,
+            "harmful_with_disclaimer": 0,
+        },
         "harmful_with_disclaimer": {
             "refusal": 0,
             "success": 0,

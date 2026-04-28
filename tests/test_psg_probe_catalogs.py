@@ -36,7 +36,9 @@ def test_data_leakage_probe_catalog_has_expected_subcategories() -> None:
 
 
 def test_encoding_attacks_catalog_has_minimum_size_and_techniques() -> None:
-    data = json.loads(Path("datasets/encoding_attacks.json").read_text(encoding="utf-8"))
+    data = json.loads(
+        Path("datasets/encoding_attacks.json").read_text(encoding="utf-8")
+    )
     attacks = data.get("attacks", [])
     assert len(attacks) >= 30
 
@@ -62,7 +64,11 @@ def test_target_catalogs_do_not_contain_unknown_categories() -> None:
             if isinstance(current, dict):
                 for key, value in current.items():
                     path = f"{trail}.{key}" if trail else key
-                    if key == "category" and isinstance(value, str) and value.lower() == "unknown":
+                    if (
+                        key == "category"
+                        and isinstance(value, str)
+                        and value.lower() == "unknown"
+                    ):
                         unknowns.append(path)
                     _walk(value, path)
             elif isinstance(current, list):

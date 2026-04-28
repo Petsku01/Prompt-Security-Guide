@@ -17,12 +17,22 @@ def setup_function() -> None:
 
 
 def _public_dns(*_args, **_kwargs):
-    return [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("93.184.216.34", 443))]
+    return [
+        (
+            socket.AF_INET,
+            socket.SOCK_STREAM,
+            socket.IPPROTO_TCP,
+            "",
+            ("93.184.216.34", 443),
+        )
+    ]
 
 
 def test_validate_url_returns_true_for_redirect(monkeypatch) -> None:
     monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
-    monkeypatch.setattr("psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(302))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(302)
+    )
     assert validate_url("https://example.com") is True
 
 
@@ -51,7 +61,9 @@ def test_validate_url_uses_cache(monkeypatch) -> None:
 
 
 def test_validate_doi_returns_true_for_200(monkeypatch) -> None:
-    monkeypatch.setattr("psg.validation.online.requests.get", lambda *_args, **_kwargs: _Resp(200))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.get", lambda *_args, **_kwargs: _Resp(200)
+    )
     assert validate_doi("10.1000/xyz123") is True
 
 
@@ -103,17 +115,33 @@ def test_validate_url_blocks_if_dns_resolves_private(monkeypatch) -> None:
     monkeypatch.setattr(
         "psg.validation.online.socket.getaddrinfo",
         lambda *_args, **_kwargs: [
-            (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("93.184.216.34", 443)),
-            (socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("::1", 443, 0, 0)),
+            (
+                socket.AF_INET,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                ("93.184.216.34", 443),
+            ),
+            (
+                socket.AF_INET6,
+                socket.SOCK_STREAM,
+                socket.IPPROTO_TCP,
+                "",
+                ("::1", 443, 0, 0),
+            ),
         ],
     )
-    monkeypatch.setattr("psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200)
+    )
     assert validate_url("https://mixed.example") is False
 
 
 def test_validate_url_allowlist_restricts_hosts(monkeypatch) -> None:
     monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
-    monkeypatch.setattr("psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200)
+    )
 
     assert validate_url("https://example.com", allowlist=("example.com",)) is True
     assert validate_url("https://not-example.com", allowlist=("example.com",)) is False
@@ -121,18 +149,25 @@ def test_validate_url_allowlist_restricts_hosts(monkeypatch) -> None:
 
 def test_validate_url_rate_limit_blocks_after_burst(monkeypatch) -> None:
     monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
-    monkeypatch.setattr("psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(200)
+    )
 
     results = [
-        validate_url(f"https://example.com/{i}", max_requests_per_second=10.0) for i in range(11)
+        validate_url(f"https://example.com/{i}", max_requests_per_second=10.0)
+        for i in range(11)
     ]
     assert results.count(True) == 10
     assert results.count(False) == 1
 
 
 def test_validate_doi_rate_limit_blocks_after_burst(monkeypatch) -> None:
-    monkeypatch.setattr("psg.validation.online.requests.get", lambda *_args, **_kwargs: _Resp(200))
+    monkeypatch.setattr(
+        "psg.validation.online.requests.get", lambda *_args, **_kwargs: _Resp(200)
+    )
 
-    results = [validate_doi(f"10.1000/xyz{i}", max_requests_per_second=10.0) for i in range(11)]
+    results = [
+        validate_doi(f"10.1000/xyz{i}", max_requests_per_second=10.0) for i in range(11)
+    ]
     assert results.count(True) == 10
     assert results.count(False) == 1

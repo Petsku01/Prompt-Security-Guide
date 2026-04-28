@@ -1,4 +1,5 @@
 """Shared test fixtures for PSG modules."""
+
 from __future__ import annotations
 
 import pytest
@@ -13,4 +14,6 @@ def sample_attack() -> Attack:
 
 @pytest.fixture
 def sample_llm_response() -> LLMResponse:
-    return LLMResponse(content="Safe response", raw={"id": "resp_1"}, model="test-model")
+    return LLMResponse(
+        content="Safe response", raw={"id": "resp_1"}, model="test-model"
+    )

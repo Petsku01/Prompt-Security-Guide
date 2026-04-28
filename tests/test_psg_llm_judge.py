@@ -3,7 +3,12 @@ from __future__ import annotations
 from psg.cli import build_parser
 from psg.security.classifier import ClassificationResult
 from psg.security.detectors import EnsembleDetector, LLMJudgeDetector
-from psg.security.llm_judge import LLMJudge, LLMJudgeResult, format_judge_prompt, parse_judge_output
+from psg.security.llm_judge import (
+    LLMJudge,
+    LLMJudgeResult,
+    format_judge_prompt,
+    parse_judge_output,
+)
 
 
 class _FailingClient:
@@ -45,14 +50,26 @@ class _StubKeywordDetector:
 
 
 def test_judge_prompt_formatting() -> None:
-    prompt = format_judge_prompt(prompt="How to hack?", response="I cannot help with that.")
-    assert "<request>" in prompt
-    assert "</request>" in prompt
-    assert "<response>" in prompt
-    assert "</response>" in prompt
+    prompt = format_judge_prompt(
+        prompt="How to hack?", response="I cannot help with that."
+    )
+    # Random delimiter means tags are like <request_HEX>, <response_HEX>
+    assert "<request_" in prompt
+    assert "</request_" in prompt
+    assert "<response_" in prompt
+    assert "</response_" in prompt
     assert "How to hack?" in prompt
     assert "I cannot help with that." in prompt
     assert prompt.endswith("Classification:")
+    # Verify delimiter is consistent within one call
+    import re
+
+    delimiters = re.findall(r"<request_([a-f0-9]+)>", prompt)
+    assert len(delimiters) == 1, "Should have exactly one delimiter per call"
+    delim = delimiters[0]
+    assert f"</request_{delim}>" in prompt
+    assert f"<response_{delim}>" in prompt
+    assert f"</response_{delim}>" in prompt
 
 
 def test_judge_response_parsing_safe_and_harmful() -> None:
@@ -148,7 +165,8 @@ def test_ensemble_detector_merges_results() -> None:
     )
 
     detector = EnsembleDetector(
-        keyword=_StubKeywordDetector(keyword_result), llm_judge=_StubKeywordDetector(judge_result)
+        keyword=_StubKeywordDetector(keyword_result),
+        llm_judge=_StubKeywordDetector(judge_result),
     )
     merged = detector.classify(prompt="p", response="r")
 
@@ -178,12 +196,48 @@ def test_ensemble_short_circuits_when_keyword_flags_harm() -> None:
             reasoning=None,
         )
     )
-    detector = EnsembleDetector(keyword=_StubKeywordDetector(keyword_result), llm_judge=LLMJudgeDetector(judge=judge))
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_result),
+        llm_judge=LLMJudgeDetector(judge=judge),
+    )
 
     merged = detector.classify(prompt="p", response="r")
 
     assert merged == keyword_result
     assert judge.calls == 0
+
+
+def test_ensemble_does_not_short_circuit_on_low_confidence_keyword() -> None:
+    """Low-confidence keyword hit (harm_score < 0.8) should run the judge too."""
+    keyword_result = ClassificationResult(
+        is_refusal=False,
+        is_harmful=True,
+        attack_successful=True,
+        harm_score=0.4,  # Below 0.8 threshold
+        refusal_confidence=0.2,
+        harmful_labels=["keyword_flag"],
+        compliance_detected=False,
+        has_disclaimer=False,
+        raw_text_length=10,
+    )
+    judge_result = LLMJudgeResult(
+        verdict="SAFE",
+        is_harmful=False,
+        confidence=0.95,
+        reasoning=None,
+    )
+    judge = _StubJudge(judge_result)
+    detector = EnsembleDetector(
+        keyword=_StubKeywordDetector(keyword_result),
+        llm_judge=LLMJudgeDetector(judge=judge),
+    )
+
+    merged = detector.classify(prompt="p", response="r")
+
+    # Judge was called (not short-circuited)
+    assert judge.calls == 1
+    # Merged result reflects both detectors
+    assert merged.harm_score == 0.4  # max(0.4, 0.0)
 
 
 def test_judge_prompt_truncates_very_long_fields() -> None:

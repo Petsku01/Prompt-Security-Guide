@@ -37,4 +37,3 @@ def test_parse_chat_completion_missing_fields() -> None:
 def test_parse_chat_completion_raises_parse_error_on_invalid_data() -> None:
     with pytest.raises(ParseError):
         parse_chat_completion([])  # type: ignore[arg-type]
-

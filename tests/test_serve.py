@@ -1,4 +1,5 @@
 """Tests for psg.serve module."""
+
 from __future__ import annotations
 
 import httpx
@@ -37,7 +38,9 @@ async def test_health_endpoint(app):
 @pytest.mark.asyncio
 async def test_screen_safe_text(app):
     """Test screening safe/refusal text."""
-    response = await _request(app, "POST", "/screen", json={"text": "I cannot help with that request."})
+    response = await _request(
+        app, "POST", "/screen", json={"text": "I cannot help with that request."}
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["harmful"] is False
@@ -48,9 +51,12 @@ async def test_screen_safe_text(app):
 @pytest.mark.asyncio
 async def test_screen_harmful_text(app):
     """Test screening harmful response - check it returns valid structure."""
-    response = await _request(app, "POST", "/screen", json={
-        "text": "Here's how to hack a computer: First, download malware..."
-    })
+    response = await _request(
+        app,
+        "POST",
+        "/screen",
+        json={"text": "Here's how to hack a computer: First, download malware..."},
+    )
     assert response.status_code == 200
     data = response.json()
     # Check structure (classifier may or may not flag this specific text)
@@ -62,23 +68,27 @@ async def test_screen_harmful_text(app):
 @pytest.mark.asyncio
 async def test_screen_with_custom_threshold(app):
     """Test screening with custom threshold."""
-    response = await _request(app, "POST", "/screen", json={
-        "text": "Some text",
-        "threshold": 0.9
-    })
+    response = await _request(
+        app, "POST", "/screen", json={"text": "Some text", "threshold": 0.9}
+    )
     assert response.status_code == 200
 
 
 @pytest.mark.asyncio
 async def test_bulk_screen(app):
     """Test bulk screening endpoint."""
-    response = await _request(app, "POST", "/screen/bulk", json={
-        "texts": [
-            "I cannot help with that.",
-            "Here's the harmful content you requested...",
-            "Sorry, I must decline."
-        ]
-    })
+    response = await _request(
+        app,
+        "POST",
+        "/screen/bulk",
+        json={
+            "texts": [
+                "I cannot help with that.",
+                "Here's the harmful content you requested...",
+                "Sorry, I must decline.",
+            ]
+        },
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 3
@@ -103,7 +113,7 @@ async def test_metrics_endpoint(app):
     # Make some requests first
     await _request(app, "POST", "/screen", json={"text": "test"})
     await _request(app, "POST", "/screen", json={"text": "test2"})
-    
+
     response = await _request(app, "GET", "/metrics")
     assert response.status_code == 200
     data = response.json()
@@ -146,10 +156,12 @@ def test_server_config_custom_values():
 @pytest.mark.asyncio
 async def test_bulk_screen_with_threshold_override(app):
     """Test bulk screening with per-request threshold."""
-    response = await _request(app, "POST", "/screen/bulk", json={
-        "texts": ["I cannot help with that.", "Sorry."],
-        "threshold": 0.1
-    })
+    response = await _request(
+        app,
+        "POST",
+        "/screen/bulk",
+        json={"texts": ["I cannot help with that.", "Sorry."], "threshold": 0.1},
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["total"] == 2
@@ -159,10 +171,9 @@ async def test_bulk_screen_with_threshold_override(app):
 @pytest.mark.asyncio
 async def test_screen_with_model_override(app):
     """Test screening with custom model parameter."""
-    response = await _request(app, "POST", "/screen", json={
-        "text": "I cannot help.",
-        "model": "custom-model"
-    })
+    response = await _request(
+        app, "POST", "/screen", json={"text": "I cannot help.", "model": "custom-model"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert "harmful" in data
@@ -172,10 +183,10 @@ async def test_screen_with_model_override(app):
 async def test_metrics_after_multiple_requests(app):
     """Test metrics aggregation."""
     reset_metrics()
-    
+
     for _ in range(5):
         await _request(app, "POST", "/screen", json={"text": "test"})
-    
+
     response = await _request(app, "GET", "/metrics")
     assert response.status_code == 200
     data = response.json()

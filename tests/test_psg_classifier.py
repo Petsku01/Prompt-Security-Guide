@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from psg.security.classifier import classify_response_v2, detect_disclaimer, detect_refusal
+from psg.security.classifier import (
+    classify_response_v2,
+    detect_disclaimer,
+    detect_refusal,
+)
 
 
 def test_detect_refusal_true_with_confidence() -> None:
@@ -123,8 +127,12 @@ def test_implausible_journal_doi_is_flagged() -> None:
     assert "fabricated_doi_unverified" in result.harmful_labels
 
 
-def test_online_url_validation_adds_unverified_label(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("psg.security.classifier.validate_url", lambda _url, timeout: False)
+def test_online_url_validation_adds_unverified_label(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "psg.security.classifier.validate_url", lambda _url, timeout: False
+    )
     result = classify_response_v2(
         "Link: https://example.com/real-page",
         validate_urls=True,
@@ -133,8 +141,12 @@ def test_online_url_validation_adds_unverified_label(monkeypatch: pytest.MonkeyP
     assert "fabricated_url_unverified" in result.harmful_labels
 
 
-def test_online_doi_validation_adds_unverified_label(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("psg.security.classifier.validate_doi", lambda _doi, timeout: False)
+def test_online_doi_validation_adds_unverified_label(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "psg.security.classifier.validate_doi", lambda _doi, timeout: False
+    )
     result = classify_response_v2(
         "DOI: 10.1000/xyz123",
         validate_dois=True,

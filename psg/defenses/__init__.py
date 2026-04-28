@@ -141,7 +141,9 @@ class DefenseLayer:
             canary_tokens=self.config.canary_tokens,
             block_threshold=self.config.input_block_threshold,
             use_ml_model=self.config.use_ml_model,
-            custom_detectors=self.custom_input_detectors or None,
+            custom_detectors=list(self.custom_input_detectors)
+            if self.custom_input_detectors
+            else None,
         )
 
     def validate_output(self, text: str) -> OutputValidationResult | None:
@@ -164,7 +166,6 @@ class DefenseLayer:
                         result.secrets_found = []
                     result.secrets_found.append(f"canary:{token[:8]}...")
                     result.blocked = True
-                    break
 
         return result
 

@@ -7,7 +7,9 @@ from psg.llm.transport import Transport
 
 
 class _Resp:
-    def __init__(self, status_code: int, body: str = "", data: dict | None = None) -> None:
+    def __init__(
+        self, status_code: int, body: str = "", data: dict | None = None
+    ) -> None:
         self.status_code = status_code
         self.text = body
         self._data = data if data is not None else {}
@@ -28,7 +30,9 @@ def test_post_json_retries_then_succeeds(monkeypatch) -> None:
         return _Resp(200, data={"ok": True})
 
     monkeypatch.setattr("psg.llm.transport.requests.post", _fake_post)
-    monkeypatch.setattr(Transport, "_sleep", lambda _self, attempt: sleeps.append(attempt))
+    monkeypatch.setattr(
+        Transport, "_sleep", lambda _self, attempt: sleeps.append(attempt)
+    )
 
     out = transport.post_json("https://example.test/v1", {"x": 1})
 
@@ -47,7 +51,9 @@ def test_backoff_sleep_uses_cap_and_jitter(monkeypatch) -> None:
         return 0.25
 
     monkeypatch.setattr("psg.llm.transport.random.uniform", _fake_uniform)
-    monkeypatch.setattr("psg.llm.transport.time.sleep", lambda seconds: slept.append(seconds))
+    monkeypatch.setattr(
+        "psg.llm.transport.time.sleep", lambda seconds: slept.append(seconds)
+    )
 
     transport._sleep(attempt=3)
 
@@ -58,8 +64,15 @@ def test_backoff_sleep_uses_cap_and_jitter(monkeypatch) -> None:
 def test_post_json_raises_http_status_error_for_4xx(monkeypatch) -> None:
     transport = Transport(max_retries=3)
 
-    monkeypatch.setattr("psg.llm.transport.requests.post", lambda *_args, **_kwargs: _Resp(404, "not found"))
-    monkeypatch.setattr(Transport, "_sleep", lambda *_args, **_kwargs: pytest.fail("should not retry 4xx"))
+    monkeypatch.setattr(
+        "psg.llm.transport.requests.post",
+        lambda *_args, **_kwargs: _Resp(404, "not found"),
+    )
+    monkeypatch.setattr(
+        Transport,
+        "_sleep",
+        lambda *_args, **_kwargs: pytest.fail("should not retry 4xx"),
+    )
 
     with pytest.raises(HTTPStatusError) as exc_info:
         transport.post_json("https://example.test/v1", {"x": 1})
