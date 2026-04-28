@@ -175,11 +175,11 @@ if is_refusal and has_security_terms and not has_instructional_content:
 
 ## Definition of Done
 
-- [ ] Kaikki uudet testit vihreällä
-- [ ] Olemassaolevat testit eivät rikkoudu
-- [ ] CHANGELOG päivitetty
+- [x] Kaikki uudet testit vihreällä
+- [x] Olemassaolevat testit eivät rikkoudu
+- [x] CHANGELOG päivitetty
 - [ ] README päivitetty jos tarpeen
-- [ ] Git commit per feature
+- [x] Git commit per feature
 
 ---
 

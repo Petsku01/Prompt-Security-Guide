@@ -124,7 +124,7 @@ class VectorGenerator:
             return []
 
         try:
-            # Robust JSON extraction from LLM response
+            # JSON extraction from LLM response
             vectors_data = self._extract_json(response)
 
             if not isinstance(vectors_data, list):

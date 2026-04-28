@@ -10,7 +10,6 @@
 - **custom_detectors semantics**: Empty list `[]` no longer silently replaced with `None`. `custom_input_detectors=[]` is now preserved (code review H8)
 
 ### New Features
-- **HarmSeverity enum**: Classification results can now be mapped to LOW/MEDIUM/HIGH/CRITICAL severity levels (improvement plan 2.1)
 - **needs_review field**: `ClassificationResult` includes `needs_review: bool` — true when `0.3 < harm_score < 0.7`, flagging uncertain classifications for human review (improvement plan 2.2)
 
 ### Code Quality

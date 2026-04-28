@@ -4,7 +4,7 @@ import logging
 from typing import Any
 
 try:
-    from langchain_core.callbacks import AsyncCallbackHandler, BaseCallbackHandler
+    from langchain_core.callbacks import AsyncCallbackHandler, BaseCallbackHandler  # type: ignore[import-not-found]
 except ImportError:  # pragma: no cover - optional dependency fallback
 
     class BaseCallbackHandler:  # type: ignore[no-redef]

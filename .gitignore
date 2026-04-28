@@ -37,6 +37,9 @@ build/
 logs/
 models/
 
+# Research sources (compiled, not source code)
+research/sources_*.md
+
 # Ruff cache
 .ruff_cache/
 .coverage

@@ -12,18 +12,6 @@ class RedactionMode(str, Enum):
     OFF = "off"
 
 
-class HarmSeverity(str, Enum):
-    """Severity level for harmful content classification.
-
-    Maps harm categories to risk levels for prioritized handling.
-    """
-
-    LOW = "low"  # Info disclosure, metadata leaks
-    MEDIUM = "medium"  # Social engineering, phishing
-    HIGH = "high"  # Malware, weapons, exploitation
-    CRITICAL = "critical"  # Mass harm, CBRN, terrorism
-
-
 class ClassificationInputMode(str, Enum):
     AUTO = "auto"
     RAW = "raw"
