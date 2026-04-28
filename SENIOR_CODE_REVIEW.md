@@ -3,7 +3,8 @@
 **Date:** 2026-04-09  
 **Reviewer:** Claude (Automated Senior Review)  
 **Scope:** Full codebase review - architecture, security, bugs, code quality  
-**Version reviewed:** v4.3.0 (commit 5828784)
+**Version reviewed:** v4.3.0 (commit 5828784)  
+**Last updated:** 2026-04-28 (status annotations after audit iterations 1-2)
 
 ---
 
@@ -19,10 +20,10 @@ However, this review identified **two interface bugs** in the crescendo and many
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| **CRITICAL** | 2 | Interface bugs causing silent degradation |
-| **HIGH** | 5 | Security design, thread safety, test quality |
-| **MEDIUM** | 18 | Code smells, missing validation, inconsistencies |
-| **LOW** | 7 | Style, naming, minor improvements |
+| **CRITICAL** | 2 | Interface bugs causing silent degradation — **FIXED** |
+| **HIGH** | 5 | Security design, thread safety, test quality — **4 FIXED, 1 deferred** |
+| **MEDIUM** | 18 | Code smells, missing validation, inconsistencies — **6 FIXED, 12 remaining** |
+| **LOW** | 7 | Style, naming, minor improvements — **5 FIXED, 2 remaining** |
 
 ---
 
@@ -79,7 +80,9 @@ This is **correct logic**. The original review was wrong.
 
 ## HIGH Severity Issues
 
-### H1. Fail-Open Security in LangChain Integration
+### H1. Fail-Open Security in LangChain Integration **(FIXED — now fail-closed by default)**
+
+The `fail_open` parameter now defaults to `False` (fail-closed). Users must explicitly opt in to fail-open behavior.
 
 **File:** `psg/integrations/langchain.py:75-77`
 
@@ -95,7 +98,9 @@ For a **security middleware**, failing open defeats its purpose. If the classifi
 
 ---
 
-### H2. Thread-Unsafe Singleton in WildGuard Classifier
+### H2. Thread-Unsafe Singleton in WildGuard Classifier **(FIXED — `threading.Lock` added)**
+
+Double-check pattern now guarded with `_classifier_lock`.
 
 **File:** `psg/security/wildguard_classifier.py:222-231`
 
@@ -164,7 +169,9 @@ Creates fake classes at runtime that bypass mypy. Should use `TYPE_CHECKING` blo
 
 ---
 
-### H8. `custom_detectors or None` Semantic Bug
+### H8. `custom_detectors or None` Semantic Bug **(FIXED)**
+
+Empty list `[]` is now preserved: `list(self.custom_input_detectors) if self.custom_input_detectors else None`.
 
 **File:** `psg/defenses/__init__.py:138`
 
@@ -176,7 +183,9 @@ An empty list `[]` is falsy in Python, so it gets replaced with `None`. This mea
 
 ---
 
-### H9. Canary Token Not Normalized Before Comparison
+### H9. Canary Token Not Normalized Before Comparison **(FIXED)**
+
+Canary tokens are now compared after `.lower()` normalization. Input text normalization already applies.
 
 **File:** `psg/defenses/input_validators.py:263`
 
@@ -268,7 +277,9 @@ The refusal regex is extremely broad — `\b(cannot|can't) (help|assist|provide)
 
 Multiple hardcoded thresholds (0.5, 0.2, 0.05, 0.25) with no documentation or configuration. The scoring logic has arbitrary caps (`min(0.2, len(harmful_labels) * 0.05)`) that are non-intuitive.
 
-### M8. `max_tokens=8` Too Small for LLM Judge
+### M8. `max_tokens=8` Too Small for LLM Judge **(FIXED — now 50)**
+
+`JUDGE_MAX_TOKENS` increased from 8 to 50, with random delimiter injection protection.
 
 **File:** `psg/security/llm_judge.py:82`
 
@@ -332,7 +343,9 @@ Duplicates lines 261-277 exactly. Should be extracted into a helper.
 
 Emojis may not render on all terminals (especially CI/CD). Should detect capabilities or provide ASCII fallback.
 
-### M18. Canary Token Leakage Detection Breaks After First Token
+### M18. Canary Token Leakage Detection Breaks After First Token **(FIXED — loop collects all tokens)**
+
+The `break` was removed; all leaked canary tokens are now collected and reported.
 
 **File:** `psg/defenses/__init__.py:154-161`
 
@@ -430,7 +443,7 @@ The `retry()` decorator doesn't preserve the wrapped function's metadata.
 
 ## Recommended Priority for Fixes
 
-### DONE in this review cycle
+### DONE (audit iterations 1-2, v4.4.0)
 1. ~~Fix `detector.detect()` -> `detector.classify()` in crescendo.py and many_shot.py~~ DONE
 2. ~~Fix `client.chat()` -> `client.chat_multi_turn()` with `model` parameter~~ DONE
 3. ~~Expand CI test glob to include all test files~~ DONE
@@ -438,17 +451,38 @@ The `retry()` decorator doesn't preserve the wrapped function's metadata.
 5. ~~Fix hardcoded version in text_report.py~~ DONE
 6. ~~Fix crescendo state leakage (history not reset)~~ DONE
 7. ~~Update tests to use correct interfaces~~ DONE
+8. ~~LangChain fail-open → fail-closed by default~~ DONE
+9. ~~WildGuard singleton thread safety (`threading.Lock`)~~ DONE
+10. ~~Canary token normalization before comparison~~ DONE
+11. ~~`custom_detectors or None` semantics~~ DONE
+12. ~~Canary token loop: collect all, not just first~~ DONE
+13. ~~`JUDGE_MAX_TOKENS`: 8 → 50~~ DONE
+14. ~~Ensemble short-circuit: confidence threshold >= 0.8~~ DONE
+15. ~~Judge prompt injection: random delimiter + HTML escaping~~ DONE
+16. ~~Silent except → logging.warning (ML load/inference)~~ DONE
+17. ~~Catalog validator: alias support for ID/prompt fields~~ DONE
+18. ~~Dead guard removal → assert~~ DONE
+19. ~~Orchestrator lambda dedup, stale alias removal~~ DONE
+20. ~~`defend.py` msg-is-dict guard, `_as_labels()` dedup~~ DONE
+21. ~~ruff format/lint, mypy clean~~ DONE
+22. ~~Test suite: 380 passing~~ DONE
 
-### Remaining (P1) - Security and correctness
-8. Change LangChain middleware from fail-open to fail-closed (or make configurable)
-9. Add thread safety to WildGuard singleton
-10. Wire crescendo/many_shot into the main pipeline or document as standalone tools
-11. Add `spec=` constraints to test Mocks to catch future interface mismatches
-
-### Remaining (P2) - Code quality
-12. Replace bare `except Exception` with specific exception types
-13. Add logging instead of print statements
-14. Extract duplicated code in client.py and html_report.py
+### Remaining (P3 — low priority, deferred)
+- M1: Extract shared logic from `client.py` chat methods
+- M5: Broaden refusal pattern detection
+- M6: PII regex false positive rate (documented limitation)
+- M7: Magic numbers in harm score calculation → configurable thresholds
+- M10: Expand secret detection beyond OpenAI/AWS key formats
+- M12: Extract PRESETS dict to YAML/JSON config
+- M13: Redundant type coercion in `config.py`
+- M14: Defense report code duplication (`cli.py` vs `defend.py`)
+- M15: HTML report code duplication in `html_report.py`
+- M17: Emoji fallback for non-Unicode terminals
+- M19: Fragile code block regex in `templates.py`
+- M20: Hash truncation in `dedup.py` (documented trade-off)
+- L5: Dockerfile layer caching optimization
+- L6: mypy `--ignore-missing-imports` → package-specific allowlist
+- L7: Coverage reporting in CI
 
 ---
 
