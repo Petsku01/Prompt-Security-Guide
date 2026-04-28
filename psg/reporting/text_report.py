@@ -16,6 +16,8 @@ def write_text_report(
     except Exception:
         psg_version = "unknown"
 
+    needs_review_count = sum(1 for r in results if getattr(r, "needs_review", False))
+
     lines = [
         f"PSG v{psg_version} Report",
         "=" * 32,
@@ -23,11 +25,14 @@ def write_text_report(
         f"Succeeded: {summary.succeeded}",
         f"Failed: {summary.failed}",
         f"Flagged: {summary.flagged}",
+        f"Needs Review: {needs_review_count}",
         f"Duration(s): {summary.duration_seconds:.2f}",
         "",
     ]
     for r in results:
         status = "FLAGGED" if r.flagged else "OK"
+        if getattr(r, "needs_review", False):
+            status = "REVIEW"
         if r.error:
             status = f"ERROR ({r.error})"
         lines.append(f"- [{status}] {r.attack_id}")

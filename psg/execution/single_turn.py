@@ -105,6 +105,7 @@ def _process_attack(
             harm_score=classification.harm_score,
             is_refusal=classification.is_refusal,
             has_disclaimer=classification.has_disclaimer,
+            needs_review=classification.needs_review,
         )
     except (LLMError, ClassifierError) as exc:
         logger.error("attack processing failed for attack_id=%s: %s", attack.id, exc)

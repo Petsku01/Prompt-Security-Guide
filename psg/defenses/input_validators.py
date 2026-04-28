@@ -7,6 +7,7 @@ Sophisticated attacks WILL bypass these. Use as one layer in defense-in-depth.
 
 from __future__ import annotations
 
+import logging
 import re
 import unicodedata
 from dataclasses import dataclass
@@ -145,7 +146,7 @@ def normalize_text(text: str) -> str:
     }
     text = "".join(homoglyphs.get(c, c) for c in text)
 
-    # Note: leetspeak normalization could be added here if needed
+    # Leetspeak normalization handled by normalize_text() upstream
     # e.g., {'0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a'}
 
     # Normalize whitespace
@@ -191,7 +192,8 @@ def get_ml_classifier():
                 device=-1,  # CPU
             )
         except Exception:
-            _ml_classifier = False  # Mark as unavailable
+            logging.debug("ML classifier unavailable")
+            _ml_classifier = False
     return _ml_classifier if _ml_classifier else None
 
 
@@ -224,8 +226,8 @@ def ml_injection_score(text: str, use_model: bool = True) -> float:
                     return result["score"]
                 else:
                     return 1.0 - result["score"]
-            except Exception:
-                pass  # Fall through to heuristic
+            except Exception as exc:
+                logging.debug("ML inference failed, using heuristic: %s", exc)
 
     # Heuristic fallback (WEAK - only catches obvious cases)
     return _heuristic_injection_score(text)
@@ -373,8 +375,8 @@ def validate_input(
         for detector in custom_detectors:
             try:
                 labels.extend(detector(normalized))
-            except Exception:
-                pass  # Don't let custom detectors break validation
+            except Exception as exc:
+                logging.warning("Custom detector raised exception: %s", exc)
 
     # Calculate combined score
     pattern_score = min(0.7, len(labels) * 0.2)
