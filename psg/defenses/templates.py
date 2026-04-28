@@ -142,7 +142,13 @@ def combine_templates(
     combined = separator.join(parts)
 
     if max_length and len(combined) > max_length:
-        combined = combined[:max_length].rsplit(" ", 1)[0] + "..."
+        # Safe truncation: handle case where no space exists (e.g., long URL)
+        truncated = combined[:max_length]
+        last_space = truncated.rfind(" ")
+        if last_space > max_length // 2:  # Only split if space is in latter half
+            combined = truncated[:last_space] + "..."
+        else:
+            combined = truncated[: max_length - 3] + "..."
 
     return combined
 

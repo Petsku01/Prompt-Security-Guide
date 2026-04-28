@@ -6,11 +6,12 @@ Normalizes text to catch common evasion techniques:
 - Base64: embedded encoded segments → decoded
 """
 
+from __future__ import annotations
+
 import base64
 import binascii
 import re
 import unicodedata
-from typing import Optional
 
 
 # Leetspeak translation map
@@ -110,7 +111,7 @@ def translate_homoglyphs(text: str) -> str:
     return "".join(result)
 
 
-def _try_decode_base64(s: str) -> Optional[str]:
+def _try_decode_base64(s: str) -> str | None:
     """Attempt to decode a base64 string.
 
     Returns decoded text if valid UTF-8, None otherwise.
@@ -163,7 +164,7 @@ def normalize_text(text: str) -> str:
     leetspeak translation, base64 segment decoding.
     """
     if not text:
-        return text
+        return ""  # Preserve str return type, don't return None
 
     # Step 1: Unicode NFKC normalization
     # Converts compatibility characters to canonical form

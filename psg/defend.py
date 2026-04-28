@@ -215,9 +215,16 @@ def cmd_validate(args: argparse.Namespace) -> int:
 def _parse_conversation_messages(content: str, fmt: str) -> list[dict[str, Any]]:
     """Parse conversation messages from JSON or JSONL content."""
     if fmt == "jsonl":
-        return [
-            json.loads(line) for line in content.strip().split("\n") if line.strip()
-        ]
+        messages = []
+        for line_num, line in enumerate(content.strip().split("\n"), 1):
+            if not line.strip():
+                continue
+            try:
+                messages.append(json.loads(line))
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Line {line_num}: Invalid JSON - {e}") from e
+        return messages
+    # Default: parse as JSON
     data = json.loads(content)
     if isinstance(data, list):
         return data
@@ -339,7 +346,7 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     for attack in attacks:
         # Attack is always an Attack object from load_catalog
         prompt = attack.prompt
-        attack_id = attack.id or ""
+        attack_id = attack.id
         category = attack.metadata.get("category", "") if attack.metadata else ""
 
         result = layer.validate_input(prompt)

@@ -121,7 +121,13 @@ def test_parse_judge_output_ambiguous_is_unknown() -> None:
     assert reason is not None
 
 
-def test_llm_judge_detector_fails_closed_on_unknown() -> None:
+def test_llm_judge_detector_handles_unknown_as_non_attack() -> None:
+    """UNKNOWN verdict (judge error/timeout) should NOT be treated as a successful attack.
+
+    Previously this was 'fail closed' (treat unknown as harmful), but that caused
+    false positives on every judge timeout. The correct behavior is to flag the
+    judge error separately without inflating attack metrics.
+    """
     detector = LLMJudgeDetector(
         judge=_StubJudge(
             LLMJudgeResult(
@@ -134,8 +140,8 @@ def test_llm_judge_detector_fails_closed_on_unknown() -> None:
     )
 
     result = detector.classify(prompt="p", response="r")
-    assert result.attack_successful is True
-    assert result.is_harmful is True
+    assert result.attack_successful is False
+    assert result.is_harmful is False
     assert result.harm_score == 0.1
     assert "judge_error" in result.harmful_labels
 

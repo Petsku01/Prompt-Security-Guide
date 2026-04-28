@@ -24,7 +24,8 @@ def validate_config(cfg: AppConfig) -> AppConfig:
         url=cfg.base_url,
         allow_insecure_http=cfg.allow_insecure_http,
     )
-    judge_url = cfg.judge_url or cfg.base_url
+    # Use explicit None check: empty string "" should NOT fall back to base_url
+    judge_url = cfg.judge_url if cfg.judge_url is not None else cfg.base_url
     _validate_endpoint_url(
         field_name="judge-url",
         url=judge_url,

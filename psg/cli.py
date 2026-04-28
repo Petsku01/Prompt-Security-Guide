@@ -206,7 +206,11 @@ def _validate_file_path(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Prompt Security Guide v4.0 (scan)")
+    from . import __version__
+
+    parser = argparse.ArgumentParser(
+        description=f"Prompt Security Guide v{__version__} (scan)"
+    )
     return add_scan_arguments(parser)
 
 
@@ -285,7 +289,8 @@ def main(argv: list[str] | None = None) -> int:
         defense_report=args.defense_report,
         detector=args.detector,
         judge_model=args.judge_model,
-        judge_url=args.judge_url or args.base_url,
+        # Use explicit None check: empty string "" should NOT fall back to base_url
+        judge_url=args.judge_url if args.judge_url is not None else args.base_url,
         classification_input_mode=ClassificationInputMode(args.classification_input),
         workers=args.workers,
         rate_limit=args.rate_limit,

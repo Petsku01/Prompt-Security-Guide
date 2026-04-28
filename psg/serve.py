@@ -112,16 +112,20 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
         )
 
     cfg = config or ServerConfig()
+    from . import __version__
+
     app = FastAPI(
         title="PSG Screening API",
         description="Real-time prompt and response screening for LLM safety",
-        version="1.0.0",
+        version=__version__,
     )
 
     @app.get("/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
         """Health check endpoint."""
-        return HealthResponse(status="ok", version="1.0.0")
+        from . import __version__
+
+        return HealthResponse(status="ok", version=__version__)
 
     @app.post("/screen", response_model=ScreenResponse)
     async def screen(body: ScreenRequest) -> ScreenResponse:

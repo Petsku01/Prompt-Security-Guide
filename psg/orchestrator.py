@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import time
 
@@ -36,7 +37,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     started = time.perf_counter()
     try:
         attacks = load_catalog(cfg.catalog_path)
-    except Exception as exc:
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise CatalogError(f"failed to load catalog {cfg.catalog_path}: {exc}") from exc
 
     transport = Transport(
@@ -89,7 +90,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     ):
         try:
             writer(report_path, summary, results)
-        except Exception as exc:
+        except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {report_path}: {exc}")
             logger.error(str(err))
             report_errors.append(str(err))
@@ -105,7 +106,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
                 defended_results=defended_results,
                 baseline_results=baseline_results,
             )
-        except Exception as exc:
+        except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {cfg.defense_report_path}: {exc}")
             logger.error(str(err))
             report_errors.append(str(err))

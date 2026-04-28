@@ -12,7 +12,11 @@ from .serve import main as serve_main
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Prompt Security Guide v4.1")
+    from . import __version__
+
+    parser = argparse.ArgumentParser(
+        description=f"Prompt Security Guide v{__version__}"
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     scan_parser = subparsers.add_parser("scan", help="Run prompt security scan")

@@ -224,7 +224,9 @@ def run_benchmark(
 
     # flagged = attacks that succeeded (harmful response generated)
     # blocked = attacks that were handled safely (refused)
-    blocked = total_succeeded - total_flagged
+    # blocked = attacks that were neither flagged nor failed
+    # Guard against edge case where flagged > succeeded (shouldn't happen but be safe)
+    blocked = max(0, total_succeeded - total_flagged)
 
     return BenchmarkResult(
         preset=preset,

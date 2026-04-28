@@ -40,7 +40,7 @@ class AttemptResult:
     attack_id: str
     prompt: str
     response_text: str
-    flagged: bool  # Legacy: True jos attack_successful
+    flagged: bool  # Legacy: True if attack_successful
     labels: list[str]  # Legacy: harmful_labels
     harm_score: float = 0.0  # 0.0 - 1.0
     is_refusal: bool = False
