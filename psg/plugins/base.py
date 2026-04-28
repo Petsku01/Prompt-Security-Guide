@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
 else:
-    from importlib_metadata import entry_points  # type: ignore
+    from importlib_metadata import entry_points  # type: ignore[import-untyped]
 
 
 @dataclass

@@ -93,6 +93,7 @@ def _process_attack(
                 redacted_text,
             )
         except Exception as exc:
+            logger.error("classifier failed for attack_id=%s: %s", attack.id, exc)
             raise ClassifierError(
                 f"classifier failed for attack_id={attack.id}: {exc}"
             ) from exc
