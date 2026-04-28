@@ -58,7 +58,6 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         system_prompt=cfg.system_prompt,
         checkpoint_tag="defended",
     )
-    results = defended_results
 
     baseline_results: list[AttemptResult] | None = None
     if cfg.defense_report and cfg.system_prompt:
@@ -74,10 +73,10 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
 
     elapsed = time.perf_counter() - started
     summary = RunSummary(
-        total=len(results),
-        succeeded=sum(1 for r in results if not r.error),
-        failed=sum(1 for r in results if r.error),
-        flagged=sum(1 for r in results if r.flagged),
+        total=len(defended_results),
+        succeeded=sum(1 for r in defended_results if not r.error),
+        failed=sum(1 for r in defended_results if r.error),
+        flagged=sum(1 for r in defended_results if r.flagged),
         duration_seconds=elapsed,
         report_write_failed=False,
     )
@@ -88,7 +87,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         (cfg.report_text_path, write_text_report),
     ):
         try:
-            writer(report_path, summary, results)
+            writer(report_path, summary, defended_results)
         except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {report_path}: {exc}")
             logger.error(str(err))
@@ -114,7 +113,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         logger.warning("run completed with report errors: %s", "; ".join(report_errors))
         summary.report_write_failed = True
 
-    return summary, results
+    return summary, defended_results
 
 
 def _run_attacks(
@@ -148,6 +147,17 @@ def _run_attacks(
     )
 
 
+_process_attack_fn = lambda cfg, attack, client, detector, system_prompt: (  # noqa: E731
+    _process_attack(
+        cfg=cfg,
+        attack=attack,
+        client=client,
+        detector=detector,
+        system_prompt=system_prompt,
+    )
+)
+
+
 def _run_attacks_sequential(
     *,
     cfg: AppConfig,
@@ -166,15 +176,7 @@ def _run_attacks_sequential(
         detector=detector,
         system_prompt=system_prompt,
         checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: (
-            _process_attack(
-                cfg=cfg,
-                attack=attack,
-                client=client,
-                detector=detector,
-                system_prompt=system_prompt,
-            )
-        ),
+        process_attack_fn=_process_attack_fn,
     )
 
 
@@ -196,15 +198,7 @@ def _run_attacks_parallel(
         detector=detector,
         system_prompt=system_prompt,
         checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: (
-            _process_attack(
-                cfg=cfg,
-                attack=attack,
-                client=client,
-                detector=detector,
-                system_prompt=system_prompt,
-            )
-        ),
+        process_attack_fn=_process_attack_fn,
     )
 
 

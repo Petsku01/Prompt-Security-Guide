@@ -26,6 +26,11 @@ from .defenses import (
 )
 
 
+def _as_labels(value: Any) -> list[str]:
+    """Extract labels from a value that may be a list/tuple or something else."""
+    return list(value) if isinstance(value, (list, tuple)) else []
+
+
 def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     """Add arguments for defend subcommand."""
     subparsers = parser.add_subparsers(dest="defend_command")
@@ -149,11 +154,7 @@ def _print_validation_results(results: dict[str, Any], blocked: bool) -> None:
             continue
         print(f"[{mode.upper()}]")
         print(f"  Score: {data['score']}")
-        labels = (
-            list(data.get("labels", []))
-            if isinstance(data.get("labels"), (list, tuple))
-            else []
-        )
+        labels = _as_labels(data.get("labels"))
         print(f"  Labels: {', '.join(labels) if labels else 'none'}")
         if mode == "input" and data.get("canary_triggered"):
             print("  ⚠️  Canary token detected!")
@@ -247,8 +248,12 @@ def _check_messages_for_issues(
 
     issues: list[dict[str, Any]] = []
     for i, msg in enumerate(messages):
-        text = str(msg.get("content") or msg.get("text") or msg.get("prompt") or msg)
-        role = str(msg.get("role", "unknown"))
+        text = str(
+            msg.get("content") or msg.get("text") or msg.get("prompt") or msg
+            if isinstance(msg, dict)
+            else msg
+        )
+        role = str(msg.get("role", "unknown") if isinstance(msg, dict) else "unknown")
 
         if role in ("user", "human"):
             result = layer.validate_input(text)
@@ -310,11 +315,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         if issues:
             print(f"⚠️  Found {len(issues)} issues:")
             for issue in issues:
-                labels = (
-                    list(issue["labels"])
-                    if isinstance(issue["labels"], (list, tuple))
-                    else []
-                )
+                labels = _as_labels(issue["labels"])
                 print(f"  [{issue['index']}] {issue['role']}: {', '.join(labels)}")
         else:
             print("✅ No issues found")
