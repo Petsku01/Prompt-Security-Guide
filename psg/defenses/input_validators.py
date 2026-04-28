@@ -294,9 +294,7 @@ def detect_canary_token(text: str, canary_tokens: Iterable[str] | None = None) -
         return False
 
     normalized = normalize_text(text)
-    return any(
-        token and normalize_text(token) in normalized for token in canary_tokens
-    )
+    return any(token and normalize_text(token) in normalized for token in canary_tokens)
 
 
 # =============================================================================

@@ -80,12 +80,12 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
         # Check that at least one prompt alias is present
         has_prompt = any(_is_non_empty_string(item.get(key)) for key in PROMPT_ALIASES)
         missing_required: list[str] = []
-        
+
         if not has_id:
             missing_required.append(f"one of: {', '.join(ID_ALIASES)}")
         if not has_prompt:
             missing_required.append(f"one of: {', '.join(PROMPT_ALIASES)}")
-            
+
         if missing_required:
             errors.append(
                 f"[{idx}] Missing required field(s): {', '.join(missing_required)}"
