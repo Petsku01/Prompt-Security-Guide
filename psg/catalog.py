@@ -40,9 +40,16 @@ def load_catalog(path: str) -> list[Attack]:
         followups = item.get("followups", [])
         if not isinstance(followups, list):
             followups = []
-        meta = {k: v for k, v in item.items() if k not in {"id", "attack_id", "name", "prompt", "text", "input", "followups"}}
+        meta = {
+            k: v
+            for k, v in item.items()
+            if k
+            not in {"id", "attack_id", "name", "prompt", "text", "input", "followups"}
+        }
         if prompt:
-            attacks.append(Attack(id=str(aid), prompt=prompt, metadata=meta, followups=followups))
+            attacks.append(
+                Attack(id=str(aid), prompt=prompt, metadata=meta, followups=followups)
+            )
 
     return attacks
 

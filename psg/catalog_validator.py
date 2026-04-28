@@ -24,7 +24,10 @@ def _extract_items(data: Any) -> tuple[list[Any] | None, str | None]:
             value = data.get(key)
             if isinstance(value, list):
                 return value, None
-        return None, "No supported attack list key found (expected one of: attacks, prompts, tests, items)"
+        return (
+            None,
+            "No supported attack list key found (expected one of: attacks, prompts, tests, items)",
+        )
 
     return None, "Top-level JSON must be an object or array"
 
@@ -39,7 +42,9 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
         return {
             "file": str(path),
             "checked": 0,
-            "errors": [f"Invalid JSON: {exc.msg} at line {exc.lineno}, column {exc.colno}"],
+            "errors": [
+                f"Invalid JSON: {exc.msg} at line {exc.lineno}, column {exc.colno}"
+            ],
             "warnings": [],
             "skipped": False,
         }
@@ -61,12 +66,18 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
         checked += 1
 
         if not isinstance(item, dict):
-            errors.append(f"[{idx}] Entry must be an object with required fields: id, prompt")
+            errors.append(
+                f"[{idx}] Entry must be an object with required fields: id, prompt"
+            )
             continue
 
-        missing_required = [name for name in REQUIRED_FIELDS if not _is_non_empty_string(item.get(name))]
+        missing_required = [
+            name for name in REQUIRED_FIELDS if not _is_non_empty_string(item.get(name))
+        ]
         if missing_required:
-            errors.append(f"[{idx}] Missing required field(s): {', '.join(missing_required)}")
+            errors.append(
+                f"[{idx}] Missing required field(s): {', '.join(missing_required)}"
+            )
 
         item_id = item.get("id")
         if _is_non_empty_string(item_id):
@@ -75,9 +86,13 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
                 errors.append(f"[{idx}] Duplicate id: {item_id_str}")
             seen_ids.add(item_id_str)
 
-        missing_optional = [name for name in OPTIONAL_FIELDS if not _is_non_empty_string(item.get(name))]
+        missing_optional = [
+            name for name in OPTIONAL_FIELDS if not _is_non_empty_string(item.get(name))
+        ]
         if missing_optional:
-            warnings.append(f"[{idx}] Missing optional field(s): {', '.join(missing_optional)}")
+            warnings.append(
+                f"[{idx}] Missing optional field(s): {', '.join(missing_optional)}"
+            )
 
     return {
         "file": str(path),
@@ -96,7 +111,11 @@ def _iter_json_files(path: Path) -> list[Path]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Validate attack catalog JSON files")
-    parser.add_argument("--path", default="datasets/", help="Path to a JSON file or directory of catalog files")
+    parser.add_argument(
+        "--path",
+        default="datasets/",
+        help="Path to a JSON file or directory of catalog files",
+    )
     return parser
 
 

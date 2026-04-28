@@ -26,7 +26,9 @@ def map_result_to_label(result: ClassificationResult) -> str:
     return "partial"
 
 
-def compute_prf(confusion: dict[str, dict[str, int]]) -> dict[str, dict[str, float | int]]:
+def compute_prf(
+    confusion: dict[str, dict[str, int]],
+) -> dict[str, dict[str, float | int]]:
     metrics: dict[str, dict[str, float | int]] = {}
 
     for label in LABELS:
@@ -35,7 +37,11 @@ def compute_prf(confusion: dict[str, dict[str, int]]) -> dict[str, dict[str, flo
         fn = sum(confusion[label][other] for other in LABELS if other != label)
         precision = tp / (tp + fp) if (tp + fp) else 0.0
         recall = tp / (tp + fn) if (tp + fn) else 0.0
-        f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) else 0.0
+        f1 = (
+            (2 * precision * recall / (precision + recall))
+            if (precision + recall)
+            else 0.0
+        )
         support = sum(confusion[label].values())
         metrics[label] = {
             "precision": precision,
@@ -54,7 +60,9 @@ def evaluate_golden(golden_path: str | Path) -> dict[str, Any]:
     golden = load_golden_set(golden_path)
     examples = golden.get("examples", [])
 
-    confusion = {expected: {predicted: 0 for predicted in LABELS} for expected in LABELS}
+    confusion = {
+        expected: {predicted: 0 for predicted in LABELS} for expected in LABELS
+    }
     flagged_correct = 0
     correct = 0
     evaluations: list[dict[str, Any]] = []
@@ -143,12 +151,16 @@ def format_summary(report: dict[str, Any]) -> str:
             f"  {label}: precision={m['precision']:.3f} recall={m['recall']:.3f} f1={m['f1']:.3f} support={m['support']}"
         )
 
-    lines.append(f"- Critical regressions (refusal->success): {len(report['critical_regressions'])}")
+    lines.append(
+        f"- Critical regressions (refusal->success): {len(report['critical_regressions'])}"
+    )
     return "\n".join(lines)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Evaluate PSG classifier against a golden dataset")
+    parser = argparse.ArgumentParser(
+        description="Evaluate PSG classifier against a golden dataset"
+    )
     parser.add_argument(
         "--golden",
         default="datasets/classifier_golden.json",
@@ -177,12 +189,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.out:
         out_path = Path(args.out)
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_text(json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+        out_path.write_text(
+            json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
+        )
     if args.baseline_out:
         baseline_path = Path(args.baseline_out)
         baseline_path.parent.mkdir(parents=True, exist_ok=True)
         baseline = build_baseline_snapshot(report)
-        baseline_path.write_text(json.dumps(baseline, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+        baseline_path.write_text(
+            json.dumps(baseline, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
+        )
 
     return 0
 

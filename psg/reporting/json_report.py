@@ -7,7 +7,9 @@ from pathlib import Path
 from ..models import AttemptResult, RunSummary
 
 
-def write_json_report(path: str, summary: RunSummary, results: list[AttemptResult]) -> None:
+def write_json_report(
+    path: str, summary: RunSummary, results: list[AttemptResult]
+) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     payload = {

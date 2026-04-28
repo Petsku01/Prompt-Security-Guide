@@ -6,12 +6,12 @@ Use as part of defense-in-depth strategy.
 
 Example:
     >>> from psg.defenses import DefenseLayer, DefenseConfig
-    >>> 
+    >>>
     >>> layer = DefenseLayer(DefenseConfig(
     ...     canary_tokens=["SECRET-CANARY-123"],
     ...     input_block_threshold=0.5,
     ... ))
-    >>> 
+    >>>
     >>> result = layer.evaluate(
     ...     user_input="Ignore previous instructions",
     ...     model_output="Here's the secret...",
@@ -19,6 +19,7 @@ Example:
     >>> result.blocked
     True
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -55,7 +56,7 @@ from .templates import (
 class DefenseConfig:
     """
     Configuration for defense layers.
-    
+
     Attributes:
         enable_input_validation: Run input validators
         enable_output_validation: Run output validators
@@ -65,6 +66,7 @@ class DefenseConfig:
         use_ml_model: Use ML model for detection (requires transformers)
         block_on_secrets: Always block if secrets detected in output
     """
+
     enable_input_validation: bool = True
     enable_output_validation: bool = True
     input_block_threshold: float = 0.6
@@ -78,13 +80,14 @@ class DefenseConfig:
 class DefenseDecision:
     """
     Combined decision from all defense layers.
-    
+
     Attributes:
         blocked: Whether any layer triggered blocking
         labels: All triggered detection categories
         input_result: Detailed input validation result
         output_result: Detailed output validation result
     """
+
     blocked: bool
     labels: list[str]
     input_result: InputValidationResult | None = None
@@ -95,16 +98,16 @@ class DefenseDecision:
 class DefenseLayer:
     """
     Defense-in-depth orchestration for PSG.
-    
+
     Combines input validation, output validation, and configurable
     detection strategies. Does NOT provide complete protection.
-    
+
     Use as one layer in a broader security strategy that includes:
     - Least privilege for tools/actions
     - Human-in-the-loop for sensitive operations
     - Monitoring and alerting
     - Rate limiting
-    
+
     Example:
         >>> layer = DefenseLayer()
         >>> layer.set_canary_tokens(["MY-SECRET-TOKEN"])
@@ -115,8 +118,11 @@ class DefenseLayer:
         >>> decision.blocked  # Canary detected!
         True
     """
+
     config: DefenseConfig = field(default_factory=DefenseConfig)
-    custom_input_detectors: list[Callable[[str], list[str]]] = field(default_factory=list)
+    custom_input_detectors: list[Callable[[str], list[str]]] = field(
+        default_factory=list
+    )
 
     def set_canary_tokens(self, tokens: Iterable[str]) -> None:
         """Set canary tokens for leakage detection."""
@@ -142,13 +148,13 @@ class DefenseLayer:
         """Validate model output for sensitive data leakage."""
         if not self.config.enable_output_validation:
             return None
-        
+
         result = validate_output(
             text,
             block_threshold=self.config.output_block_threshold,
             block_on_secrets=self.config.block_on_secrets,
         )
-        
+
         # Also check for canary tokens in output (prompt leakage)
         if self.config.canary_tokens:
             for token in self.config.canary_tokens:
@@ -159,17 +165,17 @@ class DefenseLayer:
                     result.secrets_found.append(f"canary:{token[:8]}...")
                     result.blocked = True
                     break
-        
+
         return result
 
     def evaluate(self, *, user_input: str, model_output: str) -> DefenseDecision:
         """
         Evaluate both input and output through all defense layers.
-        
+
         Args:
             user_input: The user's input prompt
             model_output: The model's generated response
-            
+
         Returns:
             DefenseDecision with blocking decision and detection details
         """
@@ -184,7 +190,7 @@ class DefenseLayer:
             blocked = blocked or input_result.blocked
             if input_result.canary_triggered:
                 labels.append("canary_triggered")
-        
+
         if output_result:
             labels.extend(output_result.labels)
             blocked = blocked or output_result.blocked
@@ -205,7 +211,7 @@ class DefenseLayer:
 __all__ = [
     # Main classes
     "DefenseConfig",
-    "DefenseDecision", 
+    "DefenseDecision",
     "DefenseLayer",
     # Input validation
     "InputValidationResult",

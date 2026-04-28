@@ -34,9 +34,13 @@ def recommend_defense_strategy(
         "Log prompts/responses and monitor for adaptive attacks.",
     ]
     if external_content:
-        recommendations.append("Treat external content as untrusted and isolate it from privileged instructions.")
+        recommendations.append(
+            "Treat external content as untrusted and isolate it from privileged instructions."
+        )
     if needs_tool_use:
-        recommendations.append("Use least-privilege tool permissions with explicit allowlists.")
+        recommendations.append(
+            "Use least-privilege tool permissions with explicit allowlists."
+        )
     if high_risk_actions:
         recommendations.append("Require human approval for high-impact actions.")
     return recommendations
@@ -61,6 +65,10 @@ def conflict_with_higher_priority(
     trusted = trusted_instruction.lower()
     untrusted = untrusted_instruction.lower()
 
-    asks_to_override = any(token in untrusted for token in ("ignore", "override", "forget previous"))
-    references_policy = any(token in trusted for token in ("must", "never", "policy", "do not"))
+    asks_to_override = any(
+        token in untrusted for token in ("ignore", "override", "forget previous")
+    )
+    references_policy = any(
+        token in trusted for token in ("must", "never", "policy", "do not")
+    )
     return asks_to_override and references_policy

@@ -1,4 +1,5 @@
 """Deduplication utilities using SHA256 hashing."""
+
 from __future__ import annotations
 
 import hashlib
@@ -13,14 +14,14 @@ def hash_text(text: str) -> str:
 
 class DeduplicationStore:
     """Store for tracking seen items via hashes."""
-    
+
     def __init__(self, path: Path, save_every: int = 100) -> None:
         self.path = path
         self.save_every = max(1, int(save_every))
         self.hashes: set[str] = set()
         self._pending_writes = 0
         self._load()
-    
+
     def _load(self) -> None:
         """Load existing hashes from file."""
         if self.path.exists() and self.path.stat().st_size > 0:
@@ -30,16 +31,16 @@ class DeduplicationStore:
                     self.hashes = set(data.get("hashes", []))
             except json.JSONDecodeError:
                 self.hashes = set()
-    
+
     def _save(self) -> None:
         """Save hashes to file."""
         with open(self.path, "w") as f:
             json.dump({"hashes": sorted(self.hashes)}, f, indent=2)
-    
+
     def is_known(self, text: str) -> bool:
         """Check if text hash is already known."""
         return hash_text(text) in self.hashes
-    
+
     def add(self, text: str) -> bool:
         """Add text hash. Returns True if new, False if duplicate."""
         h = hash_text(text)
@@ -50,7 +51,7 @@ class DeduplicationStore:
         if self._pending_writes >= self.save_every:
             self.flush()
         return True
-    
+
     def add_many(self, texts: list[str]) -> int:
         """Add multiple texts. Returns count of new items."""
         new_count = 0
@@ -70,7 +71,7 @@ class DeduplicationStore:
             return
         self._save()
         self._pending_writes = 0
-    
+
     def __len__(self) -> int:
         return len(self.hashes)
 
@@ -78,6 +79,7 @@ class DeduplicationStore:
 if __name__ == "__main__":
     # Quick test
     import tempfile
+
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
         store = DeduplicationStore(Path(f.name), save_every=1)
         assert store.add("test prompt")

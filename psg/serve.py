@@ -10,6 +10,7 @@ Endpoints:
     GET  /health      - Health check
     GET  /metrics     - Prometheus metrics (if enabled)
 """
+
 from __future__ import annotations
 
 import argparse
@@ -21,14 +22,18 @@ from typing import Any
 try:
     from fastapi import FastAPI
     from pydantic import BaseModel, Field
+
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
+
     # Dummy classes for when FastAPI not installed
     class BaseModel:  # type: ignore
         pass
+
     def Field(*args, **kwargs):  # type: ignore
         return None
+
 
 from .security.classifier import classify_response_v2
 
@@ -36,6 +41,7 @@ from .security.classifier import classify_response_v2
 @dataclass
 class ServerConfig:
     """Server configuration."""
+
     host: str = "0.0.0.0"
     port: int = 8000
     threshold: float = 0.5
@@ -104,7 +110,7 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
         raise ImportError(
             "FastAPI not installed. Install with: pip install fastapi uvicorn"
         )
-    
+
     cfg = config or ServerConfig()
     app = FastAPI(
         title="PSG Screening API",
@@ -121,13 +127,13 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
     async def screen(body: ScreenRequest) -> ScreenResponse:
         """Screen a single text for harmful content."""
         start = time.perf_counter()
-        
+
         result = classify_response_v2(body.text)
         threshold = body.threshold if body.threshold is not None else cfg.threshold
         harmful = result.harm_score >= threshold and result.attack_successful
-        
+
         latency_ms = (time.perf_counter() - start) * 1000
-        
+
         # Update metrics
         _metrics["requests_total"] += 1
         _metrics["latency_sum_ms"] += latency_ms
@@ -135,7 +141,7 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
             _metrics["requests_harmful"] += 1
         else:
             _metrics["requests_safe"] += 1
-        
+
         return ScreenResponse(
             harmful=harmful,
             harm_score=result.harm_score,
@@ -149,37 +155,39 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
     async def screen_bulk(body: BulkScreenRequest) -> BulkScreenResponse:
         """Screen multiple texts for harmful content."""
         start = time.perf_counter()
-        
+
         threshold = body.threshold if body.threshold is not None else cfg.threshold
         results: list[ScreenResponse] = []
         harmful_count = 0
-        
+
         for text in body.texts:
             text_start = time.perf_counter()
             result = classify_response_v2(text)
             harmful = result.harm_score >= threshold and result.attack_successful
             text_latency = (time.perf_counter() - text_start) * 1000
-            
+
             if harmful:
                 harmful_count += 1
-            
-            results.append(ScreenResponse(
-                harmful=harmful,
-                harm_score=result.harm_score,
-                is_refusal=result.is_refusal,
-                has_disclaimer=result.has_disclaimer,
-                attack_successful=result.attack_successful,
-                latency_ms=round(text_latency, 2),
-            ))
-        
+
+            results.append(
+                ScreenResponse(
+                    harmful=harmful,
+                    harm_score=result.harm_score,
+                    is_refusal=result.is_refusal,
+                    has_disclaimer=result.has_disclaimer,
+                    attack_successful=result.attack_successful,
+                    latency_ms=round(text_latency, 2),
+                )
+            )
+
         total_latency = (time.perf_counter() - start) * 1000
-        
+
         # Update metrics
         _metrics["requests_total"] += len(body.texts)
         _metrics["latency_sum_ms"] += total_latency
         _metrics["requests_harmful"] += harmful_count
         _metrics["requests_safe"] += len(body.texts) - harmful_count
-        
+
         return BulkScreenResponse(
             results=results,
             total=len(results),
@@ -242,37 +250,37 @@ def main(argv: list[str] | None = None) -> int:
         print("Error: FastAPI not installed.", file=sys.stderr)
         print("Install with: pip install fastapi uvicorn", file=sys.stderr)
         return 1
-    
+
     try:
         import uvicorn
     except ImportError:
         print("Error: uvicorn not installed.", file=sys.stderr)
         print("Install with: pip install uvicorn", file=sys.stderr)
         return 1
-    
+
     parser = build_parser()
     args = parser.parse_args(argv)
-    
+
     config = ServerConfig(
         host=args.host,
         port=args.port,
         threshold=args.threshold,
     )
-    
+
     print(f"Starting PSG server on {config.host}:{config.port}")
     print(f"Default threshold: {config.threshold}")
     print(f"Docs: http://{config.host}:{config.port}/docs")
-    
+
     # Create app with config
     app = create_app(config)
-    
+
     uvicorn.run(
         app,
         host=config.host,
         port=config.port,
         reload=args.reload,
     )
-    
+
     return 0
 
 

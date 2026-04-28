@@ -1,4 +1,5 @@
 """Configuration for Auto Vector Pipeline."""
+
 from __future__ import annotations
 
 import os
@@ -15,11 +16,13 @@ class PipelineConfig:
     """Pipeline configuration."""
 
     # Discovery settings
-    search_queries: list[str] = field(default_factory=lambda: [
-        "LLM jailbreak 2026",
-        "prompt injection techniques",
-        "AI safety bypass methods",
-    ])
+    search_queries: list[str] = field(
+        default_factory=lambda: [
+            "LLM jailbreak 2026",
+            "prompt injection techniques",
+            "AI safety bypass methods",
+        ]
+    )
     max_sources_per_query: int = 5
 
     # Generator settings
@@ -27,27 +30,47 @@ class PipelineConfig:
     generator_model: str = "dolphin-llama3:8b"
 
     # Tester settings
-    test_models: list[str] = field(default_factory=lambda: [
-        "llama3:8b",
-        "mistral:7b",
-        "qwen2.5:3b",
-        "phi3:mini",
-        "gemma2:2b",
-    ])
+    test_models: list[str] = field(
+        default_factory=lambda: [
+            "llama3:8b",
+            "mistral:7b",
+            "qwen2.5:3b",
+            "phi3:mini",
+            "gemma2:2b",
+        ]
+    )
     test_timeout: int = 120
-    ollama_base_url: str = field(default_factory=lambda: os.environ.get("PSG_OLLAMA_URL", "http://localhost:11434"))
+    ollama_base_url: str = field(
+        default_factory=lambda: os.environ.get(
+            "PSG_OLLAMA_URL", "http://localhost:11434"
+        )
+    )
 
     # Configurable tool paths (env var overrides)
-    python_executable: str = field(default_factory=lambda: os.environ.get("PYTHON_PATH", "python3"))
+    python_executable: str = field(
+        default_factory=lambda: os.environ.get("PYTHON_PATH", "python3")
+    )
     scrapling_venv_path: Path = field(
         default_factory=lambda: Path(
-            os.environ.get("PSG_SCRAPLING_VENV", str(Path.home() / ".openclaw/workspace/tools/scrapling-venv"))
+            os.environ.get(
+                "PSG_SCRAPLING_VENV",
+                str(Path.home() / ".openclaw/workspace/tools/scrapling-venv"),
+            )
         )
     )
     scrapling_python: str = field(
         default_factory=lambda: os.environ.get(
             "SCRAPLING_PYTHON",
-            str(Path(os.environ.get("PSG_SCRAPLING_VENV", str(Path.home() / ".openclaw/workspace/tools/scrapling-venv"))) / "bin" / "python"),
+            str(
+                Path(
+                    os.environ.get(
+                        "PSG_SCRAPLING_VENV",
+                        str(Path.home() / ".openclaw/workspace/tools/scrapling-venv"),
+                    )
+                )
+                / "bin"
+                / "python"
+            ),
         )
     )
     search_script: str = field(
@@ -59,16 +82,32 @@ class PipelineConfig:
 
     # Root and output paths
     base_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parent)
-    project_root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
-    output_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
-    datasets_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "datasets")
-    results_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "results")
-    logs_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2] / "logs")
+    project_root: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parents[2]
+    )
+    output_dir: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parents[2]
+    )
+    datasets_dir: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parents[2] / "datasets"
+    )
+    results_dir: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parents[2] / "results"
+    )
+    logs_dir: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parents[2] / "logs"
+    )
 
     # Internal state/report paths
-    known_sources_path: Path = field(default_factory=lambda: Path(__file__).resolve().parent / "known_sources.json")
-    known_vectors_path: Path = field(default_factory=lambda: Path(__file__).resolve().parent / "known_vectors.json")
-    reports_dir: Path = field(default_factory=lambda: Path(__file__).resolve().parent / "reports")
+    known_sources_path: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parent / "known_sources.json"
+    )
+    known_vectors_path: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parent / "known_vectors.json"
+    )
+    reports_dir: Path = field(
+        default_factory=lambda: Path(__file__).resolve().parent / "reports"
+    )
 
     # Notification
     notify_discord: bool = True

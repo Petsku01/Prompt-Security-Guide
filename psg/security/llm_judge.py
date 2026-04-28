@@ -67,7 +67,9 @@ def parse_judge_output(text: str) -> tuple[JudgeVerdict, float, str | None]:
 
 
 class LLMJudge:
-    def __init__(self, client: OpenAICompatibleClient, model: str = "llama3:8b") -> None:
+    def __init__(
+        self, client: OpenAICompatibleClient, model: str = "llama3:8b"
+    ) -> None:
         self.client = client
         self.model = model
 

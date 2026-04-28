@@ -23,7 +23,6 @@ ProcessAttackFn = Callable[
 ]
 
 
-
 def _run_attacks_sequential(
     *,
     cfg: AppConfig,
@@ -41,6 +40,10 @@ def _run_attacks_sequential(
         try:
             checkpoint.append({**asdict(result), "mode": checkpoint_tag})
         except Exception:
-            logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
+            logger.exception(
+                "failed to append checkpoint for attack_id=%s mode=%s",
+                attack.id,
+                checkpoint_tag,
+            )
         results.append(result)
     return results

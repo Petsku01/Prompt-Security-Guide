@@ -54,7 +54,6 @@ class _RateLimiter:
             time.sleep(sleep_time)
 
 
-
 def _run_attacks_parallel(
     *,
     cfg: AppConfig,
@@ -82,7 +81,11 @@ def _run_attacks_parallel(
             try:
                 checkpoint.append({**asdict(result), "mode": checkpoint_tag})
             except Exception:
-                logger.exception("failed to append checkpoint for attack_id=%s mode=%s", attack.id, checkpoint_tag)
+                logger.exception(
+                    "failed to append checkpoint for attack_id=%s mode=%s",
+                    attack.id,
+                    checkpoint_tag,
+                )
             completed += 1
             if completed % 10 == 0 or completed == total:
                 logger.info("Progress: %d/%d attacks completed", completed, total)
@@ -94,7 +97,12 @@ def _run_attacks_parallel(
         logger.warning("Adjusted workers from %d to %d", cfg.workers, workers)
 
     if cfg.rate_limit:
-        logger.info("Running %d attacks with %d workers (rate limit: %.1f req/s)", total, workers, cfg.rate_limit)
+        logger.info(
+            "Running %d attacks with %d workers (rate limit: %.1f req/s)",
+            total,
+            workers,
+            cfg.rate_limit,
+        )
     else:
         logger.info("Running %d attacks with %d workers", total, workers)
 

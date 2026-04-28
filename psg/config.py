@@ -42,13 +42,20 @@ def validate_config(cfg: AppConfig) -> AppConfig:
     if not cfg.judge_model.strip():
         raise ConfigError("judge-model is required")
 
-    for p in (cfg.checkpoint_path, cfg.report_json_path, cfg.report_text_path, cfg.defense_report_path):
+    for p in (
+        cfg.checkpoint_path,
+        cfg.report_json_path,
+        cfg.report_text_path,
+        cfg.defense_report_path,
+    ):
         Path(p).parent.mkdir(parents=True, exist_ok=True)
 
     if not isinstance(cfg.redaction_mode, RedactionMode):
         cfg.redaction_mode = RedactionMode(str(cfg.redaction_mode))
     if not isinstance(cfg.classification_input_mode, ClassificationInputMode):
-        cfg.classification_input_mode = ClassificationInputMode(str(cfg.classification_input_mode))
+        cfg.classification_input_mode = ClassificationInputMode(
+            str(cfg.classification_input_mode)
+        )
 
     if cfg.system_prompt is not None:
         cfg.system_prompt = cfg.system_prompt.strip() or None
@@ -56,7 +63,9 @@ def validate_config(cfg: AppConfig) -> AppConfig:
     return cfg
 
 
-def _validate_endpoint_url(field_name: str, url: str, allow_insecure_http: bool) -> None:
+def _validate_endpoint_url(
+    field_name: str, url: str, allow_insecure_http: bool
+) -> None:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"}:
         raise ConfigError(f"{field_name} must start with http:// or https://")

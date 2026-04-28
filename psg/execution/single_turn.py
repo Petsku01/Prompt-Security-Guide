@@ -6,7 +6,13 @@ from typing import Callable
 from ..errors import ClassifierError
 from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
-from ..models import AppConfig, Attack, AttemptResult, ClassificationInputMode, RedactionMode
+from ..models import (
+    AppConfig,
+    Attack,
+    AttemptResult,
+    ClassificationInputMode,
+    RedactionMode,
+)
 from ..security.classifier import ClassificationResult
 from ..security.detectors import Detector
 from ..security.redaction import redact_text
@@ -29,7 +35,6 @@ ClassifyAttackResponseFn = Callable[
     [AppConfig, Detector, str, str, str],
     ClassificationResult,
 ]
-
 
 
 def _process_attack(
@@ -88,7 +93,9 @@ def _process_attack(
                 redacted_text,
             )
         except Exception as exc:
-            raise ClassifierError(f"classifier failed for attack_id={attack.id}: {exc}") from exc
+            raise ClassifierError(
+                f"classifier failed for attack_id={attack.id}: {exc}"
+            ) from exc
         return AttemptResult(
             attack_id=attack.id,
             prompt=redacted_prompt,
@@ -110,7 +117,9 @@ def _process_attack(
             error=str(exc),
         )
     except Exception as exc:
-        logger.exception("unexpected attack processing error for attack_id=%s", attack.id)
+        logger.exception(
+            "unexpected attack processing error for attack_id=%s", attack.id
+        )
         return AttemptResult(
             attack_id=attack.id,
             prompt=redacted_prompt,
@@ -119,7 +128,6 @@ def _process_attack(
             labels=[],
             error=f"unexpected error: {exc}",
         )
-
 
 
 def _classify_attack_response(
@@ -144,11 +152,13 @@ def _classify_attack_response(
             inputs = [redacted_response]
 
     unique_inputs = list(dict.fromkeys(inputs))
-    results = [detector.classify(prompt=prompt, response=response) for response in unique_inputs]
+    results = [
+        detector.classify(prompt=prompt, response=response)
+        for response in unique_inputs
+    ]
     if len(results) == 1:
         return results[0]
     return _merge_classifications(results)
-
 
 
 def _merge_classifications(results: list[ClassificationResult]) -> ClassificationResult:

@@ -1,4 +1,5 @@
 """Auto Vector Pipeline for discovering, generating, testing, and reporting jailbreak vectors."""
+
 from .config import PipelineConfig, load_config
 from .discovery import DiscoveryEngine, Source
 from .generator import VectorGenerator, AttackVector

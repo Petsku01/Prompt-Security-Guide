@@ -14,17 +14,32 @@ from .orchestrator import run
 def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument("--model", required=True, help="Model name, e.g. llama3")
     parser.add_argument("--catalog", required=True, help="Path to attacks catalog JSON")
-    parser.add_argument("--base-url", default="http://localhost:11434/v1", help="OpenAI-compatible base URL")
+    parser.add_argument(
+        "--base-url",
+        default="http://localhost:11434/v1",
+        help="OpenAI-compatible base URL",
+    )
     parser.add_argument(
         "--detector",
         choices=["keyword", "llm-judge", "ensemble"],
         default="keyword",
         help="Response detector mode",
     )
-    parser.add_argument("--judge-model", default="llama3:8b", help="Model used by LLM judge detector")
-    parser.add_argument("--judge-url", help="OpenAI-compatible base URL for judge (defaults to --base-url)")
-    parser.add_argument("--allow-insecure-http", action="store_true", help="Allow http:// base URL")
-    parser.add_argument("--redaction", choices=[m.value for m in RedactionMode], default=RedactionMode.PARTIAL.value)
+    parser.add_argument(
+        "--judge-model", default="llama3:8b", help="Model used by LLM judge detector"
+    )
+    parser.add_argument(
+        "--judge-url",
+        help="OpenAI-compatible base URL for judge (defaults to --base-url)",
+    )
+    parser.add_argument(
+        "--allow-insecure-http", action="store_true", help="Allow http:// base URL"
+    )
+    parser.add_argument(
+        "--redaction",
+        choices=[m.value for m in RedactionMode],
+        default=RedactionMode.PARTIAL.value,
+    )
     parser.add_argument("--timeout", type=float, default=240.0)
     parser.add_argument("--max-retries", type=int, default=4)
     parser.add_argument("--checkpoint", default="results/checkpoint.jsonl")
@@ -33,10 +48,20 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=512)
     system_prompt_group = parser.add_mutually_exclusive_group()
-    system_prompt_group.add_argument("--system-prompt", help="System prompt to test (inline)")
-    system_prompt_group.add_argument("--system-prompt-file", help="Path to file containing system prompt")
-    parser.add_argument("--defense-report", action="store_true", help="Generate defense effectiveness report")
-    parser.add_argument("--html-report", default=None, help="Path for HTML dashboard report")
+    system_prompt_group.add_argument(
+        "--system-prompt", help="System prompt to test (inline)"
+    )
+    system_prompt_group.add_argument(
+        "--system-prompt-file", help="Path to file containing system prompt"
+    )
+    parser.add_argument(
+        "--defense-report",
+        action="store_true",
+        help="Generate defense effectiveness report",
+    )
+    parser.add_argument(
+        "--html-report", default=None, help="Path for HTML dashboard report"
+    )
     parser.add_argument(
         "--api-key",
         default=os.getenv("PSG_API_KEY"),
@@ -146,7 +171,9 @@ def _resolve_system_prompt(args: argparse.Namespace) -> str | None:
     return None
 
 
-def _validate_file_path(path: str, *, allowed_dirs: tuple[Path, ...] | None = None) -> Path:
+def _validate_file_path(
+    path: str, *, allowed_dirs: tuple[Path, ...] | None = None
+) -> Path:
     raw_path = Path(path)
     if ".." in raw_path.parts:
         raise ConfigError(f"path traversal is not allowed: {path}")
@@ -165,8 +192,12 @@ def _validate_file_path(path: str, *, allowed_dirs: tuple[Path, ...] | None = No
             continue
 
     if not is_allowed:
-        allowed_text = ", ".join(str(d.expanduser().resolve(strict=False)) for d in checked_dirs)
-        raise ConfigError(f"path is outside allowed directories: {resolved} (allowed: {allowed_text})")
+        allowed_text = ", ".join(
+            str(d.expanduser().resolve(strict=False)) for d in checked_dirs
+        )
+        raise ConfigError(
+            f"path is outside allowed directories: {resolved} (allowed: {allowed_text})"
+        )
 
     if not resolved.exists() or not resolved.is_file():
         raise ConfigError(f"system prompt file does not exist: {path}")
@@ -228,42 +259,54 @@ def main(argv: list[str] | None = None) -> int:
     if args.defense_only:
         from .catalog import load_catalog
         from .defenses import DefenseLayer, DefenseConfig
-        
+
         attacks = load_catalog(cfg.catalog_path)
-        layer = DefenseLayer(DefenseConfig(
-            input_block_threshold=args.defense_threshold,
-        ))
-        
+        layer = DefenseLayer(
+            DefenseConfig(
+                input_block_threshold=args.defense_threshold,
+            )
+        )
+
         detected = 0
         results_data = []
         for attack in attacks:
             result = layer.validate_input(attack.prompt)
             if result and result.blocked:
                 detected += 1
-            results_data.append({
-                "id": attack.id,
-                "blocked": result.blocked if result else False,
-                "score": round(result.score, 3) if result else 0,
-                "labels": result.labels if result else [],
-            })
-        
+            results_data.append(
+                {
+                    "id": attack.id,
+                    "blocked": result.blocked if result else False,
+                    "score": round(result.score, 3) if result else 0,
+                    "labels": result.labels if result else [],
+                }
+            )
+
         total = len(attacks)
         rate = detected / total if total > 0 else 0
-        print(f"Defense-only scan: {detected}/{total} ({rate*100:.1f}%) attacks blocked")
+        print(
+            f"Defense-only scan: {detected}/{total} ({rate * 100:.1f}%) attacks blocked"
+        )
         print(f"Threshold: {args.defense_threshold}")
-        
+
         # Write results
         import json
         from pathlib import Path
+
         Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
-        Path(cfg.report_json_path).write_text(json.dumps({
-            "mode": "defense_only",
-            "total": total,
-            "detected": detected,
-            "detection_rate": rate,
-            "threshold": args.defense_threshold,
-            "results": results_data,
-        }, indent=2))
+        Path(cfg.report_json_path).write_text(
+            json.dumps(
+                {
+                    "mode": "defense_only",
+                    "total": total,
+                    "detected": detected,
+                    "detection_rate": rate,
+                    "threshold": args.defense_threshold,
+                    "results": results_data,
+                },
+                indent=2,
+            )
+        )
         print(f"Results: {cfg.report_json_path}")
         return 0
 
@@ -286,6 +329,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.html_report:
         try:
             from .reporting.html_report import write_html_report
+
             write_html_report(
                 args.html_report,
                 summary,
@@ -298,7 +342,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Warning: Failed to write HTML report: {exc}", file=sys.stderr)
 
     if summary.report_write_failed:
-        print("Run completed, but report writing failed. Check logs for details.", file=sys.stderr)
+        print(
+            "Run completed, but report writing failed. Check logs for details.",
+            file=sys.stderr,
+        )
         return 1
 
     print(

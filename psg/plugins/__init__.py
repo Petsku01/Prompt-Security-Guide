@@ -30,7 +30,7 @@ from psg.plugins import DetectorPlugin
 
 class MyDetector(DetectorPlugin):
     name = "my-detector"
-    
+
     def detect(self, prompt: str, response: str) -> DetectionResult:
         # Return DetectionResult(attack_successful=bool, confidence=float, reason=str)
         ...
@@ -43,12 +43,13 @@ from psg.plugins import ClassifierPlugin
 
 class MyClassifier(ClassifierPlugin):
     name = "my-classifier"
-    
+
     def classify(self, text: str) -> ClassificationResult:
         # Return classification result
         ...
 ```
 """
+
 from .base import (
     DetectorPlugin,
     ClassifierPlugin,
@@ -61,7 +62,7 @@ from .base import (
 
 __all__ = [
     "DetectorPlugin",
-    "ClassifierPlugin", 
+    "ClassifierPlugin",
     "ReporterPlugin",
     "DetectionResult",
     "PluginRegistry",

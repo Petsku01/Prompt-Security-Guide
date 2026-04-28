@@ -46,7 +46,9 @@ class AttemptResult:
     is_refusal: bool = False
     has_disclaimer: bool = False
     error: str | None = None
-    started_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    started_at: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
 
 @dataclass(slots=True)

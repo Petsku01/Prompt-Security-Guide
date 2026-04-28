@@ -57,7 +57,9 @@ def validate_url(
     max_requests_per_second: float | None = DEFAULT_MAX_REQUESTS_PER_SECOND,
 ) -> bool:
     normalized_allowlist = _normalize_allowlist(allowlist)
-    return _validate_url_cached(url, float(timeout), normalized_allowlist, max_requests_per_second)
+    return _validate_url_cached(
+        url, float(timeout), normalized_allowlist, max_requests_per_second
+    )
 
 
 @lru_cache(maxsize=2048)
@@ -94,7 +96,9 @@ def validate_doi(
 
 
 @lru_cache(maxsize=2048)
-def _validate_doi_cached(doi: str, timeout: float, max_requests_per_second: float | None) -> bool:
+def _validate_doi_cached(
+    doi: str, timeout: float, max_requests_per_second: float | None
+) -> bool:
     if not _allow_request(max_requests_per_second):
         return False
 
@@ -166,7 +170,9 @@ def _host_in_allowlist(host: str, allowlist: tuple[str, ...]) -> bool:
     return False
 
 
-def _resolve_host_ips(hostname: str, port: int | None) -> set[ipaddress.IPv4Address | ipaddress.IPv6Address]:
+def _resolve_host_ips(
+    hostname: str, port: int | None
+) -> set[ipaddress.IPv4Address | ipaddress.IPv6Address]:
     try:
         infos = socket.getaddrinfo(hostname, port or 443, proto=socket.IPPROTO_TCP)
     except OSError:

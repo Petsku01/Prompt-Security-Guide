@@ -39,7 +39,9 @@ def parse_chat_completion(data: dict[str, Any]) -> LLMResponse:
         elif "content" in data:
             content = _content_to_text(data.get("content"))
 
-    return LLMResponse(content=content or "", raw=data, model=model, finish_reason=finish_reason)
+    return LLMResponse(
+        content=content or "", raw=data, model=model, finish_reason=finish_reason
+    )
 
 
 def _content_to_text(value: Any) -> str:

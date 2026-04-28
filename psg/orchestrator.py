@@ -6,12 +6,18 @@ import time
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
 from .errors import CatalogError, ReportError
-from .execution.multi_turn import _process_multi_turn_attack as _process_multi_turn_attack_impl
+from .execution.multi_turn import (
+    _process_multi_turn_attack as _process_multi_turn_attack_impl,
+)
 from .execution.parallel import _run_attacks_parallel as _run_attacks_parallel_impl
-from .execution.sequential import _run_attacks_sequential as _run_attacks_sequential_impl
+from .execution.sequential import (
+    _run_attacks_sequential as _run_attacks_sequential_impl,
+)
 from .execution.crescendo import run_crescendo_attack
 from .execution.many_shot import run_many_shot_attack
-from .execution.single_turn import _classify_attack_response as _classify_attack_response_impl
+from .execution.single_turn import (
+    _classify_attack_response as _classify_attack_response_impl,
+)
 from .execution.single_turn import _process_attack as _process_attack_impl
 from .llm.client import OpenAICompatibleClient
 from .llm.transport import Transport
@@ -160,12 +166,14 @@ def _run_attacks_sequential(
         detector=detector,
         system_prompt=system_prompt,
         checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
+        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: (
+            _process_attack(
+                cfg=cfg,
+                attack=attack,
+                client=client,
+                detector=detector,
+                system_prompt=system_prompt,
+            )
         ),
     )
 
@@ -188,12 +196,14 @@ def _run_attacks_parallel(
         detector=detector,
         system_prompt=system_prompt,
         checkpoint_tag=checkpoint_tag,
-        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
+        process_attack_fn=lambda cfg, attack, client, detector, system_prompt: (
+            _process_attack(
+                cfg=cfg,
+                attack=attack,
+                client=client,
+                detector=detector,
+                system_prompt=system_prompt,
+            )
         ),
     )
 
@@ -232,19 +242,23 @@ def _process_attack(
         client=client,
         detector=detector,
         system_prompt=system_prompt,
-        process_multi_turn_attack_fn=lambda cfg, attack, client, detector, system_prompt: _process_multi_turn_attack(
-            cfg=cfg,
-            attack=attack,
-            client=client,
-            detector=detector,
-            system_prompt=system_prompt,
+        process_multi_turn_attack_fn=lambda cfg, attack, client, detector, system_prompt: (
+            _process_multi_turn_attack(
+                cfg=cfg,
+                attack=attack,
+                client=client,
+                detector=detector,
+                system_prompt=system_prompt,
+            )
         ),
-        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: _classify_attack_response(
-            cfg=cfg,
-            detector=detector,
-            prompt=prompt,
-            raw_response=raw_response,
-            redacted_response=redacted_response,
+        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: (
+            _classify_attack_response(
+                cfg=cfg,
+                detector=detector,
+                prompt=prompt,
+                raw_response=raw_response,
+                redacted_response=redacted_response,
+            )
         ),
         redactor=redact_text,
     )
@@ -264,12 +278,14 @@ def _process_multi_turn_attack(
         client=client,
         detector=detector,
         system_prompt=system_prompt,
-        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: _classify_attack_response(
-            cfg=cfg,
-            detector=detector,
-            prompt=prompt,
-            raw_response=raw_response,
-            redacted_response=redacted_response,
+        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: (
+            _classify_attack_response(
+                cfg=cfg,
+                detector=detector,
+                prompt=prompt,
+                raw_response=raw_response,
+                redacted_response=redacted_response,
+            )
         ),
         redactor=redact_text,
     )

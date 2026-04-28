@@ -1,4 +1,5 @@
 """HTML dashboard report generator."""
+
 from __future__ import annotations
 
 import html
@@ -8,7 +9,7 @@ from string import Template
 from ..models import AttemptResult, RunSummary
 
 
-HTML_TEMPLATE = Template('''<!DOCTYPE html>
+HTML_TEMPLATE = Template("""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -207,7 +208,7 @@ HTML_TEMPLATE = Template('''<!DOCTYPE html>
     </script>
 </body>
 </html>
-''')
+""")
 
 
 def _escape(text: str) -> str:
@@ -228,7 +229,7 @@ def _generate_rows(results: list[AttemptResult]) -> str:
     """Generate table rows HTML."""
     rows = []
     for r in results:
-        category = getattr(r, 'category', None) or 'N/A'
+        category = getattr(r, "category", None) or "N/A"
         row = f'''<tr>
             <td>{_escape(r.attack_id)}</td>
             <td>{_escape(category)}</td>
@@ -236,7 +237,7 @@ def _generate_rows(results: list[AttemptResult]) -> str:
             <td class="truncate" title="{_escape(r.prompt)}">{_escape(r.prompt[:100])}</td>
         </tr>'''
         rows.append(row)
-    return '\n'.join(rows)
+    return "\n".join(rows)
 
 
 def generate_html_string(
@@ -248,7 +249,9 @@ def generate_html_string(
     """Generate HTML report as string."""
     failed = sum(1 for r in results if r.error)
     defended = summary.total - summary.flagged - failed
-    defense_rate = round((defended / summary.total * 100) if summary.total > 0 else 0, 1)
+    defense_rate = round(
+        (defended / summary.total * 100) if summary.total > 0 else 0, 1
+    )
     progress_class = "danger" if defense_rate < 70 else ""
 
     return HTML_TEMPLATE.substitute(

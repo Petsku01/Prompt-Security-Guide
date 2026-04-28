@@ -15,6 +15,7 @@ Exit codes:
     1 - F1 score below threshold
     2 - Configuration/input error
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,36 +30,41 @@ from .security.classifier import classify_response_v2
 @dataclass
 class EvalMetrics:
     """Evaluation metrics for binary classification."""
-    
+
     true_positives: int
     true_negatives: int
     false_positives: int
     false_negatives: int
-    
+
     @property
     def total(self) -> int:
-        return self.true_positives + self.true_negatives + self.false_positives + self.false_negatives
-    
+        return (
+            self.true_positives
+            + self.true_negatives
+            + self.false_positives
+            + self.false_negatives
+        )
+
     @property
     def accuracy(self) -> float:
         if self.total == 0:
             return 0.0
         return (self.true_positives + self.true_negatives) / self.total
-    
+
     @property
     def precision(self) -> float:
         denom = self.true_positives + self.false_positives
         if denom == 0:
             return 0.0
         return self.true_positives / denom
-    
+
     @property
     def recall(self) -> float:
         denom = self.true_positives + self.false_negatives
         if denom == 0:
             return 0.0
         return self.true_positives / denom
-    
+
     @property
     def f1(self) -> float:
         p, r = self.precision, self.recall
@@ -71,33 +77,33 @@ def load_golden(path: Path) -> list[dict]:
     """Load golden dataset from JSON file."""
     if not path.exists():
         raise FileNotFoundError(f"Golden dataset not found: {path}")
-    
+
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
-    
+
     if not isinstance(data, list):
         raise ValueError("Golden dataset must be a JSON array")
-    
+
     for i, item in enumerate(data):
         if "text" not in item:
             raise ValueError(f"Item {i} missing 'text' field")
         if "expected_harmful" not in item:
             raise ValueError(f"Item {i} missing 'expected_harmful' field")
-    
+
     return data
 
 
 def evaluate(golden: list[dict], threshold: float = 0.5) -> EvalMetrics:
     """Evaluate classifier against golden dataset."""
     tp = tn = fp = fn = 0
-    
+
     for item in golden:
         text = item["text"]
         expected = item["expected_harmful"]
-        
+
         result = classify_response_v2(text)
         predicted = result.harm_score >= threshold
-        
+
         if expected and predicted:
             tp += 1
         elif not expected and not predicted:
@@ -106,7 +112,7 @@ def evaluate(golden: list[dict], threshold: float = 0.5) -> EvalMetrics:
             fp += 1
         else:  # expected and not predicted
             fn += 1
-    
+
     return EvalMetrics(
         true_positives=tp,
         true_negatives=tn,
@@ -147,19 +153,19 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    
+
     try:
         golden = load_golden(Path(args.golden))
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
         print(f"Error loading golden dataset: {exc}", file=sys.stderr)
         return 2
-    
+
     if not golden:
         print("Golden dataset is empty", file=sys.stderr)
         return 2
-    
+
     metrics = evaluate(golden, threshold=args.threshold)
-    
+
     if args.json:
         output = {
             "total": metrics.total,
@@ -184,8 +190,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  Recall:    {metrics.recall:.2%}")
         print(f"  F1 Score:  {metrics.f1:.2%}")
         print()
-        print(f"  TP={metrics.true_positives} TN={metrics.true_negatives} FP={metrics.false_positives} FN={metrics.false_negatives}")
-    
+        print(
+            f"  TP={metrics.true_positives} TN={metrics.true_negatives} FP={metrics.false_positives} FN={metrics.false_negatives}"
+        )
+
     if args.fail_on_macro_f1_below is not None:
         if metrics.f1 < args.fail_on_macro_f1_below:
             if not args.json:
@@ -196,8 +204,10 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         else:
             if not args.json:
-                print(f"\n✅ PASSED: F1 score {metrics.f1:.2%} meets threshold {args.fail_on_macro_f1_below:.2%}")
-    
+                print(
+                    f"\n✅ PASSED: F1 score {metrics.f1:.2%} meets threshold {args.fail_on_macro_f1_below:.2%}"
+                )
+
     return 0
 
 

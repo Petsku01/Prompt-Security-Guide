@@ -19,7 +19,6 @@ ClassifyAttackResponseFn = Callable[
 ]
 
 
-
 def _process_multi_turn_attack(
     *,
     cfg: AppConfig,

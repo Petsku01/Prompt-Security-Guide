@@ -6,6 +6,7 @@ from typing import Any
 try:
     from langchain_core.callbacks import AsyncCallbackHandler, BaseCallbackHandler
 except ImportError:  # pragma: no cover - optional dependency fallback
+
     class BaseCallbackHandler:  # type: ignore[no-redef]
         """Fallback base class when langchain-core is not installed."""
 
@@ -59,7 +60,7 @@ class PSGGuardMiddleware(BaseCallbackHandler):
         """Screen input prompts for potential injection attempts."""
         if not self.screen_input:
             return
-        
+
         for prompt in prompts:
             self._check_text(prompt, direction="input")
 
@@ -67,7 +68,7 @@ class PSGGuardMiddleware(BaseCallbackHandler):
         """Screen LLM output for harmful content."""
         if not self.screen_output:
             return
-        
+
         text = self._extract_response_text(response)
         self._check_text(text, direction="output")
 
@@ -77,12 +78,16 @@ class PSGGuardMiddleware(BaseCallbackHandler):
             result = classify_response_v2(text)
         except Exception as exc:
             if self.fail_open:
-                logger.warning("PSG classification failed for %s (fail_open=True): %s", direction, exc)
+                logger.warning(
+                    "PSG classification failed for %s (fail_open=True): %s",
+                    direction,
+                    exc,
+                )
                 return
             raise PSGSecurityException(
                 f"PSG classifier error for {direction} (fail_open=False): {exc}"
             ) from exc
-        
+
         logger.debug(
             "PSG %s check: harm_score=%.2f, threshold=%.2f, labels=%s",
             direction,
@@ -90,9 +95,11 @@ class PSGGuardMiddleware(BaseCallbackHandler):
             self.threshold,
             result.harmful_labels,
         )
-        
+
         if result.harm_score >= self.threshold:
-            labels = ", ".join(result.harmful_labels) if result.harmful_labels else "unknown"
+            labels = (
+                ", ".join(result.harmful_labels) if result.harmful_labels else "unknown"
+            )
             raise PSGSecurityException(
                 f"PSG blocked LLM {direction} "
                 f"(harm_score={result.harm_score:.2f}, threshold={self.threshold:.2f}, labels={labels})"
@@ -121,7 +128,7 @@ class PSGGuardMiddleware(BaseCallbackHandler):
 
 class AsyncPSGGuardMiddleware(AsyncCallbackHandler):
     """Async version of PSGGuardMiddleware for async LangChain chains.
-    
+
     Same features as PSGGuardMiddleware but with async methods.
     """
 
@@ -138,7 +145,9 @@ class AsyncPSGGuardMiddleware(AsyncCallbackHandler):
         self.screen_input = screen_input
         self.screen_output = screen_output
         self.fail_open = fail_open
-        self._sync = PSGGuardMiddleware(threshold, screen_input, screen_output, fail_open)
+        self._sync = PSGGuardMiddleware(
+            threshold, screen_input, screen_output, fail_open
+        )
 
     async def on_llm_start(
         self,

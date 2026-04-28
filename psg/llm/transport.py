@@ -22,16 +22,25 @@ class Transport:
         self.backoff_base_seconds = backoff_base_seconds
         self.backoff_cap_seconds = backoff_cap_seconds
 
-    def post_json(self, url: str, payload: dict[str, Any], headers: dict[str, str] | None = None) -> dict[str, Any]:
+    def post_json(
+        self, url: str, payload: dict[str, Any], headers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         attempts = 0
         request_headers = dict(headers or {})
         while True:
             attempts += 1
             try:
-                resp = requests.post(url, json=payload, headers=request_headers, timeout=self.timeout_seconds)
+                resp = requests.post(
+                    url,
+                    json=payload,
+                    headers=request_headers,
+                    timeout=self.timeout_seconds,
+                )
             except requests.RequestException as exc:
                 if attempts > self.max_retries:
-                    raise RetryExhaustedError(f"request failed after retries: {exc}") from exc
+                    raise RetryExhaustedError(
+                        f"request failed after retries: {exc}"
+                    ) from exc
                 self._sleep(attempts)
                 continue
 
@@ -45,7 +54,9 @@ class Transport:
             # retry 429 and server errors
             if status == 429 or 500 <= status <= 599:
                 if attempts > self.max_retries:
-                    raise RetryExhaustedError(f"retries exhausted with status {status}: {resp.text[:300]}")
+                    raise RetryExhaustedError(
+                        f"retries exhausted with status {status}: {resp.text[:300]}"
+                    )
                 self._sleep(attempts)
                 continue
 

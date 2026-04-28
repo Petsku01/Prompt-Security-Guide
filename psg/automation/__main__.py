@@ -1,4 +1,5 @@
 """CLI entry point for psg.automation."""
+
 from .main import main
 
 if __name__ == "__main__":

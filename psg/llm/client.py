@@ -8,7 +8,9 @@ from .transport import Transport
 
 
 class OpenAICompatibleClient:
-    def __init__(self, base_url: str, transport: Transport, api_key: str | None = None) -> None:
+    def __init__(
+        self, base_url: str, transport: Transport, api_key: str | None = None
+    ) -> None:
         self.base_url = base_url.rstrip("/") + "/"
         self.transport = transport
         self.api_key = api_key
