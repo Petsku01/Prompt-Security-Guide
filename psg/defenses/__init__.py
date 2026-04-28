@@ -123,9 +123,11 @@ class DefenseLayer:
         )
 
         # Also check for canary tokens in output (prompt leakage)
+        # Use case-insensitive matching consistent with input validation
         if self.config.canary_tokens:
+            text_lower = text.lower()
             for token in self.config.canary_tokens:
-                if token and token in text:
+                if token and token.lower() in text_lower:
                     result.labels.append("canary_leaked")
                     # secrets_found is always a list after __post_init__
                     assert result.secrets_found is not None  # mypy: narrow type
