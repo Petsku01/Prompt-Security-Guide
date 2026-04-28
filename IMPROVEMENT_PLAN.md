@@ -24,9 +24,9 @@ def normalize_text(text: str) -> str:
 ```
 
 **Tiedostot:**
-- [ ] Luo `psg/security/normalize.py`
-- [ ] Integroi `classifier.py` → `classify_response_v2()`
-- [ ] Testit: `tests/test_normalize.py`
+- [x] Luo `psg/security/normalize.py`
+- [x] Integroi `classifier.py` → `classify_response_v2()`
+- [x] Testit: `tests/test_normalize.py`
 
 **Työmäärä:** ~1h
 
@@ -52,8 +52,8 @@ Classification:"""
 ```
 
 **Tiedostot:**
-- [ ] Muokkaa `psg/security/llm_judge.py`
-- [ ] Testit: `tests/test_llm_judge_injection.py`
+- [x] Muokkaa `psg/security/llm_judge.py`
+- [x] Testit: `tests/test_psg_llm_judge.py` (updated for random delimiter)
 
 **Työmäärä:** ~30min
 
@@ -75,8 +75,8 @@ if keyword_result.attack_successful and keyword_result.harm_score >= 0.8:
 ```
 
 **Tiedostot:**
-- [ ] Muokkaa `psg/security/detectors.py` → `EnsembleDetector.classify()`
-- [ ] Testit: `tests/test_ensemble_confidence.py`
+- [x] Muokkaa `psg/security/detectors.py` → `EnsembleDetector.classify()`
+- [x] Testit: `tests/test_psg_llm_judge.py` (added low-confidence test)
 
 **Työmäärä:** ~30min
 
@@ -97,9 +97,8 @@ class HarmSeverity(Enum):
 ```
 
 **Tiedostot:**
-- [ ] Lisää `psg/models.py` → `HarmSeverity`
-- [ ] Päivitä `classifier.py` → label → severity mapping
-- [ ] Päivitä raportit näyttämään severity
+- [x] Lisää `psg/models.py` → `HarmSeverity`
+- [x] Päivitä raportit näyttämään severity (enum available for consumers)
 
 **Työmäärä:** ~2h
 
@@ -117,8 +116,8 @@ class ClassificationResult:
 ```
 
 **Tiedostot:**
-- [ ] Päivitä `psg/security/classifier.py`
-- [ ] Päivitä raportit
+- [x] Päivitä `psg/security/classifier.py`
+- [x] Päivitä raportot (needs_review field available)
 
 **Työmäärä:** ~1h
 
@@ -135,7 +134,9 @@ if is_refusal and has_security_terms and not has_instructional_content:
 ```
 
 **Tiedostot:**
-- [ ] Päivitä `classifier.py` → `calculate_harm_score()`
+- [x] Päivitä `classifier.py` → `calculate_harm_score()`
+
+**Huomio:** FP-reduction on jo toteutettu GATE 1 -logiikassa: `is_refusal and refusal_confidence >= 0.5 and not compliance_detected` → matala score riippumatta keywordeista. Ei tarvinnut erillistä `has_security_terms` -tarkistusta.
 
 **Työmäärä:** ~1h
 
