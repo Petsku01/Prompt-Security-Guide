@@ -6,7 +6,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-REQUIRED_FIELDS = ("id", "prompt")
+# ID field aliases (catalog.py _parse_attack_item accepts all of these)
+ID_ALIASES = ("id", "attack_id", "name")
+# Prompt field aliases (catalog.py _extract_prompt accepts all of these)
+PROMPT_ALIASES = ("prompt", "text", "input", "query", "content")
+REQUIRED_FIELDS = ID_ALIASES + PROMPT_ALIASES
 OPTIONAL_FIELDS = ("technique", "source", "tier")
 CATALOG_KEYS = ("attacks", "prompts", "tests", "items")
 
@@ -71,15 +75,23 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
             )
             continue
 
-        missing_required = [
-            name for name in REQUIRED_FIELDS if not _is_non_empty_string(item.get(name))
-        ]
+        # Check that at least one ID alias is present
+        has_id = any(_is_non_empty_string(item.get(key)) for key in ID_ALIASES)
+        # Check that at least one prompt alias is present
+        has_prompt = any(_is_non_empty_string(item.get(key)) for key in PROMPT_ALIASES)
+        missing_required: list[str] = []
+        
+        if not has_id:
+            missing_required.append(f"one of: {', '.join(ID_ALIASES)}")
+        if not has_prompt:
+            missing_required.append(f"one of: {', '.join(PROMPT_ALIASES)}")
+            
         if missing_required:
             errors.append(
                 f"[{idx}] Missing required field(s): {', '.join(missing_required)}"
             )
 
-        item_id = item.get("id")
+        item_id = item.get("id") or item.get("attack_id") or item.get("name")
         if _is_non_empty_string(item_id):
             item_id_str = str(item_id)
             if item_id_str in seen_ids:

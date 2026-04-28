@@ -136,9 +136,6 @@ def normalize_text(text: str) -> str:
     }
     text = "".join(homoglyphs.get(c, c) for c in text)
 
-    # Leetspeak normalization handled by normalize_text() upstream
-    # e.g., {'0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a'}
-
     # Normalize whitespace
     text = " ".join(text.split())
 
@@ -181,8 +178,8 @@ def get_ml_classifier():
                 model="deepset/deberta-v3-base-injection",
                 device=-1,  # CPU
             )
-        except Exception:
-            logging.debug("ML classifier unavailable")
+        except Exception as exc:
+            logging.warning("ML classifier unavailable: %s", exc)
             _ml_classifier = False
     return _ml_classifier if _ml_classifier else None
 
@@ -208,7 +205,7 @@ def ml_injection_score(text: str, use_model: bool = True) -> float:
                 else:
                     return 1.0 - result["score"]
             except Exception as exc:
-                logging.debug("ML inference failed, using heuristic: %s", exc)
+                logging.warning("ML inference failed, using heuristic: %s", exc)
 
     # Heuristic fallback (WEAK - only catches obvious cases)
     return _heuristic_injection_score(text)
@@ -287,17 +284,19 @@ def _heuristic_injection_score(text: str) -> float:
 
 
 def detect_canary_token(text: str, canary_tokens: Iterable[str] | None = None) -> bool:
-    """
-    Returns True if a configured canary token appears in the text.
+    """Return True if a canary token appears in the text.
 
     Canary tokens are secrets placed in system prompts that should never
     appear in outputs. Their presence indicates prompt leakage.
+    Both text and tokens are normalized for consistent matching.
     """
     if not text or not canary_tokens:
         return False
 
     normalized = normalize_text(text)
-    return any(token and token in normalized for token in canary_tokens)
+    return any(
+        token and normalize_text(token) in normalized for token in canary_tokens
+    )
 
 
 # =============================================================================

@@ -26,7 +26,6 @@ from .models import AppConfig, Attack, AttemptResult, RunSummary
 from .reporting.defense_report import write_defense_report
 from .reporting.json_report import write_json_report
 from .reporting.text_report import write_text_report
-from .security.classifier import ClassificationResult
 from .security.detectors import Detector, build_detector
 from .security.redaction import redact_text
 
@@ -265,45 +264,7 @@ def _process_attack(
     )
 
 
-def _process_multi_turn_attack(
-    *,
-    cfg: AppConfig,
-    attack: Attack,
-    client: OpenAICompatibleClient,
-    detector: Detector,
-    system_prompt: str | None,
-) -> AttemptResult:
-    return _process_multi_turn_attack_impl(
-        cfg=cfg,
-        attack=attack,
-        client=client,
-        detector=detector,
-        system_prompt=system_prompt,
-        classify_attack_response_fn=lambda cfg, detector, prompt, raw_response, redacted_response: (
-            _classify_attack_response(
-                cfg=cfg,
-                detector=detector,
-                prompt=prompt,
-                raw_response=raw_response,
-                redacted_response=redacted_response,
-            )
-        ),
-        redactor=redact_text,
-    )
+_process_multi_turn_attack = _process_multi_turn_attack_impl
 
 
-def _classify_attack_response(
-    *,
-    cfg: AppConfig,
-    detector: Detector,
-    prompt: str,
-    raw_response: str,
-    redacted_response: str,
-) -> ClassificationResult:
-    return _classify_attack_response_impl(
-        cfg=cfg,
-        detector=detector,
-        prompt=prompt,
-        raw_response=raw_response,
-        redacted_response=redacted_response,
-    )
+_classify_attack_response = _classify_attack_response_impl

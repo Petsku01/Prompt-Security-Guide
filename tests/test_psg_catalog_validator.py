@@ -26,7 +26,7 @@ def test_validate_catalog_file_detects_duplicate_id_and_missing_required(
 
     assert report["skipped"] is False
     assert any("Duplicate id" in e for e in report["errors"])
-    assert any("Missing required field(s): prompt" in e for e in report["errors"])
+    assert any("Missing required field(s)" in e and "prompt" in e for e in report["errors"])
 
 
 def test_validate_catalog_file_warnings_for_optional_fields(tmp_path) -> None:

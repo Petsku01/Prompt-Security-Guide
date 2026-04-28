@@ -40,6 +40,7 @@ from .output_validators import (
 from .strategies import (
     InstructionLevel,
     recommend_defense_strategy,
+    SCENARIOS,
     sort_by_instruction_hierarchy,
     conflict_with_higher_priority,
 )
@@ -126,8 +127,8 @@ class DefenseLayer:
             for token in self.config.canary_tokens:
                 if token and token in text:
                     result.labels.append("canary_leaked")
-                    if result.secrets_found is None:
-                        result.secrets_found = []
+                    # secrets_found is always a list after __post_init__
+                    assert result.secrets_found is not None  # mypy: narrow type
                     result.secrets_found.append(f"canary:{token[:8]}...")
                     result.blocked = True
 
@@ -191,6 +192,7 @@ __all__ = [
     # Strategies
     "InstructionLevel",
     "recommend_defense_strategy",
+    "SCENARIOS",
     "sort_by_instruction_hierarchy",
     "conflict_with_higher_priority",
     # Templates

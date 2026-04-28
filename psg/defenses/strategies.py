@@ -24,8 +24,7 @@ def recommend_defense_strategy(
     external_content: bool = False,
     needs_tool_use: bool = False,
 ) -> list[str]:
-    """
-    Returns pragmatic defense recommendations.
+    """Return pragmatic defense recommendations.
 
     These are risk mitigations only; no strategy fully eliminates prompt injection.
     """
@@ -44,6 +43,31 @@ def recommend_defense_strategy(
     if high_risk_actions:
         recommendations.append("Require human approval for high-impact actions.")
     return recommendations
+
+
+# Predefined scenario profiles for common deployment patterns
+SCENARIOS: dict[str, dict[str, bool]] = {
+    "chatbot": {
+        "high_risk_actions": False,
+        "external_content": False,
+        "needs_tool_use": False,
+    },
+    "agent": {
+        "high_risk_actions": True,
+        "external_content": True,
+        "needs_tool_use": True,
+    },
+    "rag": {
+        "high_risk_actions": False,
+        "external_content": True,
+        "needs_tool_use": False,
+    },
+    "tool-use": {
+        "high_risk_actions": True,
+        "external_content": False,
+        "needs_tool_use": True,
+    },
+}
 
 
 def sort_by_instruction_hierarchy(

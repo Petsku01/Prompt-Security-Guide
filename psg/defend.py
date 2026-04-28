@@ -22,6 +22,7 @@ from .defenses import (
     validate_input,
     validate_output,
     recommend_defense_strategy,
+    SCENARIOS,
 )
 
 
@@ -437,30 +438,7 @@ def cmd_info(args: argparse.Namespace) -> int:
         print(f"Recommendations for: {args.scenario}")
         print("-" * 40)
 
-        scenarios = {
-            "chatbot": {
-                "high_risk_actions": False,
-                "external_content": False,
-                "needs_tool_use": False,
-            },
-            "agent": {
-                "high_risk_actions": True,
-                "external_content": True,
-                "needs_tool_use": True,
-            },
-            "rag": {
-                "high_risk_actions": False,
-                "external_content": True,
-                "needs_tool_use": False,
-            },
-            "tool-use": {
-                "high_risk_actions": True,
-                "external_content": False,
-                "needs_tool_use": True,
-            },
-        }
-
-        recs = recommend_defense_strategy(**scenarios[args.scenario])
+        recs = recommend_defense_strategy(**SCENARIOS[args.scenario])
         for rec in recs:
             print(f"  • {rec}")
         print()
