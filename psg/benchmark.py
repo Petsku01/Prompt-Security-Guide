@@ -27,7 +27,7 @@ from .orchestrator import run
 
 
 # Preset definitions - maps preset name to catalog path(s)
-PRESETS: dict[str, dict] = {
+PRESETS: dict[str, dict[str, str | list[str]]] = {
     "jbb": {
         "name": "JailbreakBench",
         "description": "JailbreakBench harmful behaviors dataset",

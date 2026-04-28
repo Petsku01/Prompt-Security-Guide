@@ -72,8 +72,8 @@ def parse_template(content: str, filename: str) -> DefenseTemplate | None:
     name_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
     name = name_match.group(1).strip() if name_match else filename.replace(".md", "")
 
-    # Extract content from code block
-    code_match = re.search(r"```\n?(.*?)```", content, re.DOTALL)
+    # Extract content from code block (supports language identifiers like ```python)
+    code_match = re.search(r"```\w*\n?(.*?)```", content, re.DOTALL)
     if code_match:
         prompt_content = code_match.group(1).strip()
     else:

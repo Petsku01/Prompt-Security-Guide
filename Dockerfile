@@ -15,21 +15,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
+# Copy dependency spec first for layer caching
 COPY pyproject.toml README.md ./
-COPY psg/ ./psg/
-COPY datasets/ ./datasets/
-COPY defense_templates/ ./defense_templates/
 
 # Build argument for ML dependencies
 ARG INSTALL_ML=false
 
-# Install PSG
+# Install dependencies (cached unless pyproject.toml changes)
 RUN if [ "$INSTALL_ML" = "true" ]; then \
         pip install --no-cache-dir -e ".[ml]"; \
     else \
         pip install --no-cache-dir -e .; \
     fi
+
+# Copy source (invalidates cache only when code changes)
+COPY psg/ ./psg/
+COPY datasets/ ./datasets/
+COPY defense_templates/ ./defense_templates/
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
