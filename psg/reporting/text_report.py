@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from importlib.metadata import version
 from pathlib import Path
 
 from ..models import AttemptResult, RunSummary
+
+logger = logging.getLogger(__name__)
 
 
 def write_text_report(
@@ -14,6 +17,7 @@ def write_text_report(
     try:
         psg_version = version("prompt-security-guide")
     except Exception:
+        logger.debug("Could not determine PSG version")
         psg_version = "unknown"
 
     needs_review_count = sum(1 for r in results if getattr(r, "needs_review", False))

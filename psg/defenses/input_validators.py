@@ -2,7 +2,7 @@
 Input validation for prompt injection detection.
 
 WARNING: These are risk-reduction heuristics, NOT complete defenses.
-Sophisticated attacks WILL bypass these. Use as one layer in defense-in-depth.
+Targeted attacks WILL bypass these. Use as one layer in defense-in-depth.
 """
 
 from __future__ import annotations
@@ -215,7 +215,7 @@ def _heuristic_injection_score(text: str) -> float:
     """
     Heuristic fallback when ML model unavailable.
 
-    WARNING: This is intentionally simple and WILL miss sophisticated attacks.
+    WARNING: This is intentionally simple and WILL miss targeted attacks.
     It exists only as a fallback, not a real detection mechanism.
     """
     normalized = normalize_text(text).lower()

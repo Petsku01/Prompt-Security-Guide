@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import base64
 import binascii
+import logging
 import re
 import unicodedata
+
+logger = logging.getLogger(__name__)
 
 
 # Leetspeak translation map
@@ -129,6 +132,7 @@ def _try_decode_base64(s: str) -> str | None:
         if text and sum(c.isprintable() or c.isspace() for c in text) / len(text) > 0.8:
             return text
     except (ValueError, UnicodeDecodeError, binascii.Error):
+        logger.debug("Base64 decode failed for input segment")
         pass
     return None
 
