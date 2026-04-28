@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from typing import Any
 from pathlib import Path
 
 from .defenses import (
@@ -125,20 +126,53 @@ def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     return parser
 
 
+def _read_validation_text(args: argparse.Namespace) -> str | None:
+    """Read validation text from args, file, or stdin. Returns None on error."""
+    if args.text:
+        return args.text
+    if args.file:
+        return Path(args.file).read_text(encoding="utf-8")
+    if not sys.stdin.isatty():
+        return sys.stdin.read()
+    print("Error: provide text, --file, or pipe to stdin", file=sys.stderr)
+    return None
+
+
+def _print_validation_results(results: dict[str, Any], blocked: bool) -> None:
+    """Print human-readable validation results."""
+    status = "🚫 BLOCKED" if blocked else "✅ PASSED"
+    print(status)
+    print()
+    for mode, data in results.items():
+        if mode == "blocked" or not isinstance(data, dict):
+            continue
+        print(f"[{mode.upper()}]")
+        print(f"  Score: {data['score']}")
+        labels = (
+            list(data.get("labels", []))
+            if isinstance(data.get("labels"), (list, tuple))
+            else []
+        )
+        print(f"  Labels: {', '.join(labels) if labels else 'none'}")
+        if mode == "input" and data.get("canary_triggered"):
+            print("  ⚠️  Canary token detected!")
+        secrets = (
+            list(data.get("secrets_found", []))
+            if isinstance(data.get("secrets_found"), (list, tuple))
+            else []
+        )
+        if mode == "output" and secrets:
+            print(f"  ⚠️  Secrets: {', '.join(secrets)}")
+        print()
+
+
 def cmd_validate(args: argparse.Namespace) -> int:
     """Validate text for injection signals."""
-    # Get text from args, file, or stdin
-    if args.text:
-        text = args.text
-    elif args.file:
-        text = Path(args.file).read_text(encoding="utf-8")
-    elif not sys.stdin.isatty():
-        text = sys.stdin.read()
-    else:
-        print("Error: provide text, --file, or pipe to stdin", file=sys.stderr)
+    text = _read_validation_text(args)
+    if text is None:
         return 2
 
-    results: dict[str, dict[str, object] | bool] = {}
+    results: dict[str, Any] = {}
     blocked = False
 
     if args.mode in ("input", "both"):
@@ -158,10 +192,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         blocked = blocked or input_result.blocked
 
     if args.mode in ("output", "both"):
-        output_result = validate_output(
-            text,
-            block_threshold=args.threshold,
-        )
+        output_result = validate_output(text, block_threshold=args.threshold)
         results["output"] = {
             "blocked": output_result.blocked,
             "score": round(output_result.score, 3),
@@ -176,75 +207,40 @@ def cmd_validate(args: argparse.Namespace) -> int:
     if args.json:
         print(json.dumps(results, indent=2))
     else:
-        status = "🚫 BLOCKED" if blocked else "✅ PASSED"
-        print(f"{status}")
-        print()
-
-        for mode, data in results.items():
-            if mode == "blocked" or not isinstance(data, dict):
-                continue
-            print(f"[{mode.upper()}]")
-            print(f"  Score: {data['score']}")
-            raw_labels = data.get("labels", [])
-            labels_list: list[str] = (
-                list(raw_labels) if isinstance(raw_labels, (list, tuple)) else []
-            )
-            print(f"  Labels: {', '.join(labels_list) if labels_list else 'none'}")
-            if mode == "input" and data.get("canary_triggered"):
-                print("  ⚠️  Canary token detected!")
-            raw_secrets = data.get("secrets_found", [])
-            secrets_list: list[str] = (
-                list(raw_secrets) if isinstance(raw_secrets, (list, tuple)) else []
-            )
-            if mode == "output" and secrets_list:
-                print(f"  ⚠️  Secrets: {', '.join(secrets_list)}")
-            print()
+        _print_validation_results(results, blocked)
 
     return 1 if blocked else 0
 
 
-def cmd_check(args: argparse.Namespace) -> int:
-    """Check conversation file for issues."""
-    path = Path(args.file)
-    if not path.exists():
-        print(f"Error: file not found: {path}", file=sys.stderr)
-        return 2
-
-    content = path.read_text(encoding="utf-8")
-
-    # Detect format
-    fmt = args.format
-    if fmt == "auto":
-        fmt = "jsonl" if path.suffix == ".jsonl" else "json"
-
-    # Parse messages
-    messages = []
+def _parse_conversation_messages(content: str, fmt: str) -> list[dict[str, Any]]:
+    """Parse conversation messages from JSON or JSONL content."""
     if fmt == "jsonl":
-        for line in content.strip().split("\n"):
-            if line.strip():
-                messages.append(json.loads(line))
-    else:
-        data = json.loads(content)
-        if isinstance(data, list):
-            messages = data
-        elif "messages" in data:
-            messages = data["messages"]
-        else:
-            messages = [data]
+        return [
+            json.loads(line) for line in content.strip().split("\n") if line.strip()
+        ]
+    data = json.loads(content)
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict) and "messages" in data:
+        return data["messages"]
+    return [data]
 
-    # Check each message
+
+def _check_messages_for_issues(
+    messages: list[dict[str, Any]], threshold: float
+) -> list[dict[str, Any]]:
+    """Check messages against defense layers. Returns list of issues."""
     layer = DefenseLayer(
         DefenseConfig(
-            input_block_threshold=args.threshold,
-            output_block_threshold=args.threshold,
+            input_block_threshold=threshold,
+            output_block_threshold=threshold,
         )
     )
 
-    issues = []
+    issues: list[dict[str, Any]] = []
     for i, msg in enumerate(messages):
-        # Extract text - handle various formats
-        text = msg.get("content") or msg.get("text") or msg.get("prompt") or str(msg)
-        role = msg.get("role", "unknown")
+        text = str(msg.get("content") or msg.get("text") or msg.get("prompt") or msg)
+        role = str(msg.get("role", "unknown"))
 
         if role in ("user", "human"):
             result = layer.validate_input(text)
@@ -271,6 +267,24 @@ def cmd_check(args: argparse.Namespace) -> int:
                     }
                 )
 
+    return issues
+
+
+def cmd_check(args: argparse.Namespace) -> int:
+    """Check conversation file for issues."""
+    path = Path(args.file)
+    if not path.exists():
+        print(f"Error: file not found: {path}", file=sys.stderr)
+        return 2
+
+    content = path.read_text(encoding="utf-8")
+    fmt = args.format
+    if fmt == "auto":
+        fmt = "jsonl" if path.suffix == ".jsonl" else "json"
+
+    messages = _parse_conversation_messages(content, fmt)
+    issues = _check_messages_for_issues(messages, args.threshold)
+
     if args.json:
         print(
             json.dumps(
@@ -288,9 +302,12 @@ def cmd_check(args: argparse.Namespace) -> int:
         if issues:
             print(f"⚠️  Found {len(issues)} issues:")
             for issue in issues:
-                print(
-                    f"  [{issue['index']}] {issue['role']}: {', '.join(issue['labels'])}"
+                labels = (
+                    list(issue["labels"])
+                    if isinstance(issue["labels"], (list, tuple))
+                    else []
                 )
+                print(f"  [{issue['index']}] {issue['role']}: {', '.join(labels)}")
         else:
             print("✅ No issues found")
 

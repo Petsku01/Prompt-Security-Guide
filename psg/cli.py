@@ -210,6 +210,55 @@ def build_parser() -> argparse.ArgumentParser:
     return add_scan_arguments(parser)
 
 
+def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
+    """Run defense-only scan without calling any LLM."""
+    import json
+    from pathlib import Path
+
+    from .catalog import load_catalog
+    from .defenses import DefenseConfig, DefenseLayer
+
+    attacks = load_catalog(cfg.catalog_path)
+    layer = DefenseLayer(DefenseConfig(input_block_threshold=threshold))
+
+    detected = 0
+    results_data: list[dict[str, object]] = []
+    for attack in attacks:
+        result = layer.validate_input(attack.prompt)
+        if result and result.blocked:
+            detected += 1
+        results_data.append(
+            {
+                "id": attack.id,
+                "blocked": result.blocked if result else False,
+                "score": round(result.score, 3) if result else 0,
+                "labels": result.labels if result else [],
+            }
+        )
+
+    total = len(attacks)
+    rate = detected / total if total > 0 else 0
+    print(f"Defense-only scan: {detected}/{total} ({rate * 100:.1f}%) attacks blocked")
+    print(f"Threshold: {threshold}")
+
+    Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(cfg.report_json_path).write_text(
+        json.dumps(
+            {
+                "mode": "defense_only",
+                "total": total,
+                "detected": detected,
+                "detection_rate": rate,
+                "threshold": threshold,
+                "results": results_data,
+            },
+            indent=2,
+        )
+    )
+    print(f"Results: {cfg.report_json_path}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
@@ -257,58 +306,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Defense-only mode: validate attacks without calling model
     if args.defense_only:
-        from .catalog import load_catalog
-        from .defenses import DefenseLayer, DefenseConfig
-
-        attacks = load_catalog(cfg.catalog_path)
-        layer = DefenseLayer(
-            DefenseConfig(
-                input_block_threshold=args.defense_threshold,
-            )
-        )
-
-        detected = 0
-        results_data = []
-        for attack in attacks:
-            result = layer.validate_input(attack.prompt)
-            if result and result.blocked:
-                detected += 1
-            results_data.append(
-                {
-                    "id": attack.id,
-                    "blocked": result.blocked if result else False,
-                    "score": round(result.score, 3) if result else 0,
-                    "labels": result.labels if result else [],
-                }
-            )
-
-        total = len(attacks)
-        rate = detected / total if total > 0 else 0
-        print(
-            f"Defense-only scan: {detected}/{total} ({rate * 100:.1f}%) attacks blocked"
-        )
-        print(f"Threshold: {args.defense_threshold}")
-
-        # Write results
-        import json
-        from pathlib import Path
-
-        Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
-        Path(cfg.report_json_path).write_text(
-            json.dumps(
-                {
-                    "mode": "defense_only",
-                    "total": total,
-                    "detected": detected,
-                    "detection_rate": rate,
-                    "threshold": args.defense_threshold,
-                    "results": results_data,
-                },
-                indent=2,
-            )
-        )
-        print(f"Results: {cfg.report_json_path}")
-        return 0
+        return _run_defense_only(cfg, args.defense_threshold)
 
     try:
         summary, results = run(cfg)
