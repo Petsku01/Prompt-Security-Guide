@@ -54,18 +54,7 @@ from .templates import (
 
 @dataclass(slots=True)
 class DefenseConfig:
-    """
-    Configuration for defense layers.
-
-    Attributes:
-        enable_input_validation: Run input validators
-        enable_output_validation: Run output validators
-        input_block_threshold: Score threshold for blocking input (0.0-1.0)
-        output_block_threshold: Score threshold for blocking output (0.0-1.0)
-        canary_tokens: Secret tokens that should never appear in output
-        use_ml_model: Use ML model for detection (requires transformers)
-        block_on_secrets: Always block if secrets detected in output
-    """
+    """Configuration for defense layers."""
 
     enable_input_validation: bool = True
     enable_output_validation: bool = True
@@ -78,15 +67,7 @@ class DefenseConfig:
 
 @dataclass(slots=True)
 class DefenseDecision:
-    """
-    Combined decision from all defense layers.
-
-    Attributes:
-        blocked: Whether any layer triggered blocking
-        labels: All triggered detection categories
-        input_result: Detailed input validation result
-        output_result: Detailed output validation result
-    """
+    """Combined decision from all defense layers."""
 
     blocked: bool
     labels: list[str]
@@ -96,27 +77,10 @@ class DefenseDecision:
 
 @dataclass(slots=True)
 class DefenseLayer:
-    """
-    Defense-in-depth orchestration for PSG.
+    """Defense-in-depth orchestration combining input/output validation.
 
-    Combines input validation, output validation, and configurable
-    detection strategies. Does NOT provide complete protection.
-
-    Use as one layer in a broader security strategy that includes:
-    - Least privilege for tools/actions
-    - Human-in-the-loop for sensitive operations
-    - Monitoring and alerting
-    - Rate limiting
-
-    Example:
-        >>> layer = DefenseLayer()
-        >>> layer.set_canary_tokens(["MY-SECRET-TOKEN"])
-        >>> decision = layer.evaluate(
-        ...     user_input="Hello",
-        ...     model_output="Your token is MY-SECRET-TOKEN",
-        ... )
-        >>> decision.blocked  # Canary detected!
-        True
+    This is risk-reduction, not complete protection. Use alongside
+    least privilege, human-in-the-loop, monitoring, and rate limiting.
     """
 
     config: DefenseConfig = field(default_factory=DefenseConfig)

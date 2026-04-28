@@ -159,23 +159,8 @@ def decode_base64_segments(text: str) -> str:
 def normalize_text(text: str) -> str:
     """Normalize text for security classification.
 
-    Applies multiple normalization steps to detect obfuscated content:
-    1. Unicode NFKC normalization (compatibility decomposition)
-    2. Homoglyph translation (Cyrillic/Greek → Latin)
-    3. Leetspeak translation (k3ylogg3r → keylogger)
-    4. Base64 decoding (embedded encoded segments)
-
-    Args:
-        text: Input text to normalize
-
-    Returns:
-        Normalized text suitable for keyword matching
-
-    Example:
-        >>> normalize_text("k3ylogg3r")
-        'keylogger'
-        >>> normalize_text("a2V5bG9nZ2Vy")
-        'keylogger'
+    Steps: NFKC unicode normalization, homoglyph translation (Cyrillic/Greek → Latin),
+    leetspeak translation, base64 segment decoding.
     """
     if not text:
         return text

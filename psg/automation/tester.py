@@ -65,7 +65,10 @@ class TestRunner:
                 timeout=5,
             )
             return result.stdout.strip() == "200"
-        except Exception:
+        except Exception as exc:
+            from .logging_config import logger
+
+            logger.debug("Ollama health check failed: %s", exc)
             return False
 
     def get_available_models(self) -> list[str]:

@@ -7,6 +7,7 @@ and provides utilities for combining and applying them.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -49,7 +50,8 @@ def load_templates(
             template = parse_template(content, md_file.name)
             if template:
                 templates.append(template)
-        except Exception:
+        except Exception as exc:
+            logging.debug("Skipping template %s: %s", md_file.name, exc)
             continue
 
     return templates

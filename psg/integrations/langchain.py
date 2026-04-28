@@ -21,20 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 class PSGGuardMiddleware(BaseCallbackHandler):
-    """LangChain callback middleware that screens LLM inputs and outputs.
+    """LangChain callback middleware screening LLM inputs and outputs.
 
-    Features:
-    - Output screening via on_llm_end (blocks harmful responses)
-    - Input screening via on_llm_start (blocks prompt injection attempts)
-    - Configurable threshold (default 0.5)
-    - Raises PSGSecurityException when harm_score >= threshold
-    - fail_open: if False (default), classifier errors raise; if True, they pass through
-
-    Usage:
-        from langchain_openai import ChatOpenAI
-        from psg.integrations.langchain import PSGGuardMiddleware
-
-        llm = ChatOpenAI(callbacks=[PSGGuardMiddleware(threshold=0.5)])
+    Raises PSGSecurityException when harm_score >= threshold.
+    Set fail_open=True to pass through on classifier errors.
     """
 
     def __init__(

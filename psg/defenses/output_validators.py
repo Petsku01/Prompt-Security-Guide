@@ -90,19 +90,10 @@ LEAKAGE_PATTERNS: dict[str, re.Pattern[str]] = {
 
 @dataclass(slots=True)
 class OutputValidationResult:
-    """
-    Best-effort leakage detection signal, NOT prevention.
+    """Best-effort leakage detection signal, NOT prevention.
 
-    By the time this runs, the content has already been generated.
+    Content has already been generated when this runs.
     Use for monitoring, alerting, and post-hoc analysis.
-
-    Attributes:
-        blocked: Whether output triggered blocking threshold
-        score: Risk score 0.0-1.0
-        labels: Categories of detected issues
-        secrets_found: Specific secret types detected
-        pii_found: Specific PII types detected
-        exfil_indicators: Exfiltration attempt indicators
     """
 
     blocked: bool
@@ -198,22 +189,11 @@ def validate_output(
     block_on_secrets: bool = True,
     custom_secret_patterns: dict[str, re.Pattern[str]] | None = None,
 ) -> OutputValidationResult:
-    """
-    Validate model output for sensitive data and exfiltration attempts.
+    """Validate model output for sensitive data and exfiltration.
 
-    Args:
-        text: Model output to validate
-        block_threshold: Score threshold for blocking
-        block_on_secrets: Always block if secrets detected
-        custom_secret_patterns: Additional secret patterns to check
-
-    Returns:
-        OutputValidationResult with detection details
-
-    WARNING:
-        This is DETECTION, not PREVENTION. The model has already generated
-        this content. Use this for logging, alerting, and filtering responses
-        before they reach end users.
+    WARNING: This is DETECTION, not PREVENTION. The model has already
+    generated this content. Use for logging, alerting, and filtering
+    responses before they reach end users.
     """
     if not text:
         return OutputValidationResult(

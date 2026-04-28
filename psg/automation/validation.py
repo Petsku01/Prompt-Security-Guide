@@ -1,5 +1,6 @@
 """Input validation for auto_pipeline."""
 
+import logging
 import socket
 import re
 from urllib.parse import urlparse
@@ -113,7 +114,8 @@ def validate_url(url: str) -> bool:
 
         return True
 
-    except Exception:
+    except Exception as exc:
+        logging.debug("URL validation failed for %s: %s", url, exc)
         return False
 
 
