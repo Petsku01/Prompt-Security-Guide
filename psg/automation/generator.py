@@ -39,40 +39,54 @@ class AttackVector:
 GenerateFunc = Callable[[str], str]
 
 
+def create_generate_func(config: PipelineConfig) -> GenerateFunc:
+    """Create a generate function that uses config settings for model and URL."""
+
+    def generate_func(prompt: str) -> str:
+        """Generate using local Ollama model via urllib (no subprocess)."""
+        import urllib.request
+        import urllib.error
+
+        try:
+            data = json.dumps(
+                {
+                    "model": config.generator_model,
+                    "prompt": prompt,
+                    "stream": False,
+                    "options": {"temperature": 0.7, "num_predict": 512},
+                }
+            ).encode("utf-8")
+
+            req = urllib.request.Request(
+                f"{config.ollama_base_url}/api/generate",
+                data=data,
+                headers={"Content-Type": "application/json"},
+            )
+
+            with urllib.request.urlopen(req, timeout=180) as resp:
+                result = json.loads(resp.read().decode("utf-8"))
+                return result.get("response", "")
+
+        except urllib.error.URLError as e:
+            logger.error(f"Ollama connection failed: {e}")
+            return ""
+        except json.JSONDecodeError as e:
+            logger.error(f"Invalid JSON from Ollama: {e}")
+            return ""
+        except TimeoutError:
+            logger.error("Ollama request timed out (180s)")
+            return ""
+
+    return generate_func
+
+
 def default_generate_func(prompt: str) -> str:
-    """Generate using local Ollama model via urllib (no subprocess)."""
-    import urllib.request
-    import urllib.error
+    """Generate using local Ollama model via urllib (no subprocess).
 
-    try:
-        data = json.dumps(
-            {
-                "model": "dolphin-llama3:8b",
-                "prompt": prompt,
-                "stream": False,
-                "options": {"temperature": 0.7, "num_predict": 512},
-            }
-        ).encode("utf-8")
-
-        req = urllib.request.Request(
-            "http://localhost:11434/api/generate",
-            data=data,
-            headers={"Content-Type": "application/json"},
-        )
-
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            result = json.loads(resp.read().decode("utf-8"))
-            return result.get("response", "")
-
-    except urllib.error.URLError as e:
-        logger.error(f"Ollama connection failed: {e}")
-        return ""
-    except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON from Ollama: {e}")
-        return ""
-    except TimeoutError:
-        logger.error("Ollama request timed out (180s)")
-        return ""
+    Uses default config values. For custom config, use
+    ``create_generate_func(config)`` instead.
+    """
+    return create_generate_func(PipelineConfig())(prompt)
 
 
 GENERATION_PROMPT = """Analyze this jailbreak technique source and generate test vectors.
@@ -101,7 +115,7 @@ class VectorGenerator:
         generate_func: GenerateFunc | None = None,
     ) -> None:
         self.config = config
-        self.generate_func = generate_func or default_generate_func
+        self.generate_func = generate_func or create_generate_func(config)
         self.vector_store = DeduplicationStore(config.known_vectors_path)
         self._counter = 0
 
@@ -137,7 +151,7 @@ class VectorGenerator:
         vectors: list[AttackVector] = []
         for v in vectors_data:
             prompt_text = v.get("prompt", "")
-            if not prompt_text or self.vector_store.is_known(prompt_text):
+            if not prompt_text or not prompt_text.strip() or self.vector_store.is_known(prompt_text):
                 continue
 
             vector = AttackVector(
@@ -150,7 +164,7 @@ class VectorGenerator:
             vectors.append(vector)
             self.vector_store.add(prompt_text)
 
-            if len(vectors) >= self.config.max_vectors_per_run:
+            if len(vectors) >= self.config.max_vectors_per_source:
                 break
 
         return vectors

@@ -1,4 +1,11 @@
-"""Reporting module for pipeline results."""
+"""Reporting module for pipeline results.
+
+Limitation: top_findings aggregates results by model, not by technique,
+because individual test results do not currently carry technique-level
+metadata.  A future refactor should thread the technique name from
+AttackVector through to ModelTestResult so findings can be grouped by
+technique across models (as the SPEC envisions).
+"""
 
 from __future__ import annotations
 
@@ -10,7 +17,7 @@ from typing import Any
 from .config import PipelineConfig
 from .discovery import Source
 from .generator import AttackVector
-from .tester import TestResult
+from .tester import ModelTestResult
 
 
 @dataclass
@@ -23,7 +30,7 @@ class PipelineReport:
     models_tested: int
     total_tests: int
     total_flagged: int
-    results: list[TestResult]
+    results: list[ModelTestResult]
     top_findings: list[dict[str, Any]]
 
     def to_dict(self) -> dict[str, Any]:
@@ -49,16 +56,19 @@ class Reporter:
         self,
         sources: list[Source],
         vectors: list[AttackVector],
-        results: list[TestResult],
+        results: list[ModelTestResult],
     ) -> PipelineReport:
-        """Create a pipeline report."""
+        """Create a pipeline report.
+
+        NOTE: top_findings is currently grouped by model, not by
+        technique.  This is a known limitation — see module docstring.
+        """
         total_tests = sum(r.total for r in results)
         total_flagged = sum(r.flagged for r in results)
 
-        # Find top findings (vectors that were flagged on multiple models)
+        # Find top findings — currently by model (not technique).
+        # See module docstring for the technique-level limitation.
         top_findings: list[dict[str, Any]] = []
-        # This would require parsing individual test results
-        # For now, summarize by model
         for r in sorted(results, key=lambda x: x.flagged, reverse=True):
             if r.flagged > 0:
                 top_findings.append(
@@ -132,30 +142,41 @@ class Reporter:
         return "\n".join(lines)
 
     def generate_discord_message(self, report: PipelineReport) -> str:
-        """Generate Discord notification message."""
-        emoji = "🔬"
-        if report.total_flagged > 10:
-            emoji = "[!]"
-        elif report.total_flagged == 0:
-            emoji = "[OK]"
+        """Generate Discord notification message per SPEC format.
 
+        SPEC format:
+            🔬 Auto Vector Pipeline Complete
+            📅 Date: YYYY-MM-DD
+            🆕 New vectors: X
+            🧪 Models tested: Y
+            [WARNING] Flagged: Z      ← only when flagged > 0
+            Flagged: Z                ← when flagged == 0
+            ...
+        """
         lines = [
-            f"{emoji} **Auto Vector Pipeline Complete**",
+            "🔬 Auto Vector Pipeline Complete",
             "",
-            f"Date: {report.date}",
-            f"New vectors: {report.vectors_generated}",
-            f"Models tested: {report.models_tested}",
-            f"[!] Flagged: {report.total_flagged}",
+            f"📅 Date: {report.date}",
+            f"🆕 New vectors: {report.vectors_generated}",
+            f"🧪 Models tested: {report.models_tested}",
         ]
+
+        # Conditional warning prefix per SPEC
+        if report.total_flagged > 0:
+            lines.append(f"⚠️ Flagged: {report.total_flagged}")
+        else:
+            lines.append(f"Flagged: {report.total_flagged}")
 
         if report.top_findings:
             lines.append("")
-            lines.append("**Top findings:**")
+            lines.append("Top findings:")
             for finding in report.top_findings[:3]:
-                lines.append(f"- {finding['model']}: {finding['flagged']} flagged")
+                lines.append(
+                    f"- {finding['model']}: {finding['flagged']} flagged"
+                )
 
         lines.append("")
-        lines.append(f"Full report: `psg/automation/reports/{report.date}.md`")
+        lines.append(f"Full report: reports/{report.date}.md")
 
         return "\n".join(lines)
 

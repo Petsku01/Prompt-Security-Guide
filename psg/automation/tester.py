@@ -15,7 +15,7 @@ from .config import PipelineConfig
 
 
 @dataclass
-class TestResult:
+class ModelTestResult:
     """Result from a single model test."""
 
     model: str
@@ -38,7 +38,7 @@ class TestResult:
         }
 
 
-class TestRunner:
+class PipelineTester:
     """Runner for jailbreak tests using tmux."""
 
     def __init__(self, config: PipelineConfig) -> None:
@@ -104,7 +104,7 @@ class TestRunner:
         vectors_path: Path,
         model: str,
         output_prefix: str,
-    ) -> TestResult | None:
+    ) -> ModelTestResult | None:
         """Run test for a single model."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_safe = model.replace(":", "_")
@@ -160,7 +160,7 @@ class TestRunner:
                         elif part.startswith("flagged="):
                             flagged = int(part.split("=")[1])
 
-            return TestResult(
+            return ModelTestResult(
                 model=model,
                 total=total,
                 succeeded=succeeded,
@@ -179,14 +179,14 @@ class TestRunner:
         self,
         vectors_path: Path,
         output_prefix: str = "auto",
-    ) -> list[TestResult]:
+    ) -> list[ModelTestResult]:
         """Run tests on all configured models."""
         if not self.check_ollama():
             print("ERROR: Ollama not running")
             return []
 
         available = set(self.get_available_models())
-        results: list[TestResult] = []
+        results: list[ModelTestResult] = []
 
         for model in self.config.test_models:
             if model not in available:

@@ -24,9 +24,11 @@ class PipelineConfig:
         ]
     )
     max_sources_per_query: int = 5
+    max_total_sources: int = 10
 
     # Generator settings
     max_vectors_per_run: int = 10
+    max_vectors_per_source: int = 5
     generator_model: str = "dolphin-llama3:8b"
 
     # Tester settings

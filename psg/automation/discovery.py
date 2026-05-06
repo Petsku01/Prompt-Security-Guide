@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 import subprocess
 import time
@@ -43,6 +44,7 @@ def retry(max_attempts: int = 3, delay: float = 1.0):
     """Simple retry decorator with exponential backoff."""
 
     def decorator(func):
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             last_error = None
             for attempt in range(max_attempts):
@@ -230,11 +232,11 @@ class DiscoveryEngine:
                 new_sources.append(source)
                 self.source_store.add(url)
 
-                if len(new_sources) >= 10:
+                if len(new_sources) >= self.config.max_total_sources:
                     break
 
-            if len(new_sources) >= 10:
-                logger.info("Reached max sources limit (10)")
+            if len(new_sources) >= self.config.max_total_sources:
+                logger.info(f"Reached max sources limit ({self.config.max_total_sources})")
                 break
 
         logger.info(f"Discovery complete: {len(new_sources)} new sources found")

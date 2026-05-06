@@ -3,7 +3,7 @@
 from .config import PipelineConfig, load_config
 from .discovery import DiscoveryEngine, Source
 from .generator import VectorGenerator, AttackVector
-from .tester import TestRunner, TestResult
+from .tester import PipelineTester, ModelTestResult
 from .reporter import Reporter, PipelineReport
 from .main import Pipeline
 
@@ -14,8 +14,8 @@ __all__ = [
     "Source",
     "VectorGenerator",
     "AttackVector",
-    "TestRunner",
-    "TestResult",
+    "PipelineTester",
+    "ModelTestResult",
     "Reporter",
     "PipelineReport",
     "Pipeline",

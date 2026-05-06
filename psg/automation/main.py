@@ -11,7 +11,7 @@ from typing import Callable
 from .config import PipelineConfig, load_config, validate_environment
 from .discovery import DiscoveryEngine, Source
 from .generator import VectorGenerator, AttackVector
-from .tester import TestRunner, TestResult
+from .tester import PipelineTester, ModelTestResult
 from .reporter import Reporter, PipelineReport
 from .logging_config import logger
 
@@ -28,7 +28,7 @@ class Pipeline:
         self.config = config
         self.discovery = DiscoveryEngine(config, search_func)
         self.generator = VectorGenerator(config, generate_func)
-        self.tester = TestRunner(config)
+        self.tester = PipelineTester(config)
         self.reporter = Reporter(config)
 
     def run_discovery(self) -> list[Source]:
@@ -69,7 +69,7 @@ class Pipeline:
 
     def run_testing(
         self, vectors_path: Path, use_tmux: bool = False
-    ) -> list[TestResult]:
+    ) -> list[ModelTestResult]:
         """Run testing phase."""
         logger.info("=== TESTING PHASE ===")
 
@@ -90,7 +90,7 @@ class Pipeline:
         self,
         sources: list[Source],
         vectors: list[AttackVector],
-        results: list[TestResult],
+        results: list[ModelTestResult],
     ) -> PipelineReport:
         """Run reporting phase."""
         logger.info("=== REPORTING PHASE ===")
@@ -193,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.report_only:
         sources: list[Source] = []
         vectors: list[AttackVector] = []
-        results: list[TestResult] = []
+        results: list[ModelTestResult] = []
         pipeline.run_reporting(sources, vectors, results)
         return 0
 
