@@ -6,7 +6,6 @@ import socket
 import pytest
 
 from psg.automation.validation import (
-    sanitize_filename,
     validate_query,
     validate_url,
 )
@@ -112,18 +111,3 @@ def test_validate_query_invalid_chars_raises() -> None:
     with pytest.raises(ValueError, match="invalid characters"):
         validate_query("<script>alert(1)</script>")
 
-
-# ── sanitize_filename tests (new) ────────────────────────────────────────
-
-
-def test_sanitize_filename_basic() -> None:
-    """Unsafe characters are replaced with underscores; leading dots stripped."""
-    assert sanitize_filename("../../etc/passwd") == "etc_passwd"
-    assert sanitize_filename("my good file.txt") == "my_good_file.txt"
-
-
-def test_sanitize_filename_empty_returns_unnamed() -> None:
-    """Empty or dot/underscore-only names fall back to 'unnamed'."""
-    assert sanitize_filename("") == "unnamed"
-    assert sanitize_filename("...") == "unnamed"
-    assert sanitize_filename("___") == "unnamed"

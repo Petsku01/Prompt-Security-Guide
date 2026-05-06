@@ -224,3 +224,25 @@ def test_generate_from_source_skips_empty_prompts(tmp_path: Path) -> None:
     vectors = gen.generate_from_source(_source())
     assert len(vectors) == 1
     assert vectors[0].prompt == "valid prompt"
+
+
+# ── 13. generate_from_sources respects overall max_vectors_per_run cap (B8) ─
+
+def test_generate_from_sources_respects_overall_cap(tmp_path: Path) -> None:
+    """When multiple sources produce vectors, the total must be capped
+    at max_vectors_per_run even if each source respects max_vectors_per_source."""
+    # Each source returns 4 vectors (under per-source cap of 5)
+    def multi_gen(prompt: str) -> str:
+        return json.dumps([
+            {"prompt": f"p-{prompt[:4]}-{i}", "technique": "t", "description": "d"}
+            for i in range(4)
+        ])
+
+    # Overall cap of 6 vectors across 3 sources × 4 = 12 potential
+    cfg = _make_config(tmp_path, max_vectors_per_run=6, max_vectors_per_source=5)
+    gen = VectorGenerator(cfg, generate_func=multi_gen)
+    sources = [_source(title=f"S{i}", url=f"https://example.com/s{i}")
+               for i in range(3)]
+    vectors = gen.generate_from_sources(sources)
+    # Should be capped at max_vectors_per_run
+    assert len(vectors) <= 6

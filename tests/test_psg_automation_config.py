@@ -132,3 +132,73 @@ def test_load_config_unknown_keys_raises_typerror(tmp_path: Path) -> None:
 
     with pytest.raises(TypeError):
         load_config(config_file)
+
+
+# ── validate_environment tests (I7) ──────────────────────────────────────────
+
+def test_validate_environment_happy_path(tmp_path: Path) -> None:
+    """validate_environment succeeds when scrapling_python exists and can
+    import scrapling."""
+    from unittest.mock import patch, MagicMock
+
+    scrapling_bin = tmp_path / "bin" / "python"
+    scrapling_bin.parent.mkdir(parents=True)
+    scrapling_bin.touch()
+
+    config = PipelineConfig(
+        base_dir=tmp_path,
+        project_root=tmp_path,
+        output_dir=tmp_path,
+        datasets_dir=tmp_path / "ds",
+        results_dir=tmp_path / "rs",
+        logs_dir=tmp_path / "lg",
+        known_sources_path=tmp_path / "ks.json",
+        known_vectors_path=tmp_path / "kv.json",
+        reports_dir=tmp_path / "rp",
+        scrapling_python=str(scrapling_bin),
+    )
+
+    mock_result = MagicMock()
+    mock_result.returncode = 0
+    mock_result.stderr = ""
+    mock_result.stdout = ""
+
+    with patch("psg.automation.config.subprocess.run", return_value=mock_result):
+        # Should not raise
+        from psg.automation.config import validate_environment
+        validate_environment(config)
+
+
+def test_validate_environment_raises_on_missing_scrapling(tmp_path: Path) -> None:
+    """validate_environment raises RuntimeError when scrapling_python
+    import fails (non-zero returncode)."""
+    from unittest.mock import patch, MagicMock
+
+    scrapling_bin = tmp_path / "bin" / "python"
+    scrapling_bin.parent.mkdir(parents=True)
+    scrapling_bin.touch()
+
+    config = PipelineConfig(
+        base_dir=tmp_path,
+        project_root=tmp_path,
+        output_dir=tmp_path,
+        datasets_dir=tmp_path / "ds",
+        results_dir=tmp_path / "rs",
+        logs_dir=tmp_path / "lg",
+        known_sources_path=tmp_path / "ks.json",
+        known_vectors_path=tmp_path / "kv.json",
+        reports_dir=tmp_path / "rp",
+        scrapling_python=str(scrapling_bin),
+    )
+
+    mock_result = MagicMock()
+    mock_result.returncode = 1
+    mock_result.stderr = "ModuleNotFoundError: No module named 'scrapling'"
+    mock_result.stdout = ""
+
+    with patch("psg.automation.config.subprocess.run", return_value=mock_result):
+        from psg.automation.config import validate_environment
+        with pytest.raises(RuntimeError, match="Scrapling import failed"):
+            validate_environment(config)
+
+

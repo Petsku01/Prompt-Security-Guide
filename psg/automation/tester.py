@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import PipelineConfig
+from .logging_config import logger
 
 
 @dataclass
@@ -25,6 +26,11 @@ class ModelTestResult:
     flagged: int
     duration_seconds: float
     output_path: Path
+    techniques: dict[str, int] | None = None
+
+    def __post_init__(self) -> None:
+        if self.techniques is None:
+            self.techniques = {}
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -35,6 +41,7 @@ class ModelTestResult:
             "flagged": self.flagged,
             "duration_seconds": self.duration_seconds,
             "output_path": str(self.output_path),
+            "techniques": self.techniques or {},
         }
 
 
@@ -47,8 +54,6 @@ class PipelineTester:
 
     def check_ollama(self) -> bool:
         """Check if Ollama is running."""
-        import subprocess
-
         try:
             result = subprocess.run(
                 [
@@ -66,15 +71,11 @@ class PipelineTester:
             )
             return result.stdout.strip() == "200"
         except Exception as exc:
-            from .logging_config import logger
-
             logger.debug("Ollama health check failed: %s", exc)
             return False
 
     def get_available_models(self) -> list[str]:
         """Get list of models available in Ollama."""
-        import subprocess
-
         try:
             result = subprocess.run(
                 ["curl", "-s", f"{self.config.ollama_base_url}/api/tags"],
@@ -106,7 +107,7 @@ class PipelineTester:
         output_prefix: str,
     ) -> ModelTestResult | None:
         """Run test for a single model."""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d")
         model_safe = model.replace(":", "_")
 
         output_base = (
@@ -139,7 +140,7 @@ class PipelineTester:
                 cwd=self.config.project_root,
                 capture_output=True,
                 text=True,
-                timeout=self.config.test_timeout * 100,  # Allow for many tests
+                timeout=self.config.test_timeout * 3,  # 3x multiplier (was 100x)
             )
             duration = time.time() - start_time
 
@@ -160,6 +161,13 @@ class PipelineTester:
                         elif part.startswith("flagged="):
                             flagged = int(part.split("=")[1])
 
+            if total == 0:
+                logger.warning(
+                    "Test for %s returned total=0 — possibly silent failure; skipping",
+                    model,
+                )
+                return None
+
             return ModelTestResult(
                 model=model,
                 total=total,
@@ -172,7 +180,7 @@ class PipelineTester:
         except subprocess.TimeoutExpired:
             return None
         except Exception as e:
-            print(f"Error testing {model}: {e}")
+            logger.error("Error testing %s: %s", model, e)
             return None
 
     def run_all_tests(
@@ -182,7 +190,7 @@ class PipelineTester:
     ) -> list[ModelTestResult]:
         """Run tests on all configured models."""
         if not self.check_ollama():
-            print("ERROR: Ollama not running")
+            logger.error("Ollama not running")
             return []
 
         available = set(self.get_available_models())
@@ -190,14 +198,16 @@ class PipelineTester:
 
         for model in self.config.test_models:
             if model not in available:
-                print(f"SKIP: {model} not available")
+                logger.warning("SKIP: %s not available", model)
                 continue
 
-            print(f"Testing: {model}")
+            logger.info("Testing: %s", model)
             result = self.run_test(vectors_path, model, output_prefix)
-            if result:
-                results.append(result)
-                print(f"  Done: {result.flagged}/{result.total} flagged")
+            if result is None:
+                logger.warning("SKIP: %s — run_test returned None (possible silent failure)", model)
+                continue
+            results.append(result)
+            logger.info("  Done: %s/%s flagged", result.flagged, result.total)
 
         return results
 
@@ -249,7 +259,7 @@ if __name__ == "__main__":
     from .config import load_config
 
     config = load_config()
-    runner = TestRunner(config)
+    runner = PipelineTester(config)
 
     if runner.check_ollama():
         print(f"Ollama running. Available models: {runner.get_available_models()}")

@@ -53,7 +53,13 @@ class DeduplicationStore:
         return True
 
     def add_many(self, texts: list[str]) -> int:
-        """Add multiple texts. Returns count of new items."""
+        """Add multiple texts. Returns count of new items.
+
+        Flushes any pending writes first, then batch-adds, then flushes
+        the batch — ensuring no data loss if add_many is called while
+        there are already pending individual writes.
+        """
+        self.flush()  # persist any prior pending writes first
         new_count = 0
         for text in texts:
             h = hash_text(text)
@@ -62,7 +68,7 @@ class DeduplicationStore:
                 new_count += 1
         if new_count > 0:
             self._pending_writes += new_count
-            self.flush()
+            self.flush()  # persist the batch immediately
         return new_count
 
     def flush(self) -> None:

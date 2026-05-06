@@ -43,29 +43,41 @@ class Pipeline:
                 / f"sources_{datetime.now().strftime('%Y%m%d')}.json"
             )
             self.discovery.save_sources(sources, output_path)
+        else:
+            # Fallback: try loading cached sources from previous runs
+            cached = self.discovery.load_cached_sources()
+            if cached:
+                logger.warning(
+                    f"Discovery returned no new sources — using {len(cached)} cached sources"
+                )
+                sources = cached
 
         return sources
 
-    def run_generation(self, sources: list[Source]) -> list[AttackVector]:
-        """Run generation phase."""
+    def run_generation(
+        self, sources: list[Source]
+    ) -> tuple[list[AttackVector], Path | None]:
+        """Run generation phase. Returns (vectors, saved_path)."""
         logger.info("=== GENERATION PHASE ===")
 
         if not sources:
             logger.info("No sources to generate from")
-            return []
+            return [], None
 
         vectors = self.generator.generate_from_sources(sources)
         logger.info(f"Generated {len(vectors)} new vectors")
 
+        saved_path = None
         if vectors:
             output_path = (
                 self.config.datasets_dir
-                / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
+                / f"new_vectors_{datetime.now().strftime('%Y%m%d')}.json"
             )
             self.generator.save_vectors(vectors, output_path)
             logger.info(f"Saved vectors to {output_path}")
+            saved_path = output_path
 
-        return vectors
+        return vectors, saved_path
 
     def run_testing(
         self, vectors_path: Path, use_tmux: bool = False
@@ -99,9 +111,9 @@ class Pipeline:
         report_path = self.reporter.save_report(report)
         logger.info(f"Report saved to {report_path}")
 
-        # Generate Discord message
-        discord_msg = self.reporter.generate_discord_message(report)
-        logger.debug(f"Discord message:\n{discord_msg}")
+        # Log summary message
+        summary = self.reporter.generate_summary_message(report)
+        logger.info(f"Pipeline summary:\n{summary}")
 
         return report
 
@@ -110,8 +122,22 @@ class Pipeline:
         use_tmux: bool = False,
         skip_discovery: bool = False,
         skip_generation: bool = False,
-    ) -> PipelineReport | None:
+    ) -> PipelineReport | dict | None:
         """Run full pipeline."""
+        try:
+            return self._run_full_impl(use_tmux, skip_discovery, skip_generation)
+        except Exception as e:
+            logger.error("Pipeline failure: %s", e)
+            logger.error("Sending failure notification — check logs for details")
+            raise
+
+    def _run_full_impl(
+        self,
+        use_tmux: bool = False,
+        skip_discovery: bool = False,
+        skip_generation: bool = False,
+    ) -> PipelineReport | dict | None:
+        """Internal implementation of run_full."""
         logger.info(f"Starting Auto Vector Pipeline at {datetime.now().isoformat()}")
         logger.info(
             f"Config: {self.config.max_vectors_per_run} max vectors, {len(self.config.test_models)} models"
@@ -129,23 +155,24 @@ class Pipeline:
         if skip_generation:
             logger.info("Skipping generation phase (--skip-generation)")
         else:
-            vectors = self.run_generation(sources)
+            vectors, vectors_path = self.run_generation(sources)
 
         if not vectors:
             logger.info("No new vectors generated - pipeline complete")
             return None
 
         # Phase 3: Testing
-        vectors_path = (
-            self.config.datasets_dir / f"auto_{datetime.now().strftime('%Y%m%d')}.json"
-        )
+        # Use actual saved path from generation (avoids midnight date rollover mismatch)
+        if not vectors_path:
+            logger.warning("No vectors path returned from generation")
+            return None
         results = self.run_testing(vectors_path, use_tmux=use_tmux)
 
         if use_tmux:
             logger.info(
                 "Testing running in background - run reporting manually when complete"
             )
-            return None
+            return {"tmux_session": self.tester.session_name, "status": "running"}
 
         # Phase 4: Reporting
         report = self.run_reporting(sources, vectors, results)

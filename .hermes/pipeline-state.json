@@ -1,0 +1,11 @@
+{
+  "pipeline_id": "psg-automation-pipeline-run3-20260506",
+  "task": "PSG Auto Vector Pipeline korjausajo: repo läpi pipeline, korjaa ongelmat",
+  "start_time": "2026-05-06T14:30:00",
+  "current_phase": 1,
+  "status": "running",
+  "previous_runs": [
+    "psg-auto-vector-pipeline-20260506 (88% SPEC → 92% SPEC)",
+    "psg-automation-reverify-20260506 (92% → 92% + security fixes, Discord removed)"
+  ]
+}

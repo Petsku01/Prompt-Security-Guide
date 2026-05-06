@@ -58,14 +58,15 @@ def test_run_generation_returns_vectors_and_saves_path(tmp_path: Path) -> None:
     pipeline.generator.save_vectors = MagicMock()
 
     sources = [MagicMock()]
-    vectors = pipeline.run_generation(sources)
+    vectors, saved_path = pipeline.run_generation(sources)
 
     assert vectors == [fake_vector]
     pipeline.generator.generate_from_sources.assert_called_once_with(sources)
     pipeline.generator.save_vectors.assert_called_once()
     # The save path should be inside datasets_dir
-    saved_path: Path = pipeline.generator.save_vectors.call_args[0][1]
-    assert str(saved_path).startswith(str(config.datasets_dir))
+    saved_vectors_path: Path = pipeline.generator.save_vectors.call_args[0][1]
+    assert str(saved_vectors_path).startswith(str(config.datasets_dir))
+    assert saved_path == saved_vectors_path
 
 
 # ── test 2: run_generation with no sources returns empty list ────────────
@@ -79,7 +80,7 @@ def test_run_generation_no_sources(tmp_path: Path) -> None:
 
     result = pipeline.run_generation([])
 
-    assert result == []
+    assert result == ([], None)
     pipeline.generator.generate_from_sources.assert_not_called()
 
 
@@ -95,7 +96,9 @@ def test_run_full_uses_actual_vectors_path_not_datetime_now(tmp_path: Path) -> N
 
     # Patch the phase methods so we can inspect what vectors_path is used
     pipeline.run_discovery = MagicMock(return_value=[MagicMock()])
-    pipeline.run_generation = MagicMock(return_value=[MagicMock()])
+    fake_vector = MagicMock()
+    fake_path = config.datasets_dir / "new_vectors_20260101.json"
+    pipeline.run_generation = MagicMock(return_value=([fake_vector], fake_path))
     pipeline.run_testing = MagicMock(return_value=[_make_result()])
     pipeline.run_reporting = MagicMock(
         return_value=PipelineReport(
@@ -152,11 +155,11 @@ def test_failure_notification_logged(tmp_path: Path) -> None:
     pipeline.run_discovery = MagicMock(side_effect=RuntimeError("boom"))
 
     with patch("psg.automation.main.logger") as mock_logger:
-        # run_full should catch and propagate (caller handles)
+        # run_full catches, logs error, then re-raises
         with pytest.raises(RuntimeError, match="boom"):
             pipeline.run_full()
 
-        mock_logger.error.assert_not_called()  # RuntimeError propagates, not caught in run_full
+        mock_logger.error.assert_called()  # RuntimeError is caught and logged, then re-raised
 
 
 # ── test 6: run_full returns None when no vectors generated ──────────────
@@ -168,29 +171,34 @@ def test_run_full_returns_none_when_no_vectors(tmp_path: Path) -> None:
     config = _make_config(tmp_path)
     pipeline = Pipeline(config)
     pipeline.run_discovery = MagicMock(return_value=[])
-    pipeline.run_generation = MagicMock(return_value=[])
+    pipeline.run_generation = MagicMock(return_value=([], None))
 
     result = pipeline.run_full()
 
     assert result is None
 
 
-# ── test 7: run_full with tmux returns None (background) ─────────────────
+# ── test 7: run_full with tmux returns dict (background) ─────────────────
 
-def test_run_full_tmux_returns_none(tmp_path: Path) -> None:
-    """When use_tmux=True, run_full returns None because tests run in
-    background; reporting must be done manually later."""
+def test_run_full_tmux_returns_dict(tmp_path: Path) -> None:
+    """When use_tmux=True, run_full returns a dict with tmux session info
+    because tests run in background; reporting must be done manually later."""
 
     config = _make_config(tmp_path)
     pipeline = Pipeline(config)
 
+    fake_vector = MagicMock()
+    fake_path = config.datasets_dir / "new_vectors_20260101.json"
     pipeline.run_discovery = MagicMock(return_value=[MagicMock()])
-    pipeline.run_generation = MagicMock(return_value=[MagicMock()])
+    pipeline.run_generation = MagicMock(return_value=([fake_vector], fake_path))
     pipeline.run_testing = MagicMock(return_value=[])  # tmux path returns []
+    pipeline.tester.session_name = "auto_test"
 
     result = pipeline.run_full(use_tmux=True)
 
-    assert result is None
+    assert isinstance(result, dict)
+    assert result["status"] == "running"
+    assert result["tmux_session"] == "auto_test"
 
 
 # ── test 8: run_discovery saves sources when found ────────────────────────
@@ -235,5 +243,43 @@ def test_cli_main_exits_zero_on_success(tmp_path: Path) -> None:
             )
 
             ret = main(["--skip-discovery", "--skip-generation"])
-
     assert ret == 0
+
+
+# ── test 10: run_discovery falls back to cached sources ──────────────────
+
+def test_run_discovery_falls_back_to_cached_sources(tmp_path: Path) -> None:
+    """When discover() returns an empty list, run_discovery should try
+    load_cached_sources() and use whatever it returns."""
+    config = _make_config(tmp_path)
+    pipeline = Pipeline(config)
+
+    # discover returns nothing
+    pipeline.discovery.discover = MagicMock(return_value=[])
+    pipeline.discovery.save_sources = MagicMock()
+    # But load_cached_sources has something
+    cached_source = MagicMock()
+    pipeline.discovery.load_cached_sources = MagicMock(return_value=[cached_source])
+
+    with patch("psg.automation.main.logger") as mock_logger:
+        sources = pipeline.run_discovery()
+
+    assert len(sources) == 1
+    # Must have called load_cached_sources as fallback
+    pipeline.discovery.load_cached_sources.assert_called_once()
+    # Must have logged a warning about the fallback
+    assert any("cached" in str(call) for call in mock_logger.warning.call_args_list)
+
+
+def test_run_discovery_no_cache_stays_empty(tmp_path: Path) -> None:
+    """When discover() returns empty and load_cached_sources also returns
+    empty, run_discovery returns an empty list."""
+    config = _make_config(tmp_path)
+    pipeline = Pipeline(config)
+
+    pipeline.discovery.discover = MagicMock(return_value=[])
+    pipeline.discovery.save_sources = MagicMock()
+    pipeline.discovery.load_cached_sources = MagicMock(return_value=[])
+
+    sources = pipeline.run_discovery()
+    assert sources == []

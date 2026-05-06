@@ -1,10 +1,10 @@
 """Reporting module for pipeline results.
 
-Limitation: top_findings aggregates results by model, not by technique,
-because individual test results do not currently carry technique-level
-metadata.  A future refactor should thread the technique name from
-AttackVector through to ModelTestResult so findings can be grouped by
-technique across models (as the SPEC envisions).
+Supports both model-level and technique-level findings:
+- When ModelTestResult.techniques dict is populated, findings are grouped by
+  technique across models (format: ``- [technique] flagged on models (N)``).
+- When techniques dicts are empty (backward compat), findings fall back to
+  model-level grouping.
 """
 
 from __future__ import annotations
@@ -32,6 +32,11 @@ class PipelineReport:
     total_flagged: int
     results: list[ModelTestResult]
     top_findings: list[dict[str, Any]]
+    top_technique_findings: list[dict[str, Any]] | None = None
+
+    def __post_init__(self) -> None:
+        if self.top_technique_findings is None:
+            self.top_technique_findings = []
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -43,6 +48,7 @@ class PipelineReport:
             "total_flagged": self.total_flagged,
             "results": [r.to_dict() for r in self.results],
             "top_findings": self.top_findings,
+            "top_technique_findings": self.top_technique_findings or [],
         }
 
 
@@ -60,14 +66,15 @@ class Reporter:
     ) -> PipelineReport:
         """Create a pipeline report.
 
-        NOTE: top_findings is currently grouped by model, not by
-        technique.  This is a known limitation — see module docstring.
+        When results carry technique-level data (non-empty techniques
+        dicts), top_technique_findings is populated and used for
+        summary / markdown formatting.  Otherwise the report falls back
+        to model-level grouping.
         """
         total_tests = sum(r.total for r in results)
         total_flagged = sum(r.flagged for r in results)
 
-        # Find top findings — currently by model (not technique).
-        # See module docstring for the technique-level limitation.
+        # Find top findings — by model (always computed).
         top_findings: list[dict[str, Any]] = []
         for r in sorted(results, key=lambda x: x.flagged, reverse=True):
             if r.flagged > 0:
@@ -81,6 +88,9 @@ class Reporter:
                     }
                 )
 
+        # Technique-level findings — only when technique data exists.
+        top_technique_findings = self.format_top_findings_by_technique(results)
+
         return PipelineReport(
             date=datetime.now().strftime("%Y-%m-%d"),
             sources_found=len(sources),
@@ -90,7 +100,45 @@ class Reporter:
             total_flagged=total_flagged,
             results=results,
             top_findings=top_findings[:5],
+            top_technique_findings=top_technique_findings,
         )
+
+    def format_top_findings_by_technique(
+        self,
+        results: list[ModelTestResult],
+    ) -> list[dict[str, Any]]:
+        """Group flagged vectors by technique across all models.
+
+        Returns a list of dicts sorted by total flagged desc:
+        [{"technique": str, "models": list[str], "total": int}, ...]
+
+        Returns empty list when no technique data is available.
+        """
+        # Aggregate: technique -> {models: set, total: int}
+        technique_map: dict[str, dict[str, Any]] = {}
+
+        for r in results:
+            if not r.techniques:
+                continue
+            for technique, count in r.techniques.items():
+                if count <= 0:
+                    continue
+                if technique not in technique_map:
+                    technique_map[technique] = {"models": set(), "total": 0}
+                technique_map[technique]["models"].add(r.model)
+                technique_map[technique]["total"] += count
+
+        # Sort by total desc
+        findings = [
+            {
+                "technique": technique,
+                "models": sorted(data["models"]),
+                "total": data["total"],
+            }
+            for technique, data in technique_map.items()
+        ]
+        findings.sort(key=lambda x: x["total"], reverse=True)
+        return findings
 
     def generate_markdown(self, report: PipelineReport) -> str:
         """Generate markdown report."""
@@ -131,6 +179,21 @@ class Reporter:
         else:
             lines.append("No significant findings.")
 
+        # Technique-level section — only when technique data exists
+        if report.top_technique_findings:
+            lines.extend(
+                [
+                    "",
+                    "## Top Findings by Technique",
+                    "",
+                ]
+            )
+            for tf in report.top_technique_findings:
+                models_str = ", ".join(tf["models"])
+                lines.append(
+                    f"- [{tf['technique']}] flagged on {models_str} ({tf['total']})"
+                )
+
         lines.extend(
             [
                 "",
@@ -141,15 +204,15 @@ class Reporter:
 
         return "\n".join(lines)
 
-    def generate_discord_message(self, report: PipelineReport) -> str:
-        """Generate Discord notification message per SPEC format.
+    def generate_summary_message(self, report: PipelineReport) -> str:
+        """Generate a summary notification message per pipeline format.
 
-        SPEC format:
+        Format:
             🔬 Auto Vector Pipeline Complete
             📅 Date: YYYY-MM-DD
             🆕 New vectors: X
             🧪 Models tested: Y
-            [WARNING] Flagged: Z      ← only when flagged > 0
+            ⚠️ Flagged: Z      ← only when flagged > 0
             Flagged: Z                ← when flagged == 0
             ...
         """
@@ -169,11 +232,20 @@ class Reporter:
 
         if report.top_findings:
             lines.append("")
-            lines.append("Top findings:")
-            for finding in report.top_findings[:3]:
-                lines.append(
-                    f"- {finding['model']}: {finding['flagged']} flagged"
-                )
+            # Use technique-level format when technique data is available
+            if report.top_technique_findings:
+                lines.append("⚠️ Top techniques:")
+                for tf in report.top_technique_findings[:3]:
+                    models_str = ", ".join(tf["models"])
+                    lines.append(
+                        f"- [{tf['technique']}] flagged on {models_str} ({tf['total']})"
+                    )
+            else:
+                lines.append("Top findings:")
+                for finding in report.top_findings[:3]:
+                    lines.append(
+                        f"- {finding['model']}: {finding['flagged']} flagged"
+                    )
 
         lines.append("")
         lines.append(f"Full report: reports/{report.date}.md")

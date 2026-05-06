@@ -35,6 +35,7 @@ def _make_result(
     model: str = "llama3:8b",
     total: int = 10,
     flagged: int = 2,
+    techniques: dict[str, int] | None = None,
 ) -> ModelTestResult:
     return ModelTestResult(
         model=model,
@@ -44,6 +45,7 @@ def _make_result(
         flagged=flagged,
         duration_seconds=1.0,
         output_path=Path("/tmp/fake.txt"),
+        techniques=techniques if techniques is not None else {},
     )
 
 
@@ -164,10 +166,10 @@ def test_rate_calculation(tmp_path: Path) -> None:
     # r3 has 0 flagged so won't appear in top_findings at all
 
 
-# ── test 5: Discord SPEC format — warning prefix when flagged > 0 ───────
+# ── test 5: summary_message SPEC format — warning prefix when flagged > 0 ───────
 
-def test_discord_spec_format_flagged_warning(tmp_path: Path) -> None:
-    """When total_flagged > 0, the Discord message must include the ⚠️
+def test_summary_message_spec_format_flagged_warning(tmp_path: Path) -> None:
+    """When total_flagged > 0, the summary message must include the ⚠️
     warning prefix per the SPEC."""
     config = _make_config(tmp_path)
     reporter = Reporter(config)
@@ -183,7 +185,7 @@ def test_discord_spec_format_flagged_warning(tmp_path: Path) -> None:
         top_findings=[{"model": "llama3:8b", "flagged": 5, "rate": "50.0%"}],
     )
 
-    msg = reporter.generate_discord_message(report)
+    msg = reporter.generate_summary_message(report)
 
     assert "⚠️ Flagged: 5" in msg
     assert msg.startswith("🔬 Auto Vector Pipeline Complete")
@@ -192,10 +194,10 @@ def test_discord_spec_format_flagged_warning(tmp_path: Path) -> None:
     assert "🧪 Models tested: 1" in msg
 
 
-# ── test 6: Discord SPEC format — no warning when flagged == 0 ───────────
+# ── test 6: summary_message SPEC format — no warning when flagged == 0 ───────────
 
-def test_discord_spec_format_no_warning_when_zero(tmp_path: Path) -> None:
-    """When total_flagged == 0, the Discord message uses plain 'Flagged: 0'
+def test_summary_message_spec_format_no_warning_when_zero(tmp_path: Path) -> None:
+    """When total_flagged == 0, the summary message uses plain 'Flagged: 0'
     (no ⚠️ emoji) per the SPEC."""
     config = _make_config(tmp_path)
     reporter = Reporter(config)
@@ -211,16 +213,16 @@ def test_discord_spec_format_no_warning_when_zero(tmp_path: Path) -> None:
         top_findings=[],
     )
 
-    msg = reporter.generate_discord_message(report)
+    msg = reporter.generate_summary_message(report)
 
     assert "Flagged: 0" in msg
     assert "⚠️" not in msg
 
 
-# ── test 7: Discord top findings limited to 3 ────────────────────────────
+# ── test 7: summary_message top findings limited to 3 ────────────────────────────
 
-def test_discord_top_findings_limited_to_three(tmp_path: Path) -> None:
-    """Even if there are 5 top_findings, Discord message shows at most 3."""
+def test_summary_message_top_findings_limited_to_three(tmp_path: Path) -> None:
+    """Even if there are 5 top_findings, summary_message shows at most 3."""
     config = _make_config(tmp_path)
     reporter = Reporter(config)
 
@@ -239,7 +241,7 @@ def test_discord_top_findings_limited_to_three(tmp_path: Path) -> None:
         top_findings=top,
     )
 
-    msg = reporter.generate_discord_message(report)
+    msg = reporter.generate_summary_message(report)
 
     # Only m0, m1, m2 appear in the top findings sublist
     assert "- m0: 5 flagged" in msg
@@ -304,3 +306,242 @@ def test_top_findings_excludes_zero_flagged(tmp_path: Path) -> None:
 
     assert len(report.top_findings) == 1
     assert report.top_findings[0]["model"] == "good"
+
+
+
+# ── test 14: ModelTestResult.techniques field ──────────────────────────────
+
+def test_model_test_result_techniques_default_empty() -> None:
+    """ModelTestResult must accept an optional techniques dict,
+    defaulting to empty for backward compatibility."""
+    r = ModelTestResult(
+        model="test-model",
+        total=5,
+        succeeded=3,
+        failed=1,
+        flagged=1,
+        duration_seconds=2.5,
+        output_path=Path("/tmp/out.txt"),
+    )
+    assert r.techniques == {}
+
+
+def test_model_test_result_techniques_in_to_dict() -> None:
+    """to_dict() must include techniques field."""
+    r = ModelTestResult(
+        model="test-model",
+        total=5,
+        succeeded=3,
+        failed=1,
+        flagged=1,
+        duration_seconds=2.5,
+        output_path=Path("/tmp/out.txt"),
+        techniques={"jailbreak": 3, "injection": 1},
+    )
+    d = r.to_dict()
+    assert d["techniques"] == {"jailbreak": 3, "injection": 1}
+
+
+# ── test 15: format_top_findings_by_technique ───────────────────────────────
+
+def test_format_top_findings_by_technique_groups_techniques(tmp_path: Path) -> None:
+    """format_top_findings_by_technique must group flagged vectors by
+    technique and list which models flagged each one."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=4, techniques={"jailbreak": 3, "injection": 1}),
+        _make_result("mistral:7b", total=10, flagged=2, techniques={"jailbreak": 2}),
+    ]
+
+    findings = reporter.format_top_findings_by_technique(results)
+
+    # jailbreak flagged on both models, total count 5
+    assert findings[0]["technique"] == "jailbreak"
+    assert "llama3:8b" in findings[0]["models"]
+    assert "mistral:7b" in findings[0]["models"]
+    assert findings[0]["total"] == 5
+    # injection flagged only on llama3:8b
+    assert findings[1]["technique"] == "injection"
+    assert findings[1]["models"] == ["llama3:8b"]
+    assert findings[1]["total"] == 1
+
+
+def test_format_top_findings_by_technique_sorted_by_total_desc(tmp_path: Path) -> None:
+    """Technique findings must be sorted by total flagged count descending."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("model-a", total=10, flagged=5, techniques={"injection": 1, "jailbreak": 4}),
+    ]
+
+    findings = reporter.format_top_findings_by_technique(results)
+    assert findings[0]["technique"] == "jailbreak"
+    assert findings[1]["technique"] == "injection"
+
+
+def test_format_top_findings_by_technique_empty_results(tmp_path: Path) -> None:
+    """With no results, format_top_findings_by_technique returns empty list."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    findings = reporter.format_top_findings_by_technique([])
+    assert findings == []
+
+
+def test_format_top_findings_by_technique_no_technique_data(tmp_path: Path) -> None:
+    """When results have empty techniques dicts, the output should be empty."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [_make_result("model-a", total=10, flagged=3, techniques={})]
+    findings = reporter.format_top_findings_by_technique(results)
+    assert findings == []
+
+
+# ── test 16: summary_message uses technique-level format when available ────
+
+def test_summary_message_technique_format_when_available(tmp_path: Path) -> None:
+    """When results have technique data, summary_message must show
+    technique-level findings in the SPEC format:
+    ⚠️ Top techniques:
+    - [jailbreak] flagged on llama3:8b, mistral:7b (3)
+    """
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=4, techniques={"jailbreak": 3, "injection": 1}),
+        _make_result("mistral:7b", total=10, flagged=2, techniques={"jailbreak": 2}),
+    ]
+    report = reporter.create_report([], [], results)
+
+    msg = reporter.generate_summary_message(report)
+
+    assert "Top techniques:" in msg
+    assert "[jailbreak] flagged on" in msg
+    assert "llama3:8b" in msg
+    assert "mistral:7b" in msg
+    # Count in parentheses
+    assert "(5)" in msg  # jailbreak total across models
+
+
+def test_summary_message_falls_back_to_model_format_no_techniques(tmp_path: Path) -> None:
+    """When no technique data is available, summary_message should fall back
+    to model-level formatting (the current behavior)."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=3, techniques={}),
+        _make_result("mistral:7b", total=10, flagged=1, techniques={}),
+    ]
+    report = reporter.create_report([], [], results)
+
+    msg = reporter.generate_summary_message(report)
+
+    # Should NOT have technique format section
+    assert "Top techniques:" not in msg
+    # Should have model-level format (existing behavior)
+    assert "Top findings:" in msg
+
+
+# ── test 17: Markdown report includes technique-level section ──────────────
+
+def test_markdown_includes_technique_section_when_available(tmp_path: Path) -> None:
+    """When results have technique data, markdown report must include a
+    'Top Findings by Technique' section."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=4, techniques={"jailbreak": 3, "injection": 1}),
+        _make_result("mistral:7b", total=10, flagged=2, techniques={"jailbreak": 2}),
+    ]
+    report = reporter.create_report([], [], results)
+
+    md = reporter.generate_markdown(report)
+
+    assert "Top Findings by Technique" in md
+    assert "[jailbreak]" in md
+    assert "llama3:8b" in md
+    assert "mistral:7b" in md
+
+
+def test_markdown_no_technique_section_when_no_data(tmp_path: Path) -> None:
+    """When no technique data exists, markdown should not include a technique
+    section."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=3, techniques={}),
+    ]
+    report = reporter.create_report([], [], results)
+
+    md = reporter.generate_markdown(report)
+
+    assert "Top Findings by Technique" not in md
+
+
+# ── test 18: PipelineReport.top_technique_findings ──────────────────────────
+
+def test_pipeline_report_includes_top_technique_findings(tmp_path: Path) -> None:
+    """PipelineReport must include top_technique_findings field."""
+    report = PipelineReport(
+        date="2026-01-01",
+        sources_found=1,
+        vectors_generated=2,
+        models_tested=1,
+        total_tests=10,
+        total_flagged=3,
+        results=[],
+        top_findings=[],
+        top_technique_findings=[{"technique": "jailbreak", "models": ["llama3:8b"], "total": 3}],
+    )
+
+    d = report.to_dict()
+    assert "top_technique_findings" in d
+    assert d["top_technique_findings"][0]["technique"] == "jailbreak"
+
+
+def test_create_report_populates_technique_findings(tmp_path: Path) -> None:
+    """create_report must populate top_technique_findings when technique data
+    is available."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    results = [
+        _make_result("llama3:8b", total=10, flagged=4, techniques={"jailbreak": 3, "injection": 1}),
+    ]
+    report = reporter.create_report([], [], results)
+
+    assert len(report.top_technique_findings) == 2
+    assert report.top_technique_findings[0]["technique"] == "jailbreak"
+    assert report.top_technique_findings[0]["total"] == 3
+
+
+# ── test 19: summary_message path matches saved report filename (B7) ─────
+
+def test_summary_message_path_matches_saved_report(tmp_path: Path) -> None:
+    """The 'Full report' path in summary_message must use the same date format
+    (YYYY-MM-DD.md) as the file saved by save_report(), not YYYYMMDD.md."""
+    config = _make_config(tmp_path)
+    reporter = Reporter(config)
+
+    report = PipelineReport(
+        date="2026-01-15",
+        sources_found=1,
+        vectors_generated=2,
+        models_tested=1,
+        total_tests=10,
+        total_flagged=0,
+        results=[],
+        top_findings=[],
+    )
+
+    msg = reporter.generate_summary_message(report)
+    assert "reports/2026-01-15.md" in msg
+    assert "reports/20260115.md" not in msg

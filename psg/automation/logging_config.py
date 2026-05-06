@@ -1,4 +1,4 @@
-"""Logging configuration for auto_pipeline."""
+"""Logging configuration for psg.automation."""
 
 import logging
 import sys
@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def setup_logging(
-    log_dir: Path | None = None, name: str = "auto_pipeline"
+    log_dir: Path | None = None, name: str = "psg.automation"
 ) -> logging.Logger:
     """Setup logging with console and optional file output."""
     logger = logging.getLogger(name)

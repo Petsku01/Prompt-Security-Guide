@@ -1,30 +1,213 @@
 #!/usr/bin/env python3
-"""Check if daily discovery has been run."""
+"""Check if daily discovery has been run and manage cron scheduling."""
 
+import re
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 
-MARKER_FILE = Path(__file__).parent / ".last_discovery"
+_DEFAULT_MARKER_FILE = Path(__file__).parent / ".last_discovery"
+
+# Marker string embedded in crontab entries so we can identify our jobs
+CRON_MARKER = "psg_daily_pipeline"
+
+# Shell metacharacters that must never appear in a cron schedule
+_SHELL_META_RE = re.compile(r'[;&|`$(){}!<>"\\]')
 
 
-def check() -> str:
+def validate_cron_schedule(schedule: str) -> str:
+    """Validate a cron schedule string.
+
+    The schedule must consist of exactly 5 space-separated fields
+    (minute, hour, day-of-month, month, day-of-week), each matching
+    typical cron patterns (numbers, ``*``, ranges, steps).  Any string
+    containing shell metacharacters is rejected.
+
+    Returns the validated schedule string.
+
+    Raises:
+        ValueError: If the schedule is invalid or contains dangerous characters.
+    """
+    if not schedule or not schedule.strip():
+        raise ValueError("Cron schedule must not be empty")
+
+    # Reject shell metacharacters outright
+    if _SHELL_META_RE.search(schedule):
+        raise ValueError(
+            f"Cron schedule contains shell metacharacters: {schedule!r}"
+        )
+
+    fields = schedule.split()
+    if len(fields) != 5:
+        raise ValueError(
+            f"Cron schedule must have exactly 5 fields, got {len(fields)}: {schedule!r}"
+        )
+
+    # Each field may contain: digits, *, ranges (1-5), steps (*/5, 1-5/2), and commas
+    _field_re = re.compile(r"^[0-9,\-\*/]+$")
+    for i, field in enumerate(fields):
+        if not _field_re.match(field):
+            raise ValueError(
+                f"Cron field {i + 1} is invalid: {field!r} (in schedule {schedule!r})"
+            )
+
+    return schedule
+
+
+def install_cron(schedule: str = "0 3 * * *") -> bool:
+    """Install a cron entry for the daily pipeline.
+
+    Appends a line to the current user's crontab.  The line is tagged with
+    ``CRON_MARKER`` so that :func:`is_cron_installed` can find it later.
+
+    Returns True on success, False on failure.
+
+    Raises:
+        ValueError: If *schedule* fails cron-format validation.
+    """
+    validate_cron_schedule(schedule)
+
+    # Retrieve existing crontab (may be empty)
+    try:
+        result = subprocess.run(
+            ["crontab", "-l"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        existing = result.stdout if result.returncode == 0 else ""
+    except (subprocess.SubprocessError, OSError):
+        existing = ""
+
+    # Remove any previous marker-tagged line to avoid duplicates
+    lines = [
+        ln for ln in existing.splitlines()
+        if CRON_MARKER not in ln
+    ]
+
+    # Add the new schedule line
+    cron_line = f"{schedule} cd \"$HOME\" && python3 -m psg.automation.main # {CRON_MARKER}"
+    lines.append(cron_line)
+
+    new_crontab = "\n".join(lines) + "\n"
+
+    try:
+        result = subprocess.run(
+            ["crontab", "-"],
+            input=new_crontab,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        return result.returncode == 0
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+
+def remove_cron() -> bool:
+    """Remove the psg cron entry from the current user's crontab.
+
+    Returns True on success, False on failure.
+    """
+    try:
+        result = subprocess.run(
+            ["crontab", "-l"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode != 0:
+            return False
+        existing = result.stdout
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+    lines = [
+        ln for ln in existing.splitlines()
+        if CRON_MARKER not in ln
+    ]
+
+    if not lines:
+        # Nothing left — remove the crontab entirely
+        try:
+            result = subprocess.run(
+                ["crontab", "-r"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.returncode == 0
+        except (subprocess.SubprocessError, OSError):
+            return False
+
+    new_crontab = "\n".join(lines) + "\n"
+
+    try:
+        result = subprocess.run(
+            ["crontab", "-"],
+            input=new_crontab,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        return result.returncode == 0
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+
+def is_cron_installed() -> bool:
+    """Check whether the psg cron entry is present in the current user's crontab.
+
+    Returns True if the marker is found, False otherwise.
+    """
+    try:
+        result = subprocess.run(
+            ["crontab", "-l"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode != 0:
+            return False
+        return CRON_MARKER in result.stdout
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+
+def _marker_file(config_dir: Path | None = None) -> Path:
+    """Return the marker file path.
+
+    If *config_dir* is given (typically ``config.logs_dir``), place the
+    marker there as ``.last_discovery``.  Otherwise fall back to the
+    package-directory default for backwards compatibility.
+    """
+    if config_dir is not None:
+        config_dir = Path(config_dir)
+        config_dir.mkdir(parents=True, exist_ok=True)
+        return config_dir / ".last_discovery"
+    return _DEFAULT_MARKER_FILE
+
+
+def check(config_dir: Path | None = None) -> str:
     """Check if discovery needed today."""
+    marker = _marker_file(config_dir)
     today = datetime.now().strftime("%Y-%m-%d")
 
-    if MARKER_FILE.exists():
-        last_run = MARKER_FILE.read_text().strip()
+    if marker.exists():
+        last_run = marker.read_text().strip()
         if last_run == today:
             return "ALREADY_RUN"
 
     return "RUN_NEEDED"
 
 
-def mark() -> None:
+def mark(config_dir: Path | None = None) -> None:
     """Mark today as done."""
+    marker = _marker_file(config_dir)
     today = datetime.now().strftime("%Y-%m-%d")
-    MARKER_FILE.write_text(today)
-    print(f"Marked {today} as complete")
+    marker.write_text(today)
+    logger.info(f"Marked {today} as complete")
 
 
 def main() -> int:

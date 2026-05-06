@@ -1,4 +1,4 @@
-"""Input validation for auto_pipeline."""
+"""Input validation for psg.automation."""
 
 import logging
 import socket
@@ -61,6 +61,14 @@ def validate_query(query: str) -> str:
 def validate_url(url: str) -> bool:
     """Check if URL is safe to process.
 
+    validate_url resolves DNS at call time, which creates a TOCTOU window
+    — an attacker could rebind DNS between validation and the actual HTTP
+    request.  For production use, pin resolved IPs to the HTTP client.
+    Accepted risk for local/offline tool.
+
+    TODO: Pass resolved IPs to the HTTP client and enforce pinning so
+    that the request goes to the same IP that was validated here.
+
     Args:
         url: URL string to validate
 
@@ -99,18 +107,6 @@ def validate_url(url: str) -> bool:
             for resolved_ip in resolved_ips:
                 if _is_blocked_ip(resolved_ip):
                     return False
-
-        # Block obvious dangerous patterns
-        dangerous_patterns = [
-            "javascript:",
-            "data:",
-            "file:",
-            "ftp:",
-        ]
-        url_lower = url.lower()
-        for pattern in dangerous_patterns:
-            if pattern in url_lower:
-                return False
 
         return True
 
@@ -156,18 +152,4 @@ def _resolve_host_ips(hostname: str, port: int | None) -> set[IPAddress]:
     return resolved
 
 
-def sanitize_filename(name: str) -> str:
-    """Sanitize a string for use as filename.
 
-    Args:
-        name: Raw filename string
-
-    Returns:
-        Safe filename string
-    """
-    # Remove/replace unsafe characters
-    safe = re.sub(r"[^\w\-\.]", "_", name)
-    # Remove leading/trailing dots and underscores
-    safe = safe.strip("._")
-    # Limit length
-    return safe[:100] if safe else "unnamed"

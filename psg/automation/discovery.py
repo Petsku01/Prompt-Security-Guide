@@ -112,74 +112,6 @@ def create_search_func(config):
     return search_func
 
 
-# Default search function (uses default config paths)
-def default_search_func(query: str, count: int) -> list[dict[str, str]]:
-    """Default search using hardcoded paths (for backwards compatibility)."""
-    from .config import load_config
-
-    config = load_config()
-    func = create_search_func(config)
-    return func(query, count)
-
-
-def fetch_page_content(url: str, max_chars: int = 5000) -> str:
-    """Fetch and extract content from a URL."""
-    if not validate_url(url):
-        logger.warning(f"Invalid URL skipped: {url[:50]}...")
-        return ""
-
-    try:
-        result = subprocess.run(
-            ["openclaw", "fetch", url, "--max-chars", str(max_chars)],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        if result.returncode == 0:
-            return result.stdout
-        logger.debug(f"openclaw fetch failed: {result.returncode}")
-    except subprocess.TimeoutExpired:
-        logger.warning(f"Fetch timed out for {url[:50]}...")
-    except FileNotFoundError:
-        logger.debug("openclaw command not found, trying fallback")
-
-    # Fallback: try requests + basic extraction
-    try:
-        import requests
-
-        resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-        if resp.status_code == 200:
-            from html.parser import HTMLParser
-
-            class TextExtractor(HTMLParser):
-                def __init__(self):
-                    super().__init__()
-                    self.text = []
-                    self.skip = False
-
-                def handle_starttag(self, tag, attrs):
-                    if tag in ("script", "style", "nav", "footer"):
-                        self.skip = True
-
-                def handle_endtag(self, tag):
-                    if tag in ("script", "style", "nav", "footer"):
-                        self.skip = False
-
-                def handle_data(self, data):
-                    if not self.skip:
-                        self.text.append(data.strip())
-
-            parser = TextExtractor()
-            parser.feed(resp.text)
-            return " ".join(t for t in parser.text if t)[:max_chars]
-    except ImportError:
-        logger.debug("requests not available for fallback")
-    except Exception as e:
-        logger.debug(f"Fallback fetch failed: {e}")
-
-    return ""
-
-
 class DiscoveryEngine:
     """Engine for discovering new jailbreak sources."""
 
@@ -189,7 +121,9 @@ class DiscoveryEngine:
         search_func: SearchFunc | None = None,
     ) -> None:
         self.config = config
-        self.search_func = search_func or default_search_func
+        if search_func is None:
+            search_func = create_search_func(config)
+        self.search_func = search_func
         self.source_store = DeduplicationStore(config.known_sources_path)
 
     def discover(self) -> list[Source]:
@@ -242,6 +176,42 @@ class DiscoveryEngine:
         logger.info(f"Discovery complete: {len(new_sources)} new sources found")
         self.source_store.flush()
         return new_sources
+
+    def load_cached_sources(self) -> list[Source]:
+        """Load the most recent sources_*.json from datasets_dir.
+
+        Finds all files matching ``sources_*.json`` in the configured
+        ``datasets_dir``, picks the one with the newest mtime, and
+        returns the parsed Source objects.  Returns an empty list when
+        no cached files exist or the directory is missing.
+        """
+        datasets_dir = self.config.datasets_dir
+        if not datasets_dir.is_dir():
+            return []
+
+        candidates = sorted(
+            datasets_dir.glob("sources_*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        if not candidates:
+            return []
+
+        newest = candidates[0]
+        logger.info(f"Loading cached sources from {newest}")
+        try:
+            data = json.loads(newest.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning(f"Failed to read cached sources from {newest}: {exc}")
+            return []
+
+        sources: list[Source] = []
+        for entry in data.get("sources", []):
+            try:
+                sources.append(Source(**entry))
+            except (TypeError, KeyError) as exc:
+                logger.warning(f"Skipping malformed cached source entry: {exc}")
+        return sources
 
     def save_sources(self, sources: list[Source], output_path: Path) -> None:
         """Save discovered sources to JSON file."""

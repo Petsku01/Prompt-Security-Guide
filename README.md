@@ -90,13 +90,43 @@ pip install -e ".[all]"      # everything
 - **[docs/DEFENSE_STRATEGIES.md](docs/DEFENSE_STRATEGIES.md)** — defense patterns
 - **[CHANGELOG.md](CHANGELOG.md)** — version history
 
+## Auto Vector Pipeline
+
+PSG includes an automated pipeline for discovering, generating, testing, and reporting jailbreak vectors:
+
+```bash
+# Run the full pipeline
+python -m psg.automation
+
+# Run with options
+python -m psg.automation --skip-discovery    # Use cached sources
+python -m psg.automation --skip-generation   # Use cached vectors
+python -m psg.automation --tmux              # Background testing
+python -m psg.automation --config config.yaml
+```
+
+**Pipeline modules:**
+
+| Module | Purpose |
+|--------|---------|
+| `config.py` | Pipeline configuration (YAML or defaults) |
+| `discovery.py` | Web search for attack sources |
+| `generator.py` | LLM-generated attack vectors |
+| `tester.py` | Model testing with timeout & tmux support |
+| `reporter.py` | Markdown reports + summary logging |
+| `validation.py` | URL & query validation (SSRF protection) |
+| `dedup.py` | SHA-256 deduplication store |
+| `daily_check.py` | Cron-friendly run-once-per-day marker |
+| `main.py` | Orchestrator: discovery → generation → testing → reporting |
+
 ## Repository Layout
 
 ```
-psg/        — core library and CLI
-datasets/   — attack catalogs (JSON)
-tests/      — 380+ tests
-docs/       — methodology and research
+psg/              — core library and CLI
+psg/automation/   — auto vector pipeline modules
+datasets/         — attack catalogs (JSON)
+tests/            — 502 tests
+docs/             — methodology and research
 ```
 
 ## Safety

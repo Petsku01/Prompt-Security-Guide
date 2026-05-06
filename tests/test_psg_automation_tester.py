@@ -35,6 +35,7 @@ def _make_result(
     model: str = "llama3:8b",
     total: int = 10,
     flagged: int = 2,
+    techniques: dict[str, int] | None = None,
 ) -> ModelTestResult:
     return ModelTestResult(
         model=model,
@@ -44,6 +45,7 @@ def _make_result(
         flagged=flagged,
         duration_seconds=1.0,
         output_path=Path("/tmp/fake.txt"),
+        techniques=techniques if techniques is not None else {},
     )
 
 
@@ -210,8 +212,8 @@ def test_parse_test_output_extracts_stats(tmp_path: Path) -> None:
 
 # test 11
 def test_parse_test_output_no_stats_defaults_zero(tmp_path: Path) -> None:
-    """When stdout has no key=value stats, run_test must return a result
-    with all counts zeroed."""
+    """When stdout has no key=value stats, run_test must return None
+    (total=0 indicates a silent failure)."""
     config = _make_config(tmp_path)
     tester = PipelineTester(config)
 
@@ -220,26 +222,24 @@ def test_parse_test_output_no_stats_defaults_zero(tmp_path: Path) -> None:
     mock_result.returncode = 0
 
     with patch("psg.automation.tester.subprocess.run", return_value=mock_result):
-        with patch("psg.automation.tester.time.time", side_effect=[0.0, 1.0]):
+        with patch("psg.automation.tester.time.time", return_value=0.0):
             result = tester.run_test(Path("/tmp/v.json"), "llama3:8b", "auto")
 
-    assert result is not None
-    assert result.total == 0
-    assert result.flagged == 0
+    assert result is None
 
 
-# ── timeout multiplier (default 3× concept via test_timeout * 100) ────────
+# ── timeout multiplier (default 3×) ────────
 
 # test 12
 def test_timeout_multiplier_default_is_3x(tmp_path: Path) -> None:
-    """The test command timeout is test_timeout * 100 (3× default is 120*100
-    = 12000 seconds).  We verify the multiplier is applied by checking
+    """The test command timeout is test_timeout * 3 (3× default is 120*3
+    = 360 seconds).  We verify the multiplier is applied by checking
     the value passed as the `timeout` kwarg to subprocess.run."""
     config = _make_config(tmp_path)
     tester = PipelineTester(config)
 
-    # Default test_timeout is 120; the effective timeout multiplier is * 100
-    expected_timeout = config.test_timeout * 100
+    # Default test_timeout is 120; the effective timeout multiplier is * 3
+    expected_timeout = config.test_timeout * 3
 
     mock_result = MagicMock()
     mock_result.stdout = "total=1 succeeded=1 failed=0 flagged=0"

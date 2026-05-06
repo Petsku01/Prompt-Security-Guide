@@ -111,8 +111,8 @@ class PipelineConfig:
         default_factory=lambda: Path(__file__).resolve().parent / "reports"
     )
 
-    # Notification
-    notify_discord: bool = True
+    # Cron scheduler
+    cron_schedule: str = "0 3 * * *"
 
     def __post_init__(self) -> None:
         """Ensure paths exist and normalize output locations."""
@@ -170,5 +170,9 @@ def load_config(config_path: Path | None = None) -> PipelineConfig:
 
 
 if __name__ == "__main__":
+    import logging
+
+    logging.basicConfig(level=logging.INFO)
     cfg = load_config()
-    print(f"Config loaded: {cfg}")
+    logger = logging.getLogger("psg.automation")
+    logger.info("Config loaded: %s", cfg)

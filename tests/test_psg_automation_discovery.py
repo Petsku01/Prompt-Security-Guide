@@ -257,3 +257,82 @@ def test_retry_preserves_function_name():
 
     assert my_function.__name__ == "my_function"
     assert my_function.__doc__ == "My docstring."
+
+
+# ---------------------------------------------------------------------------
+# GAP 3: load_cached_sources
+# ---------------------------------------------------------------------------
+
+def test_load_cached_sources_returns_most_recent(tmp_path):
+    """When multiple sources_*.json files exist, load_cached_sources returns
+    sources from the newest one (by mtime)."""
+    cfg = _make_config(tmp_path)
+    ds = cfg.datasets_dir
+    ds.mkdir(parents=True, exist_ok=True)
+
+    # Create two source files with different timestamps
+    old_path = ds / "sources_20260101.json"
+    new_path = ds / "sources_20260105.json"
+
+    import time as _time
+
+    old_data = {
+        "discovered_at": "2026-01-01T00:00:00",
+        "count": 1,
+        "sources": [
+            {
+                "url": "https://old.example.com",
+                "title": "Old",
+                "snippet": "Old snippet",
+                "query": "q",
+                "discovered_at": "2026-01-01T00:00:00",
+            }
+        ],
+    }
+    new_data = {
+        "discovered_at": "2026-01-05T00:00:00",
+        "count": 1,
+        "sources": [
+            {
+                "url": "https://new.example.com",
+                "title": "New",
+                "snippet": "New snippet",
+                "query": "q",
+                "discovered_at": "2026-01-05T00:00:00",
+            }
+        ],
+    }
+
+    old_path.write_text(json.dumps(old_data))
+    _time.sleep(0.1)  # ensure different mtime
+    new_path.write_text(json.dumps(new_data))
+
+    engine = DiscoveryEngine(cfg, search_func=_mock_search_func([]))
+    sources = engine.load_cached_sources()
+
+    assert len(sources) == 1
+    assert sources[0].url == "https://new.example.com"
+
+
+def test_load_cached_sources_returns_empty_when_no_files(tmp_path):
+    """When no sources_*.json files exist in datasets_dir, returns []."""
+    cfg = _make_config(tmp_path)
+    # datasets_dir may not even exist yet — that's fine
+    engine = DiscoveryEngine(cfg, search_func=_mock_search_func([]))
+    sources = engine.load_cached_sources()
+    assert sources == []
+
+
+def test_load_cached_sources_ignores_non_matching_files(tmp_path):
+    """Files that don't match sources_*.json are ignored."""
+    cfg = _make_config(tmp_path)
+    ds = cfg.datasets_dir
+    ds.mkdir(parents=True, exist_ok=True)
+
+    # Write a file that does NOT match the glob pattern
+    other = ds / "other_20260101.json"
+    other.write_text(json.dumps({"count": 0, "sources": []}))
+
+    engine = DiscoveryEngine(cfg, search_func=_mock_search_func([]))
+    sources = engine.load_cached_sources()
+    assert sources == []
