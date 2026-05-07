@@ -171,7 +171,6 @@ class VectorGenerator:
 
     def _extract_json(self, response: str) -> list | dict:
         """Extract JSON from LLM response, handling various formats."""
-        import json
         import re
 
         from ..defenses.templates import _extract_code_block
@@ -195,12 +194,7 @@ class VectorGenerator:
                 data = json.loads(candidate)
                 return self._normalize_vectors(data)
             except json.JSONDecodeError:
-                pass  # Fall through to try the block content directly
-            try:
-                data = json.loads(candidate)
-                return self._normalize_vectors(data)
-            except json.JSONDecodeError:
-                pass  # Fall through
+                pass  # Fall through to raw JSON search
 
         # Try to find raw JSON array or object
         for pattern in [r"\[[\s\S]*\]", r"\{[\s\S]*\}"]:

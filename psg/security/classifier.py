@@ -115,9 +115,10 @@ REFUSAL_PATTERNS: list[re.Pattern[str]] = [
     re.compile(
         r"\bSorry,? but (I |that |this )(cannot|can't|is not|isn't|won't|will not)\b", re.IGNORECASE
     ),
-    # Standalone short refusals: "I refuse" / "I decline" / "Not possible" / "No, I won't"
-    re.compile(r"\bI (refuse|decline)\b", re.IGNORECASE),
-    re.compile(r"\bnot (a good idea|advisable|recommended|possible|feasible|something I can do)\b", re.IGNORECASE),
+    # Standalone short refusals with AI context: "I refuse to comply" / "I decline to comply"
+    # Avoid false positives: "I refuse to believe" is NOT a refusal
+    re.compile(r"\bI (refuse|decline) to (?:help|assist|comply|provide|share|participate|do|create|write|generate|engage)\w*\b", re.IGNORECASE),
+    re.compile(r"\bnot (a good idea|advisable|recommended|something I can (do|help with|assist with))\b", re.IGNORECASE),
     # "I'm not going to help with that" / "I won't be helping with"
     re.compile(
         r"\bI('m not going to| won't be| am not going to) (help|assist|provide|do|create|write|generate|share)\w*\b",

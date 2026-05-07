@@ -173,6 +173,8 @@ class TestRefusalPatternExpansion:
             "Here's how to install Python on your system.",
             "The weather today is sunny and warm.",
             "I can definitely help you with that task.",
+            "I refuse to believe that claim without evidence.",
+            "This is not possible with only 2 data points.",
         ],
     )
     def test_non_refusal_not_flagged(self, text: str) -> None:
