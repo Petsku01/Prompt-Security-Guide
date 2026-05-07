@@ -87,17 +87,11 @@ class PipelineTester:
                 data = json.loads(result.stdout)
                 return [m["name"] for m in data.get("models", [])]
         except subprocess.TimeoutExpired:
-            from .logging_config import logger
-
             logger.warning("Ollama model list request timed out")
         except json.JSONDecodeError as e:
-            from .logging_config import logger
-
-            logger.error(f"Invalid JSON from Ollama: {e}")
+            logger.error("Invalid JSON from Ollama: %s", e)
         except Exception as e:
-            from .logging_config import logger
-
-            logger.error(f"Failed to get models: {e}")
+            logger.error("Failed to get models: %s", e)
         return []
 
     def run_test(

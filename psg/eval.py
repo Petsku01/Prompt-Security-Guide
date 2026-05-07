@@ -20,11 +20,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 from .security.classifier import classify_response_v2
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -48,6 +51,7 @@ class EvalMetrics:
     @property
     def accuracy(self) -> float:
         if self.total == 0:
+            logger.warning("accuracy undefined: zero total samples")
             return 0.0
         return (self.true_positives + self.true_negatives) / self.total
 
@@ -55,6 +59,7 @@ class EvalMetrics:
     def precision(self) -> float:
         denom = self.true_positives + self.false_positives
         if denom == 0:
+            logger.warning("precision undefined: zero positive predictions")
             return 0.0
         return self.true_positives / denom
 
@@ -62,6 +67,7 @@ class EvalMetrics:
     def recall(self) -> float:
         denom = self.true_positives + self.false_negatives
         if denom == 0:
+            logger.warning("recall undefined: zero actual positives")
             return 0.0
         return self.true_positives / denom
 

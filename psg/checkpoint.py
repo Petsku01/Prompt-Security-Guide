@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 class JSONLCheckpoint:
@@ -20,13 +23,22 @@ class JSONLCheckpoint:
         if not self.path.exists():
             return []
         out: list[dict[str, Any]] = []
+        skipped = 0
         with self.path.open("r", encoding="utf-8") as f:
-            for line in f:
+            for line_num, line in enumerate(f, 1):
                 line = line.strip()
                 if not line:
                     continue
                 try:
                     out.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+                except json.JSONDecodeError as e:
+                    skipped += 1
+                    logger.warning(
+                        "Skipping malformed JSON at %s:%d: %s", self.path, line_num, e
+                    )
+        if skipped:
+            logger.warning(
+                "Skipped %d malformed line(s) in %s (%d valid records loaded)",
+                skipped, self.path, len(out),
+            )
         return out
