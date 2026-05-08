@@ -140,7 +140,7 @@ class BenchmarkResult:
 
 
 def find_catalog_path(catalog: str, base_dir: Path) -> Path:
-    """Find catalog file, checking relative to base_dir and absolute paths."""
+    """Find catalog file by relative and absolute paths."""
     # Try relative to base_dir first
     rel_path = base_dir / catalog
     if rel_path.exists():

@@ -32,7 +32,6 @@ def _as_labels(value: Any) -> list[str]:
 
 
 def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Add arguments for defend subcommand."""
     subparsers = parser.add_subparsers(dest="defend_command")
 
     # psg defend validate "text"
@@ -133,7 +132,6 @@ def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
 
 
 def _read_validation_text(args: argparse.Namespace) -> str | None:
-    """Read validation text from args, file, or stdin. Returns None on error."""
     if args.text:
         return args.text
     if args.file:
