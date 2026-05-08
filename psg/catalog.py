@@ -29,7 +29,7 @@ def _parse_attack_item(idx: int, item: Any) -> Attack | None:
     if isinstance(item, str):
         return Attack(id=str(idx), prompt=item, metadata={})
     if not isinstance(item, dict):
-        logger.warning("Skipping catalog item at index %d: expected str or dict, got %s (%r)", idx, type(item).__name__, item)
+        logger.warning("Skipping catalog item at index %d: expected str or dict, got %s", idx, type(item).__name__)
         return None
 
     aid = item.get("id") or item.get("attack_id") or item.get("name") or str(idx)

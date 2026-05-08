@@ -618,3 +618,48 @@ class TestExtractCodeBlock:
         content = "# Title\n\n`` not a fence\n```\nreal code\n```\n"
         result = _extract_code_block(content)
         assert result == "real code"
+
+    # --- CommonMark spec compliance (P5 adversarial fix) ---
+
+    def test_info_string_with_spaces_accepted(self):
+        """CommonMark allows info strings with spaces after the language tag.
+        ````python extra` should be accepted as a valid opening fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python extra\nprint('hello')\n```\n"
+        result = _extract_code_block(content)
+        assert result == "print('hello')"
+
+    def test_info_string_with_slash_path(self):
+        """Info strings starting with / should also be accepted."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```/etc/config\nsetting=true\n```\n"
+        result = _extract_code_block(content)
+        assert result == "setting=true"
+
+    def test_four_space_indent_not_fence(self):
+        """CommonMark: 4+ spaces before fence = indented code block, not a fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n    ```\n    not a fence\n    ```\n"
+        result = _extract_code_block(content)
+        assert result is None
+
+    def test_three_space_indent_is_fence(self):
+        """CommonMark: 0-3 spaces before fence = valid fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n   ```\nindented code\n   ```\n"
+        result = _extract_code_block(content)
+        assert result is not None
+
+    def test_backtick_in_info_string_rejected(self):
+        """CommonMark: backtick fences cannot have backticks in the info string."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python`bad\nprint('hello')\n```\n"
+        result = _extract_code_block(content)
+        # This should NOT be treated as a valid opening fence
+        # because the info string contains a backtick
+        assert result is None

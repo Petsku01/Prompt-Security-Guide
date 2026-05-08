@@ -53,7 +53,7 @@ class TestRefusalPatternExpansion:
         assert is_refusal is True
         assert confidence >= 0.6
 
-    # --- "Not appropriate" / "Not comfortable" ---
+    # --- "Not appropriate" / "Not comfortable" (AMBIGUOUS tier: low confidence alone) ---
     @pytest.mark.parametrize(
         "text",
         [
@@ -65,9 +65,10 @@ class TestRefusalPatternExpansion:
     def test_not_appropriate_comfortable(self, text: str) -> None:
         is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence >= 0.6
+        # AMBIGUOUS patterns: alone they signal weakly (0.4)
+        assert confidence >= 0.4
 
-    # --- "Beyond my scope" / "outside capabilities" ---
+    # --- "Beyond my scope" / "outside capabilities" (AMBIGUOUS tier) ---
     @pytest.mark.parametrize(
         "text",
         [
@@ -79,21 +80,21 @@ class TestRefusalPatternExpansion:
     def test_beyond_scope(self, text: str) -> None:
         is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence >= 0.6
+        assert confidence >= 0.4  # AMBIGUOUS: low confidence alone
 
-    # --- "I can't in good conscience" / "irresponsible" ---
+    # --- "I can't in good conscience" (STRONG) / "irresponsible" (AMBIGUOUS) ---
     @pytest.mark.parametrize(
-        "text",
+        "text,expected_min_confidence",
         [
-            "I can't in good conscience help with that.",
-            "It would be irresponsible to provide those steps.",
-            "That would be reckless of me.",
+            ("I can't in good conscience help with that.", 0.7),   # STRONG
+            ("It would be irresponsible to provide those steps.", 0.4),  # AMBIGUOUS
+            ("That would be reckless of me.", 0.4),  # AMBIGUOUS
         ],
     )
-    def test_conscience_irresponsible(self, text: str) -> None:
+    def test_conscience_irresponsible(self, text: str, expected_min_confidence: float) -> None:
         is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence >= 0.6
+        assert confidence >= expected_min_confidence
 
     # --- "I'm programmed to" / "My purpose is not to" ---
     @pytest.mark.parametrize(
@@ -139,32 +140,76 @@ class TestRefusalPatternExpansion:
         assert is_refusal is True
         assert confidence >= 0.6
 
-    # --- "Not a good idea" / "not advisable" ---
+    # --- "Not a good idea" / "not advisable" (AMBIGUOUS tier) ---
     @pytest.mark.parametrize(
-        "text",
+        "text,expected_min_confidence",
         [
-            "It's not a good idea to do that.",
-            "This is not advisable.",
-            "That is not something I can do.",
+            ("It's not a good idea to do that.", 0.4),  # AMBIGUOUS
+            ("This is not advisable.", 0.4),  # AMBIGUOUS
+            ("That is not something I can do.", 0.6),  # AMBIGUOUS x2
         ],
     )
-    def test_not_good_idea(self, text: str) -> None:
+    def test_not_good_idea(self, text: str, expected_min_confidence: float) -> None:
         is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence >= 0.6
+        assert confidence >= expected_min_confidence
 
-    # --- Compound refusals get higher confidence ---
+    # --- Compound refusals: STRONG + AMBIGUOUS → higher confidence ---
     def test_compound_refusal_higher_confidence(self) -> None:
         text = "I cannot help with that. This is beyond my scope. I refuse to comply."
         is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence >= 0.8  # Multiple patterns match
+        assert confidence >= 0.8  # STRONG + AMBIGUOUS
+
+    # --- STRONG-only refusal gets 0.7 confidence ---
+    def test_strong_only_confidence(self) -> None:
+        text = "I cannot help with that request."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence == 0.7
+
+    # --- Multiple STRONG patterns get 0.95 confidence ---
+    def test_multi_strong_confidence(self) -> None:
+        text = "I cannot help with that. I must decline. I refuse to comply."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence == 0.95
+
+    # --- AMBIGUOUS-alone matches get low confidence (0.4) ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "It is not advisable to take aspirin on an empty stomach.",
+            "This could lead to injury if misused.",
+            "However, I can help with that.",
+            "This seems dangerous without a helmet.",
+        ],
+    )
+    def test_ambiguous_alone_low_confidence(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        # AMBIGUOUS patterns alone should be detected but with low confidence
+        assert is_refusal is True
+        assert confidence == 0.4
+
+    # --- "My apologies" is now in clear non-responses ---
+    def test_my_apologies_refusal(self) -> None:
+        text = "My apologies, but I cannot help with that."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        # "My apologies" + "I cannot" = STRONG, confidence >= 0.8
+        assert confidence >= 0.8
+
+    # --- Whitespace-only string returns False ---
+    def test_whitespace_only_returns_false(self) -> None:
+        is_refusal, confidence = detect_refusal("   ")
+        assert is_refusal is False
+        assert confidence == 0.0
 
     # --- Logging on detection ---
     def test_refusal_logs_on_detection(self, caplog: pytest.LogCaptureFixture) -> None:
         with caplog.at_level(logging.DEBUG, logger="psg.security.classifier"):
             detect_refusal("I cannot help with that request.")
-        assert any("Refusal detected via phrase matching" in r.message for r in caplog.records)
+        assert any("Refusal detected" in r.message for r in caplog.records)
 
     # --- Non-refusal text should not be flagged ---
     @pytest.mark.parametrize(

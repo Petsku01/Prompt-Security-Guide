@@ -60,12 +60,11 @@ def load_templates(
 def _extract_code_block(content: str) -> str | None:
     """Extract the first code block from markdown content.
 
-    Robustly handles:
-    - Backtick fences (```) and tilde fences (~~~)
-    - Language identifiers after opening fence (e.g. ```python)
-    - Nested backticks or tildes inside the code block (by matching
-      opening and closing fence sequences of the same length)
-    - Multiple code blocks (returns first)
+    Follows CommonMark spec for code fences:
+    - Opening fence: 3+ backticks or tildes, optional info string (first
+      word = language, rest = metadata), max 3 spaces indentation.
+    - Closing fence: same fence character, >= opening fence length, no info string.
+    - Nested fences inside code block handled by matching fence length.
 
     Returns:
         The stripped content inside the code block, or None if not found.
@@ -74,7 +73,14 @@ def _extract_code_block(content: str) -> str | None:
     i = 0
     while i < len(lines):
         line = lines[i]
-        stripped = line.lstrip()
+
+        # CommonMark: only 0-3 spaces indentation allowed before a fence
+        leading_spaces = len(line) - len(line.lstrip(" "))
+        if leading_spaces > 3:
+            i += 1
+            continue
+
+        stripped = line.lstrip(" ")
 
         # Detect opening fence: 3+ backticks or 3+ tildes
         fence_char = None
@@ -82,7 +88,6 @@ def _extract_code_block(content: str) -> str | None:
         if stripped.startswith("```"):
             fence_char = "`"
             fence_len = len(stripped) - len(stripped.lstrip("`"))
-            # Must be at least 3 backticks, and rest of line (after backticks) is optional lang id
             if fence_len < 3:
                 i += 1
                 continue
@@ -96,13 +101,14 @@ def _extract_code_block(content: str) -> str | None:
             i += 1
             continue
 
-        # Check that the opening fence line only contains the fence + optional lang id
-        # (no other characters that would invalidate it as a fence opener)
-        after_fence = stripped[fence_len:]
-        after_fence_stripped = after_fence.strip()
-        # Language identifier must be a single word (no spaces)
-        if " " in after_fence_stripped and not after_fence_stripped.startswith("/"):
-            # Could be content that starts with backticks, not a fence
+        # Info string: everything after the fence characters on the opening line.
+        # CommonMark allows any text here (first word is the language, rest is
+        # metadata). Previous code rejected spaces in the info string — that
+        # incorrectly rejected valid fences like ```python extra.
+        after_fence = stripped[fence_len:].rstrip("\n\r")
+        # Info string must not contain backticks (for backtick fences) — per
+        # CommonMark spec, the info string cannot contain the fence character.
+        if fence_char == "`" and "`" in after_fence:
             i += 1
             continue
 
@@ -111,11 +117,17 @@ def _extract_code_block(content: str) -> str | None:
         j = i + 1
         found_close = False
         while j < len(lines):
-            close_line = lines[j].lstrip()
-            # Closing fence must use the same character and have >= fence_len of them
-            if close_line.startswith(fence_char * fence_len):
-                close_len = len(close_line) - len(close_line.lstrip(fence_char))
-                if close_len >= fence_len and close_line[close_len:].strip() == "":
+            close_line = lines[j]
+            close_leading = len(close_line) - len(close_line.lstrip(" "))
+            close_stripped = close_line.lstrip(" ")
+            # Closing fence: max 3 spaces indent, same char, >= fence_len, no info string
+            if (
+                close_leading <= 3
+                and close_stripped.startswith(fence_char * fence_len)
+            ):
+                close_len = len(close_stripped) - len(close_stripped.lstrip(fence_char))
+                close_rest = close_stripped[close_len:].strip()
+                if close_len >= fence_len and close_rest == "":
                     found_close = True
                     break
             block_lines.append(lines[j])
