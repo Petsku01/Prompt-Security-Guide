@@ -17,6 +17,7 @@ from typing import Any
 from .config import PipelineConfig
 from .discovery import Source
 from .generator import AttackVector
+from .logging_config import logger
 from .tester import ModelTestResult
 
 
@@ -279,4 +280,4 @@ if __name__ == "__main__":
         top_findings=[],
     )
 
-    print(reporter.generate_markdown(report))
+    logger.info("Report:\n%s", reporter.generate_markdown(report))

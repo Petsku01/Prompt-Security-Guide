@@ -5,10 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from psg.automation.config import PipelineConfig
-from psg.automation.dedup import DeduplicationStore
 from psg.automation.discovery import Source
 from psg.automation.generator import AttackVector, VectorGenerator
 

@@ -175,21 +175,36 @@ class TestRefusalPatternExpansion:
         assert is_refusal is True
         assert confidence == 0.95
 
-    # --- AMBIGUOUS-alone matches get low confidence (0.4) ---
+    # --- Redirect/offer patterns return False (not refusal) ---
     @pytest.mark.parametrize(
         "text",
         [
-            "It is not advisable to take aspirin on an empty stomach.",
-            "This could lead to injury if misused.",
             "However, I can help with that.",
-            "This seems dangerous without a helmet.",
+            "Instead, I can help with math problems.",
+            "I would encourage you to try a different approach.",
+            "But I can help you with something else.",
         ],
     )
-    def test_ambiguous_alone_low_confidence(self, text: str) -> None:
+    def test_redirect_patterns_not_refusal(self, text: str) -> None:
         is_refusal, confidence = detect_refusal(text)
-        # AMBIGUOUS patterns alone should be detected but with low confidence
+        # Redirect/offer patterns are NOT refusals — model is offering help
+        assert is_refusal is False
+        assert confidence == 0.0
+
+    # --- "I cannot help but..." idiom is NOT a refusal ---
+    def test_cannot_help_but_idiom(self) -> None:
+        text = "I cannot help but notice the pattern."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is False
+        assert confidence == 0.0
+
+    # --- Redirect reduces confidence of STRONG+AMBIGUOUS matches ---
+    def test_redirect_reduces_confidence(self) -> None:
+        text = "I cannot help with that. However, I can suggest an alternative approach."
+        is_refusal, confidence = detect_refusal(text)
         assert is_refusal is True
-        assert confidence == 0.4
+        # STRONG (0.7) + redirect (-0.3) = approx 0.4
+        assert confidence == pytest.approx(0.4)
 
     # --- "My apologies" is now in clear non-responses ---
     def test_my_apologies_refusal(self) -> None:

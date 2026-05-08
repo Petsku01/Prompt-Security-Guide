@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import logging
 
-import pytest
 
 from psg.catalog import load_catalog
 from psg.catalog_validator import validate_catalog_file

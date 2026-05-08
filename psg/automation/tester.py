@@ -256,6 +256,6 @@ if __name__ == "__main__":
     runner = PipelineTester(config)
 
     if runner.check_ollama():
-        print(f"Ollama running. Available models: {runner.get_available_models()}")
+        logger.info("Ollama running. Available models: %s", runner.get_available_models())
     else:
-        print("Ollama not running")
+        logger.warning("Ollama not running")

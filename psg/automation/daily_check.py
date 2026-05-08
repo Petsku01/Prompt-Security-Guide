@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Check if daily discovery has been run and manage cron scheduling."""
 
-import logging
 import re
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from .logging_config import logger
 
 _DEFAULT_MARKER_FILE = Path(__file__).parent / ".last_discovery"
 

@@ -69,6 +69,8 @@ def _extract_code_block(content: str) -> str | None:
     Returns:
         The stripped content inside the code block, or None if not found.
     """
+    # Normalize CRLF to LF to avoid \r contamination in parsed content
+    content = content.replace("\r\n", "\n").replace("\r", "")
     lines = content.split("\n")
     i = 0
     while i < len(lines):
