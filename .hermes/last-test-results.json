@@ -1,0 +1,10 @@
+{
+  "date": "2026-05-08",
+  "pass": 580,
+  "skip": 1,
+  "fail": 0,
+  "ruff_errors": 0,
+  "total_lines": 10451,
+  "total_py_files": 63,
+  "tests_collected": 581
+}

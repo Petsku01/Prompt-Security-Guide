@@ -19,18 +19,7 @@ _SHELL_META_RE = re.compile(r'[;&|`$(){}!<>"\\]')
 
 
 def validate_cron_schedule(schedule: str) -> str:
-    """Validate a cron schedule string.
-
-    The schedule must consist of exactly 5 space-separated fields
-    (minute, hour, day-of-month, month, day-of-week), each matching
-    typical cron patterns (numbers, ``*``, ranges, steps).  Any string
-    containing shell metacharacters is rejected.
-
-    Returns the validated schedule string.
-
-    Raises:
-        ValueError: If the schedule is invalid or contains dangerous characters.
-    """
+    """Validate 5-field cron schedule. Rejects shell metacharacters. Raises ValueError if invalid."""
     if not schedule or not schedule.strip():
         raise ValueError("Cron schedule must not be empty")
 
@@ -58,15 +47,10 @@ def validate_cron_schedule(schedule: str) -> str:
 
 
 def install_cron(schedule: str = "0 3 * * *") -> bool:
-    """Install a cron entry for the daily pipeline.
+    """Install tagged cron entry for daily pipeline. Returns True on success.
 
-    Appends a line to the current user's crontab.  The line is tagged with
-    ``CRON_MARKER`` so that :func:`is_cron_installed` can find it later.
-
-    Returns True on success, False on failure.
-
-    Raises:
-        ValueError: If *schedule* fails cron-format validation.
+    Raises ValueError if schedule is invalid. Entry is tagged with
+    CRON_MARKER for later lookup by is_cron_installed().
     """
     validate_cron_schedule(schedule)
 
@@ -178,11 +162,10 @@ def is_cron_installed() -> bool:
 
 
 def _marker_file(config_dir: Path | None = None) -> Path:
-    """Return the marker file path.
+    """Return marker file path.
 
-    If *config_dir* is given (typically ``config.logs_dir``), place the
-    marker there as ``.last_discovery``.  Otherwise fall back to the
-    package-directory default for backwards compatibility.
+    Uses config_dir/.last_discovery if given, else package default
+    (kept for backwards compatibility).
     """
     if config_dir is not None:
         config_dir = Path(config_dir)

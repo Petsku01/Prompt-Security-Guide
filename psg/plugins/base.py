@@ -160,7 +160,6 @@ _registry: PluginRegistry | None = None
 
 
 def get_registry() -> PluginRegistry:
-    """Get the global plugin registry."""
     global _registry
     if _registry is None:
         _registry = PluginRegistry()
@@ -168,7 +167,6 @@ def get_registry() -> PluginRegistry:
 
 
 def load_plugins() -> PluginRegistry:
-    """Load all plugins and return the registry."""
     registry = get_registry()
     registry.load()
     return registry

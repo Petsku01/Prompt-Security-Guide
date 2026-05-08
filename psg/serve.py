@@ -97,7 +97,6 @@ _metrics: dict[str, Any] = {
 
 
 def reset_metrics() -> None:
-    """Reset metrics (for testing)."""
     _metrics["requests_total"] = 0
     _metrics["requests_harmful"] = 0
     _metrics["requests_safe"] = 0
@@ -105,7 +104,6 @@ def reset_metrics() -> None:
 
 
 def create_app(config: ServerConfig | None = None) -> "FastAPI":
-    """Create FastAPI application."""
     if not FASTAPI_AVAILABLE:
         raise ImportError(
             "FastAPI not installed. Install with: pip install fastapi uvicorn"

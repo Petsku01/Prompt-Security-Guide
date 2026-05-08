@@ -77,18 +77,7 @@ BASE64_PATTERN = re.compile(
 
 
 def translate_leetspeak(text: str) -> str:
-    """Convert leetspeak to standard ASCII.
-
-    Args:
-        text: Input text possibly containing leetspeak
-
-    Returns:
-        Text with leetspeak characters converted to letters
-
-    Example:
-        >>> translate_leetspeak("k3ylogg3r")
-        'keylogger'
-    """
+    """Convert leetspeak to standard ASCII. E.g. ``k3ylogg3r`` → ``keylogger``."""
     result = []
     for char in text:
         result.append(LEETSPEAK_MAP.get(char, char))
@@ -96,18 +85,7 @@ def translate_leetspeak(text: str) -> str:
 
 
 def translate_homoglyphs(text: str) -> str:
-    """Convert Unicode homoglyphs to ASCII equivalents.
-
-    Args:
-        text: Input text possibly containing homoglyphs
-
-    Returns:
-        Text with homoglyphs converted to ASCII
-
-    Example:
-        >>> translate_homoglyphs("kеyloggеr")  # Cyrillic е
-        'keylogger'
-    """
+    """Convert Unicode homoglyphs to ASCII. E.g. Cyrillic ``е`` → ``e``."""
     result = []
     for char in text:
         result.append(HOMOGLYPH_MAP.get(char, char))
@@ -138,18 +116,7 @@ def _try_decode_base64(s: str) -> str | None:
 
 
 def decode_base64_segments(text: str) -> str:
-    """Find and decode base64-encoded segments in text.
-
-    Args:
-        text: Input text possibly containing base64 segments
-
-    Returns:
-        Text with base64 segments decoded (if valid UTF-8)
-
-    Example:
-        >>> decode_base64_segments("Run a2V5bG9nZ2Vy script")
-        'Run keylogger script'
-    """
+    """Find and decode base64-encoded segments. E.g. ``a2V5bG9nZ2Vy`` → ``keylogger``."""
 
     def replace_match(match: re.Match) -> str:
         encoded = match.group(1)
@@ -187,15 +154,5 @@ def normalize_text(text: str) -> str:
 
 
 def normalize_for_classification(text: str) -> tuple[str, str]:
-    """Normalize text and return both original and normalized versions.
-
-    Useful for classification where you want to check the normalized
-    version but report the original.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Tuple of (original_text, normalized_text)
-    """
+    """Normalize text, return (original, normalized)."""
     return (text, normalize_text(text))

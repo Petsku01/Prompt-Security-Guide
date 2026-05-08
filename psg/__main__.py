@@ -161,7 +161,6 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _list_catalogs(path: str) -> int:
-    """List available attack catalogs with counts."""
     import json
     from pathlib import Path
 
@@ -217,7 +216,6 @@ def _list_catalogs(path: str) -> int:
 
 
 def _list_plugins(plugin_type: str) -> int:
-    """List installed plugins."""
     from .plugins import load_plugins
     from .plugins.builtin import register_builtin_plugins
 

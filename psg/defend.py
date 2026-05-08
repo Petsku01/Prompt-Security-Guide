@@ -32,7 +32,6 @@ def _as_labels(value: Any) -> list[str]:
 
 
 def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Add arguments for defend subcommand."""
     subparsers = parser.add_subparsers(dest="defend_command")
 
     # psg defend validate "text"
@@ -133,7 +132,6 @@ def add_defend_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
 
 
 def _read_validation_text(args: argparse.Namespace) -> str | None:
-    """Read validation text from args, file, or stdin. Returns None on error."""
     if args.text:
         return args.text
     if args.file:
@@ -145,7 +143,6 @@ def _read_validation_text(args: argparse.Namespace) -> str | None:
 
 
 def _print_validation_results(results: dict[str, Any], blocked: bool) -> None:
-    """Print human-readable validation results."""
     status = "🚫 BLOCKED" if blocked else "✅ PASSED"
     print(status)
     print()
@@ -215,7 +212,6 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def _parse_conversation_messages(content: str, fmt: str) -> list[dict[str, Any]]:
-    """Parse conversation messages from JSON or JSONL content."""
     if fmt == "jsonl":
         messages = []
         for line_num, line in enumerate(content.strip().split("\n"), 1):
@@ -528,7 +524,6 @@ def cmd_templates(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Main entry point for defend command."""
     parser = argparse.ArgumentParser(
         description="PSG Defense - Prompt injection defense testing"
     )
