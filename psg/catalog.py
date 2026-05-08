@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from .models import Attack
+
+logger = logging.getLogger(__name__)
 
 
 def _resolve_catalog_items(data: Any) -> list[Any]:
@@ -26,11 +29,13 @@ def _parse_attack_item(idx: int, item: Any) -> Attack | None:
     if isinstance(item, str):
         return Attack(id=str(idx), prompt=item, metadata={})
     if not isinstance(item, dict):
+        logger.warning("Skipping catalog item at index %d: expected str or dict, got %s", idx, type(item).__name__)
         return None
 
     aid = item.get("id") or item.get("attack_id") or item.get("name") or str(idx)
     prompt = _extract_prompt(item)
     if not prompt:
+        logger.warning("Skipping catalog item at index %d (id=%r): no prompt text found in keys prompt/text/input/query/content", idx, aid)
         return None
 
     followups = item.get("followups", [])

@@ -504,3 +504,162 @@ You are a helpful assistant. Refuse harmful requests.
             name="Test", content="Content", filename="test.md", category="strict"
         )
         assert template.category == "strict"
+
+
+# =============================================================================
+# M19: Robust code block extraction tests
+# =============================================================================
+
+
+class TestExtractCodeBlock:
+    """Tests for robust _extract_code_block (M19 fix)."""
+
+    def test_simple_backtick_fence(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\nHello world\n```\n"
+        assert _extract_code_block(content) == "Hello world"
+
+    def test_backtick_fence_with_language(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python\nprint('hello')\n```\n"
+        assert _extract_code_block(content) == "print('hello')"
+
+    def test_tilde_fence(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n~~~\nHello from tildes\n~~~\n"
+        assert _extract_code_block(content) == "Hello from tildes"
+
+    def test_tilde_fence_with_language(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n~~~bash\necho hello\n~~~\n"
+        assert _extract_code_block(content) == "echo hello"
+
+    def test_nested_backticks_inside_block(self):
+        """Nested backticks inside a code block should not break extraction."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\nHere are some backticks: ``\nAnd more: ```\nStill going\n```\n"
+        result = _extract_code_block(content)
+        assert result is not None
+        assert "Here are some backticks" in result
+        assert "And more: ```" in result
+
+    def test_nested_double_backticks_in_4_fence(self):
+        """4-backtick fence can contain 3-backtick sequences inside."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n````\nHere is nested: ```\nand inner code block\n```\nstill in outer\n````\n"
+        result = _extract_code_block(content)
+        assert result is not None
+        assert "Here is nested: ```" in result
+        assert "still in outer" in result
+
+    def test_nested_tildes_inside_block(self):
+        """Nested tildes inside a tilde fence should not break extraction."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n~~~~\nHere are some tildes: ~~~\nAnd even ~~~~\n~~~~\n"
+        result = _extract_code_block(content)
+        # The 4-tilde fence should contain lines including the 3-tilde and 4-tilde lines
+        # Note: the inner ~~~~ line would close the fence since it has >= 4 tildes
+        # This is standard CommonMark behavior
+        assert result is not None
+        assert "Here are some tildes: ~~~" in result
+
+    def test_no_code_block_returns_none(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\nNo code block here.\n"
+        assert _extract_code_block(content) is None
+
+    def test_unclosed_fence_returns_none(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\nNo closing fence\n"
+        assert _extract_code_block(content) is None
+
+    def test_multiline_content(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\nline 1\nline 2\nline 3\n```\n"
+        result = _extract_code_block(content)
+        assert result == "line 1\nline 2\nline 3"
+
+    def test_empty_code_block(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\n```\n"
+        result = _extract_code_block(content)
+        assert result == ""
+
+    def test_first_code_block_returned_when_multiple(self):
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```\nfirst\n```\n\n```\nsecond\n```\n"
+        assert _extract_code_block(content) == "first"
+
+    def test_parse_template_with_nested_backticks(self):
+        """parse_template should work correctly with nested backticks."""
+        from psg.defenses.templates import parse_template
+
+        content = "# Test Template\n\n````\nSome ```nested``` backticks\n````\n"
+        result = parse_template(content, "test.md")
+        assert result is not None
+        assert "Some ```nested``` backticks" in result.content
+
+    def test_backtick_in_text_not_treated_as_fence(self):
+        """Lines starting with 1-2 backticks should not be treated as fences."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n`` not a fence\n```\nreal code\n```\n"
+        result = _extract_code_block(content)
+        assert result == "real code"
+
+    # --- CommonMark spec compliance (P5 adversarial fix) ---
+
+    def test_info_string_with_spaces_accepted(self):
+        """CommonMark allows info strings with spaces after the language tag.
+        ````python extra` should be accepted as a valid opening fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python extra\nprint('hello')\n```\n"
+        result = _extract_code_block(content)
+        assert result == "print('hello')"
+
+    def test_info_string_with_slash_path(self):
+        """Info strings starting with / should also be accepted."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```/etc/config\nsetting=true\n```\n"
+        result = _extract_code_block(content)
+        assert result == "setting=true"
+
+    def test_four_space_indent_not_fence(self):
+        """CommonMark: 4+ spaces before fence = indented code block, not a fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n    ```\n    not a fence\n    ```\n"
+        result = _extract_code_block(content)
+        assert result is None
+
+    def test_three_space_indent_is_fence(self):
+        """CommonMark: 0-3 spaces before fence = valid fence."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n   ```\nindented code\n   ```\n"
+        result = _extract_code_block(content)
+        assert result is not None
+
+    def test_backtick_in_info_string_rejected(self):
+        """CommonMark: backtick fences cannot have backticks in the info string."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python`bad\nprint('hello')\n```\n"
+        result = _extract_code_block(content)
+        # This should NOT be treated as a valid opening fence
+        # because the info string contains a backtick
+        assert result is None

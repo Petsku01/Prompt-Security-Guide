@@ -448,3 +448,75 @@ def test_run_in_tmux_script_uses_results_dir(tmp_path: Path) -> None:
     content = script_path.read_text()
     # The results_dir path should appear in the script
     assert str(config.results_dir) in content
+
+
+# ── logging (M9: no print() in library code) ──────────────────────────────
+
+
+def test_get_available_models_uses_logger_on_timeout(tmp_path: Path, caplog) -> None:
+    """On TimeoutExpired, get_available_models must log a warning (not print)."""
+    import logging
+
+    config = _make_config(tmp_path)
+    tester = PipelineTester(config)
+
+    with patch(
+        "psg.automation.tester.subprocess.run",
+        side_effect=subprocess.TimeoutExpired("cmd", 5),
+    ):
+        with caplog.at_level(logging.WARNING, logger="psg.automation"):
+            models = tester.get_available_models()
+
+    assert models == []
+    assert any("timed out" in r.message.lower() for r in caplog.records)
+
+
+def test_get_available_models_uses_logger_on_json_error(tmp_path: Path, caplog) -> None:
+    """On JSONDecodeError, get_available_models must log an error (not print)."""
+    import logging
+
+    config = _make_config(tmp_path)
+    tester = PipelineTester(config)
+
+    mock_result = MagicMock()
+    mock_result.returncode = 0
+    mock_result.stdout = "not-json"
+
+    with patch("psg.automation.tester.subprocess.run", return_value=mock_result):
+        with caplog.at_level(logging.ERROR, logger="psg.automation"):
+            models = tester.get_available_models()
+
+    assert models == []
+    assert any("json" in r.message.lower() for r in caplog.records)
+
+
+def test_run_test_uses_logger_on_exception(tmp_path: Path, caplog) -> None:
+    """On general exception, run_test must log an error (not print)."""
+    import logging
+
+    config = _make_config(tmp_path)
+    tester = PipelineTester(config)
+
+    with patch("psg.automation.tester.subprocess.run", side_effect=OSError("broke")):
+        with caplog.at_level(logging.ERROR, logger="psg.automation"):
+            with patch("psg.automation.tester.time.time", side_effect=[0.0, 0.1]):
+                result = tester.run_test(Path("/tmp/v.json"), "model", "auto")
+
+    assert result is None
+    assert any("error" in r.message.lower() for r in caplog.records)
+
+
+def test_run_all_tests_uses_logger_when_ollama_down(tmp_path: Path, caplog) -> None:
+    """When Ollama is down, run_all_tests must log an error (not print)."""
+    import logging
+
+    config = _make_config(tmp_path)
+    config.test_models = ["llama3:8b"]
+    tester = PipelineTester(config)
+
+    with patch.object(tester, "check_ollama", return_value=False):
+        with caplog.at_level(logging.ERROR, logger="psg.automation"):
+            results = tester.run_all_tests(Path("/tmp/v.json"))
+
+    assert results == []
+    assert any("ollama not running" in r.message.lower() for r in caplog.records)

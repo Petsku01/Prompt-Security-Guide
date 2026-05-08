@@ -173,22 +173,28 @@ class VectorGenerator:
         """Extract JSON from LLM response, handling various formats."""
         import re
 
-        # Patterns to try, in order of specificity
-        patterns = [
-            r"```json\s*([\s\S]*?)\s*```",  # ```json ... ```
-            r"```\s*([\s\S]*?)\s*```",  # ``` ... ```
-        ]
+        from ..defenses.templates import _extract_code_block
 
-        # Try code block patterns first
-        for pattern in patterns:
-            match = re.search(pattern, response)
-            if match:
-                candidate = match.group(1).strip()
-                try:
-                    data = json.loads(candidate)
-                    return self._normalize_vectors(data)
-                except json.JSONDecodeError:
-                    continue
+        # Try extracting from code blocks first (robust: handles nested fences)
+        block_content = _extract_code_block(response)
+        if block_content:
+            # Try to find JSON within the code block
+            json_patterns = [
+                r"```json\s*([\s\S]*?)\s*```",  # legacy: inner ```json if somehow nested
+                r"```\s*([\s\S]*?)\s*```",
+            ]
+            candidate = block_content.strip()
+            # Remove optional inner json fence markers
+            for json_pat in json_patterns:
+                inner_match = re.search(json_pat, block_content)
+                if inner_match:
+                    candidate = inner_match.group(1).strip()
+                    break
+            try:
+                data = json.loads(candidate)
+                return self._normalize_vectors(data)
+            except json.JSONDecodeError:
+                pass  # Fall through to raw JSON search
 
         # Try to find raw JSON array or object
         for pattern in [r"\[[\s\S]*\]", r"\{[\s\S]*\}"]:

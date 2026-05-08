@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 import pytest
 
 from psg.security.classifier import (
@@ -13,6 +15,217 @@ def test_detect_refusal_true_with_confidence() -> None:
     is_refusal, confidence = detect_refusal("I cannot help with that request.")
     assert is_refusal is True
     assert confidence >= 0.6
+
+
+# =============================================================================
+# M5: Extended refusal pattern tests
+# =============================================================================
+
+
+class TestRefusalPatternExpansion:
+    """Tests for expanded refusal pattern detection (M5 fix)."""
+
+    # --- "As an AI" framing ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "As an AI, I cannot help with that.",
+            "As a language model, I can't provide that information.",
+            "As a chatbot, I won't do that.",
+            "As an assistant, I am not able to assist with this.",
+        ],
+    )
+    def test_as_an_ai_refusals(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.6
+
+    # --- "I refuse" / "I decline" standalone ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "I refuse to help with this request.",
+            "I decline to provide that information.",
+        ],
+    )
+    def test_standalone_refuse_decline(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.6
+
+    # --- "Not appropriate" / "Not comfortable" (AMBIGUOUS tier: low confidence alone) ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "It's not appropriate for me to do that.",
+            "I am not comfortable providing those instructions.",
+            "It is not right to share this.",
+        ],
+    )
+    def test_not_appropriate_comfortable(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        # AMBIGUOUS patterns: alone they signal weakly (0.4)
+        assert confidence >= 0.4
+
+    # --- "Beyond my scope" / "outside capabilities" (AMBIGUOUS tier) ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "This is beyond my scope of capabilities.",
+            "That goes outside my abilities.",
+            "It is past the purview of what I can do.",
+        ],
+    )
+    def test_beyond_scope(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.4  # AMBIGUOUS: low confidence alone
+
+    # --- "I can't in good conscience" (STRONG) / "irresponsible" (AMBIGUOUS) ---
+    @pytest.mark.parametrize(
+        "text,expected_min_confidence",
+        [
+            ("I can't in good conscience help with that.", 0.7),   # STRONG
+            ("It would be irresponsible to provide those steps.", 0.4),  # AMBIGUOUS
+            ("That would be reckless of me.", 0.4),  # AMBIGUOUS
+        ],
+    )
+    def test_conscience_irresponsible(self, text: str, expected_min_confidence: float) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= expected_min_confidence
+
+    # --- "I'm programmed to" / "My purpose is not to" ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "I'm programmed not to help with that.",
+            "I am designed to refuse such requests.",
+            "My purpose isn't to provide harmful content.",
+            "My role is not to assist with illegal activities.",
+        ],
+    )
+    def test_programmed_purpose(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.6
+
+    # --- Expanded non-responses ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Apologies, I cannot help with that.",
+            "Regrettably, I am unable to assist.",
+            "I regret that I can't provide this.",
+            "Sorry, but this won't be possible.",
+        ],
+    )
+    def test_expanded_non_responses(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.6
+
+    # --- "I won't be helping" / "I'm not going to" ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "I won't be helping with that.",
+            "I'm not going to provide that information.",
+            "I am not going to create this content.",
+        ],
+    )
+    def test_wont_be_helping(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.6
+
+    # --- "Not a good idea" / "not advisable" (AMBIGUOUS tier) ---
+    @pytest.mark.parametrize(
+        "text,expected_min_confidence",
+        [
+            ("It's not a good idea to do that.", 0.4),  # AMBIGUOUS
+            ("This is not advisable.", 0.4),  # AMBIGUOUS
+            ("That is not something I can do.", 0.6),  # AMBIGUOUS x2
+        ],
+    )
+    def test_not_good_idea(self, text: str, expected_min_confidence: float) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= expected_min_confidence
+
+    # --- Compound refusals: STRONG + AMBIGUOUS → higher confidence ---
+    def test_compound_refusal_higher_confidence(self) -> None:
+        text = "I cannot help with that. This is beyond my scope. I refuse to comply."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence >= 0.8  # STRONG + AMBIGUOUS
+
+    # --- STRONG-only refusal gets 0.7 confidence ---
+    def test_strong_only_confidence(self) -> None:
+        text = "I cannot help with that request."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence == 0.7
+
+    # --- Multiple STRONG patterns get 0.95 confidence ---
+    def test_multi_strong_confidence(self) -> None:
+        text = "I cannot help with that. I must decline. I refuse to comply."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        assert confidence == 0.95
+
+    # --- AMBIGUOUS-alone matches get low confidence (0.4) ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "It is not advisable to take aspirin on an empty stomach.",
+            "This could lead to injury if misused.",
+            "However, I can help with that.",
+            "This seems dangerous without a helmet.",
+        ],
+    )
+    def test_ambiguous_alone_low_confidence(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        # AMBIGUOUS patterns alone should be detected but with low confidence
+        assert is_refusal is True
+        assert confidence == 0.4
+
+    # --- "My apologies" is now in clear non-responses ---
+    def test_my_apologies_refusal(self) -> None:
+        text = "My apologies, but I cannot help with that."
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is True
+        # "My apologies" + "I cannot" = STRONG, confidence >= 0.8
+        assert confidence >= 0.8
+
+    # --- Whitespace-only string returns False ---
+    def test_whitespace_only_returns_false(self) -> None:
+        is_refusal, confidence = detect_refusal("   ")
+        assert is_refusal is False
+        assert confidence == 0.0
+
+    # --- Logging on detection ---
+    def test_refusal_logs_on_detection(self, caplog: pytest.LogCaptureFixture) -> None:
+        with caplog.at_level(logging.DEBUG, logger="psg.security.classifier"):
+            detect_refusal("I cannot help with that request.")
+        assert any("Refusal detected" in r.message for r in caplog.records)
+
+    # --- Non-refusal text should not be flagged ---
+    @pytest.mark.parametrize(
+        "text",
+        [
+            "Here's how to install Python on your system.",
+            "The weather today is sunny and warm.",
+            "I can definitely help you with that task.",
+            "I refuse to believe that claim without evidence.",
+            "This is not possible with only 2 data points.",
+        ],
+    )
+    def test_non_refusal_not_flagged(self, text: str) -> None:
+        is_refusal, confidence = detect_refusal(text)
+        assert is_refusal is False
+        assert confidence == 0.0
 
 
 def test_refusal_with_harm_keywords_not_flagged() -> None:

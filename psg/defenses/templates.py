@@ -57,6 +57,90 @@ def load_templates(
     return templates
 
 
+def _extract_code_block(content: str) -> str | None:
+    """Extract the first code block from markdown content.
+
+    Follows CommonMark spec for code fences:
+    - Opening fence: 3+ backticks or tildes, optional info string (first
+      word = language, rest = metadata), max 3 spaces indentation.
+    - Closing fence: same fence character, >= opening fence length, no info string.
+    - Nested fences inside code block handled by matching fence length.
+
+    Returns:
+        The stripped content inside the code block, or None if not found.
+    """
+    lines = content.split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+
+        # CommonMark: only 0-3 spaces indentation allowed before a fence
+        leading_spaces = len(line) - len(line.lstrip(" "))
+        if leading_spaces > 3:
+            i += 1
+            continue
+
+        stripped = line.lstrip(" ")
+
+        # Detect opening fence: 3+ backticks or 3+ tildes
+        fence_char = None
+        fence_len = 0
+        if stripped.startswith("```"):
+            fence_char = "`"
+            fence_len = len(stripped) - len(stripped.lstrip("`"))
+            if fence_len < 3:
+                i += 1
+                continue
+        elif stripped.startswith("~~~"):
+            fence_char = "~"
+            fence_len = len(stripped) - len(stripped.lstrip("~"))
+            if fence_len < 3:
+                i += 1
+                continue
+        else:
+            i += 1
+            continue
+
+        # Info string: everything after the fence characters on the opening line.
+        # CommonMark allows any text here (first word is the language, rest is
+        # metadata). Previous code rejected spaces in the info string — that
+        # incorrectly rejected valid fences like ```python extra.
+        after_fence = stripped[fence_len:].rstrip("\n\r")
+        # Info string must not contain backticks (for backtick fences) — per
+        # CommonMark spec, the info string cannot contain the fence character.
+        if fence_char == "`" and "`" in after_fence:
+            i += 1
+            continue
+
+        # Collect lines until matching closing fence
+        block_lines: list[str] = []
+        j = i + 1
+        found_close = False
+        while j < len(lines):
+            close_line = lines[j]
+            close_leading = len(close_line) - len(close_line.lstrip(" "))
+            close_stripped = close_line.lstrip(" ")
+            # Closing fence: max 3 spaces indent, same char, >= fence_len, no info string
+            if (
+                close_leading <= 3
+                and close_stripped.startswith(fence_char * fence_len)
+            ):
+                close_len = len(close_stripped) - len(close_stripped.lstrip(fence_char))
+                close_rest = close_stripped[close_len:].strip()
+                if close_len >= fence_len and close_rest == "":
+                    found_close = True
+                    break
+            block_lines.append(lines[j])
+            j += 1
+
+        if found_close:
+            return "\n".join(block_lines).strip()
+        # If no closing fence found, skip this opening and continue
+        i += 1
+
+    return None
+
+
 def parse_template(content: str, filename: str) -> DefenseTemplate | None:
     """
     Parse a defense template markdown file.
@@ -72,11 +156,9 @@ def parse_template(content: str, filename: str) -> DefenseTemplate | None:
     name_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
     name = name_match.group(1).strip() if name_match else filename.replace(".md", "")
 
-    # Extract content from code block (supports language identifiers like ```python)
-    code_match = re.search(r"```\w*\n?(.*?)```", content, re.DOTALL)
-    if code_match:
-        prompt_content = code_match.group(1).strip()
-    else:
+    # Extract content from code block (robust: handles nested backticks/tildes)
+    prompt_content = _extract_code_block(content)
+    if prompt_content is None:
         # Fallback: use content after first heading
         lines = content.split("\n")
         prompt_lines = []
