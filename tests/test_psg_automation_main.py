@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -136,7 +135,7 @@ def test_tmux_returns_session_dict_not_none(tmp_path: Path) -> None:
     pipeline.tester.run_in_tmux = MagicMock(return_value="auto_test")
 
     # run_testing with use_tmux=True
-    result = pipeline.run_testing(Path("/tmp/vectors.json"), use_tmux=True)
+    pipeline.run_testing(Path("/tmp/vectors.json"), use_tmux=True)
 
     # The method returns empty list (no blocking results) but must call run_in_tmux
     pipeline.tester.run_in_tmux.assert_called_once()

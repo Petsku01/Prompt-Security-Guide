@@ -6,6 +6,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from .logging_config import logger
+
 
 def hash_text(text: str) -> str:
     """Generate SHA256 hash of text."""
@@ -93,4 +95,4 @@ if __name__ == "__main__":
         assert store.is_known("test prompt")
         assert not store.is_known("new prompt")
         store.flush()
-        print("Dedup tests passed!")
+        logger.info("Dedup self-test passed")

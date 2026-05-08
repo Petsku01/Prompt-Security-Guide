@@ -66,8 +66,9 @@ def validate_url(url: str) -> bool:
     request.  For production use, pin resolved IPs to the HTTP client.
     Accepted risk for local/offline tool.
 
-    TODO: Pass resolved IPs to the HTTP client and enforce pinning so
-    that the request goes to the same IP that was validated here.
+    Future work: Pass resolved IPs to the HTTP client and enforce pinning so
+    that the request goes to the same IP that was validated here
+    (DNS rebinding mitigation — tracked separately).
 
     Args:
         url: URL string to validate

@@ -252,6 +252,7 @@ if __name__ == "__main__":
 
     config = load_config()
     generator = VectorGenerator(config)
-    print(
-        f"Generator initialized with store of {len(generator.vector_store)} known vectors"
+    logger.info(
+        "Generator initialized with store of %d known vectors",
+        len(generator.vector_store),
     )

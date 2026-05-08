@@ -98,7 +98,7 @@ def test_post_init_creates_directories(tmp_path: Path) -> None:
     logs = tmp_path / "logs"
     reports = tmp_path / "reports"
 
-    config = PipelineConfig(
+    PipelineConfig(
         base_dir=tmp_path,
         project_root=tmp_path,
         output_dir=tmp_path,

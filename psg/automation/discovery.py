@@ -231,4 +231,4 @@ if __name__ == "__main__":
     config = load_config()
     engine = DiscoveryEngine(config)
     sources = engine.discover()
-    print(f"Discovered {len(sources)} new sources")
+    logger.info("Discovered %d new sources", len(sources))
