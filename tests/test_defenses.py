@@ -663,3 +663,19 @@ class TestExtractCodeBlock:
         # This should NOT be treated as a valid opening fence
         # because the info string contains a backtick
         assert result is None
+
+    def test_crlf_line_endings_normalized(self):
+        """CRLF line endings should be normalized to LF before parsing."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\r\n\r\n```python\r\nprint('hello')\r\n```\r\n"
+        result = _extract_code_block(content)
+        assert result == "print('hello')"
+
+    def test_lf_only_in_content(self):
+        """Lone CR characters should be stripped from content."""
+        from psg.defenses.templates import _extract_code_block
+
+        content = "# Title\n\n```python\nline1\r\nline2\n```\n"
+        result = _extract_code_block(content)
+        assert result == "line1\nline2"
