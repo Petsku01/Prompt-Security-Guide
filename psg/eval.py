@@ -80,7 +80,6 @@ class EvalMetrics:
 
 
 def load_golden(path: Path) -> list[dict]:
-    """Load golden dataset from JSON file."""
     if not path.exists():
         raise FileNotFoundError(f"Golden dataset not found: {path}")
 

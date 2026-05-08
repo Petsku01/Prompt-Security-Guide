@@ -95,15 +95,7 @@ class InputValidationResult:
 
 
 def normalize_text(text: str) -> str:
-    """
-    Normalize text to catch common evasion techniques.
-
-    Handles:
-    - Unicode homoglyphs (е → e, а → a)
-    - Zero-width characters
-    - Whitespace normalization
-    - Common leetspeak
-    """
+    """Normalize text: homoglyphs, zero-width chars, whitespace, leetspeak."""
     if not text:
         return ""
 
@@ -284,12 +276,7 @@ def _heuristic_injection_score(text: str) -> float:
 
 
 def detect_canary_token(text: str, canary_tokens: Iterable[str] | None = None) -> bool:
-    """Return True if a canary token appears in the text.
-
-    Canary tokens are secrets placed in system prompts that should never
-    appear in outputs. Their presence indicates prompt leakage.
-    Both text and tokens are normalized for consistent matching.
-    """
+    """Check if canary tokens appear in text, indicating prompt leakage. Normalizes for consistent matching."""
     if not text or not canary_tokens:
         return False
 
@@ -310,18 +297,7 @@ def validate_input(
     use_ml_model: bool = True,
     custom_detectors: list[Callable[[str], list[str]]] | None = None,
 ) -> InputValidationResult:
-    """Layered input validation combining multiple detection methods.
-
-    Args:
-        text: User input to validate
-        canary_tokens: List of canary tokens to check for
-        block_threshold: Score threshold for blocking (0.0-1.0)
-        use_ml_model: Whether to use ML model (if available)
-        custom_detectors: Additional detection functions
-
-    Returns:
-        InputValidationResult with detection details
-    """
+    """Layered input validation. Returns InputValidationResult with detection details."""
     # Normalize for evasion resistance
     normalized = normalize_text(text)
 

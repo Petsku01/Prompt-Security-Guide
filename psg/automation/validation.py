@@ -30,17 +30,7 @@ QUERY_PATTERN = re.compile(r"^[\w\s\-\.\:\?\&\=\%\+\'\"]+$", re.UNICODE)
 
 
 def validate_query(query: str) -> str:
-    """Validate and sanitize search query.
-
-    Args:
-        query: Raw search query string
-
-    Returns:
-        Sanitized query string
-
-    Raises:
-        ValueError: If query is invalid
-    """
+    """Sanitize search query. Raises ValueError if invalid."""
     if not query:
         raise ValueError("Query cannot be empty")
 
@@ -59,23 +49,14 @@ def validate_query(query: str) -> str:
 
 
 def validate_url(url: str) -> bool:
-    """Check if URL is safe to process.
+    """Check if URL is safe.
 
-    validate_url resolves DNS at call time, which creates a TOCTOU window
-    — an attacker could rebind DNS between validation and the actual HTTP
-    request.  For production use, pin resolved IPs to the HTTP client.
-    Accepted risk for local/offline tool.
-
-    Future work: Pass resolved IPs to the HTTP client and enforce pinning so
-    that the request goes to the same IP that was validated here
-    (DNS rebinding mitigation — tracked separately).
-
-    Args:
-        url: URL string to validate
-
-    Returns:
-        True if URL is valid and safe, False otherwise
+    TOCTOU risk: DNS resolves at call time, attacker could rebind between
+    validation and request. Pin resolved IPs for production use.
+    Accepted risk for local/offline use.
     """
+    # TODO(security): Pass resolved IPs to HTTP client and enforce pinning
+    # (DNS rebinding mitigation — tracked separately)
     if not url or len(url) > MAX_URL_LENGTH:
         return False
 

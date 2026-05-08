@@ -143,7 +143,6 @@ def _read_validation_text(args: argparse.Namespace) -> str | None:
 
 
 def _print_validation_results(results: dict[str, Any], blocked: bool) -> None:
-    """Print human-readable validation results."""
     status = "🚫 BLOCKED" if blocked else "✅ PASSED"
     print(status)
     print()
@@ -213,7 +212,6 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def _parse_conversation_messages(content: str, fmt: str) -> list[dict[str, Any]]:
-    """Parse conversation messages from JSON or JSONL content."""
     if fmt == "jsonl":
         messages = []
         for line_num, line in enumerate(content.strip().split("\n"), 1):
@@ -526,7 +524,6 @@ def cmd_templates(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Main entry point for defend command."""
     parser = argparse.ArgumentParser(
         description="PSG Defense - Prompt injection defense testing"
     )

@@ -65,13 +65,7 @@ class Reporter:
         vectors: list[AttackVector],
         results: list[ModelTestResult],
     ) -> PipelineReport:
-        """Create a pipeline report.
-
-        When results carry technique-level data (non-empty techniques
-        dicts), top_technique_findings is populated and used for
-        summary / markdown formatting.  Otherwise the report falls back
-        to model-level grouping.
-        """
+        """Create pipeline report. Uses technique-level data when available, falls back to model-level grouping."""
         total_tests = sum(r.total for r in results)
         total_flagged = sum(r.flagged for r in results)
 
@@ -108,13 +102,7 @@ class Reporter:
         self,
         results: list[ModelTestResult],
     ) -> list[dict[str, Any]]:
-        """Group flagged vectors by technique across all models.
-
-        Returns a list of dicts sorted by total flagged desc:
-        [{"technique": str, "models": list[str], "total": int}, ...]
-
-        Returns empty list when no technique data is available.
-        """
+        """Group flagged vectors by technique. Returns list of {technique, models, total} sorted by total desc."""
         # Aggregate: technique -> {models: set, total: int}
         technique_map: dict[str, dict[str, Any]] = {}
 
@@ -206,17 +194,7 @@ class Reporter:
         return "\n".join(lines)
 
     def generate_summary_message(self, report: PipelineReport) -> str:
-        """Generate a summary notification message per pipeline format.
-
-        Format:
-            🔬 Auto Vector Pipeline Complete
-            📅 Date: YYYY-MM-DD
-            🆕 New vectors: X
-            🧪 Models tested: Y
-            ⚠️ Flagged: Z      ← only when flagged > 0
-            Flagged: Z                ← when flagged == 0
-            ...
-        """
+        """Generate summary notification with date, vectors, models, and flagged count."""
         lines = [
             "🔬 Auto Vector Pipeline Complete",
             "",
