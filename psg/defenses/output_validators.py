@@ -243,12 +243,12 @@ def validate_output(
 
     if blocked:
         logger.info(
-            "Output blocked: score=%.2f labels=%s secrets=%s pii=%s exfil=%s",
+            "Output blocked: score=%.2f labels=%s secrets=%d pii=%d exfil=%d",
             score,
             sorted(set(labels)),
-            secrets,
-            pii,
-            exfil,
+            len(secrets) if secrets else 0,
+            len(pii) if pii else 0,
+            len(exfil) if exfil else 0,
         )
     elif labels:
         logger.debug("Output flagged (below threshold): score=%.2f labels=%s", score, labels)

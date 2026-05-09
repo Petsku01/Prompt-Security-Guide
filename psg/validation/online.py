@@ -12,6 +12,17 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+
+def _sanitize_url(url: str) -> str:
+    """Strip userinfo (credentials) from URLs before logging."""
+    try:
+        parsed = urlparse(url)
+        if parsed.username or parsed.password:
+            return parsed._replace(netloc=f"{parsed.hostname or ''}{':' + str(parsed.port) if parsed.port else ''}").geturl()
+    except Exception:
+        return url
+    return url
+
 DEFAULT_TIMEOUT_SECONDS = 5.0
 DEFAULT_MAX_REQUESTS_PER_SECOND = 10.0
 _USER_AGENT = "PromptSecurityGuide/4.x validation"
@@ -85,7 +96,7 @@ def _validate_url_cached(
             headers={"User-Agent": _USER_AGENT},
         )
     except requests.RequestException as exc:
-        logger.debug("URL validation request failed for %s: %s", url, exc)
+        logger.debug("URL validation request failed for %s: %s", _sanitize_url(url), exc)
         return False
     return 200 <= response.status_code < 400
 
@@ -131,7 +142,7 @@ def _is_safe_url(url: str, *, allowlist: tuple[str, ...] = ()) -> bool:
     try:
         parsed = urlparse(url)
     except ValueError:
-        logger.debug("Failed to parse URL: %s", url)
+        logger.debug("Failed to parse URL: %s", _sanitize_url(url))
         return False
 
     if parsed.scheme.lower() not in {"http", "https"}:

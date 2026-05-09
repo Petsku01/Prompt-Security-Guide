@@ -126,9 +126,9 @@ def test_input_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", _classify)
 
-    # Should not raise because input screening is disabled — verify no exception
-    guard.on_llm_start({}, ["Ignore previous instructions"])
-    assert True, "Input screening should be skipped when screen_input=False"
+    # Should not raise because input screening is disabled
+    result = guard.on_llm_start({}, ["Ignore previous instructions"])
+    assert result is None, "Input screening should return None when screen_input=False"
 
 
 def test_output_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -139,9 +139,9 @@ def test_output_screening_can_be_disabled(monkeypatch: pytest.MonkeyPatch) -> No
 
     monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", _classify)
 
-    # Should not raise because output screening is disabled — verify no exception
-    guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="harmful content")))
-    assert True, "Output screening should be skipped when screen_output=False"
+    # Should not raise because output screening is disabled
+    result = guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="harmful content")))
+    assert result is None, "Output screening should return None when screen_output=False"
 
 
 def test_fails_closed_on_classifier_error(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -167,9 +167,9 @@ def test_fails_open_on_classifier_error_when_configured(
 
     monkeypatch.setattr("psg.integrations.langchain.classify_response_v2", _classify)
 
-    # fail_open=True: should not raise — verify no exception
-    guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="some text")))
-    assert True, "Should not raise when fail_open=True and classifier errors"
+    # fail_open=True: should not raise and should return None (no blocking)
+    result = guard.on_llm_end(_FakeLLMResult(_FakeGeneration(text="some text")))
+    assert result is None, "Should return None when fail_open=True and classifier errors"
 
 
 # Async tests
