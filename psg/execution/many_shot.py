@@ -54,7 +54,7 @@ class ManyShotOrchestrator:
         cfg: AppConfig,
         num_examples: int = 10,
         temperature: float = 0.7,
-    ):
+    ) -> None:
         self.client = client
         self.cfg = cfg
         self.num_examples = num_examples
@@ -158,7 +158,7 @@ class ManyShotOrchestrator:
                 final_response = response_data.content
 
             except LLMError as e:
-                logger.warning(f"Many-shot LLM call failed: {e}")
+                logger.warning("Many-shot LLM call failed: %s", e)
                 return ManyShotResult(
                     success=False,
                     examples_used=len(examples),
@@ -176,7 +176,7 @@ class ManyShotOrchestrator:
             )
 
         except Exception as e:
-            logger.error(f"Many-shot attack failed: {e}")
+            logger.exception("Many-shot attack failed unexpectedly")
             return ManyShotResult(
                 success=False,
                 examples_used=0,

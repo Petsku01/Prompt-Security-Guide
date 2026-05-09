@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+
 from ..security.classifier import classify_response_v2
 from ..security.detectors import KeywordDetector as _KeywordDetector
 from .base import DetectionResult
+
+logger = logging.getLogger(__name__)
 
 
 class KeywordDetectorPlugin:
@@ -18,13 +22,16 @@ class KeywordDetectorPlugin:
     def detect(self, prompt: str, response: str) -> DetectionResult:
         """Detect using keyword matching."""
         result = self._detector.classify(prompt, response)
-        return DetectionResult(
+        detection = DetectionResult(
             attack_successful=result.attack_successful,
             confidence=result.harm_score,
             reason=f"Labels: {result.harmful_labels}"
             if result.harmful_labels
             else "Clean",
         )
+        if detection.attack_successful:
+            logger.info("KeywordDetector: attack detected, confidence=%.2f", detection.confidence)
+        return detection
 
 
 class ClassifierDetectorPlugin:
@@ -38,7 +45,7 @@ class ClassifierDetectorPlugin:
     def detect(self, prompt: str, response: str) -> DetectionResult:
         """Detect using the v2 classifier."""
         result = classify_response_v2(response)
-        return DetectionResult(
+        detection = DetectionResult(
             attack_successful=result.harm_score >= self.threshold,
             confidence=result.harm_score,
             reason=f"Labels: {result.harmful_labels}"
@@ -50,6 +57,9 @@ class ClassifierDetectorPlugin:
                 "harm_score": result.harm_score,
             },
         )
+        if detection.attack_successful:
+            logger.info("ClassifierDetector: attack detected, confidence=%.2f", detection.confidence)
+        return detection
 
 
 class HarmClassifierPlugin:

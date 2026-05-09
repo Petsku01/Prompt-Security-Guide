@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import os
-import sys
 from pathlib import Path
 
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
 from .models import AppConfig, ClassificationInputMode, RedactionMode
 from .orchestrator import run
+
+logger = logging.getLogger(__name__)
 
 
 def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -242,8 +244,8 @@ def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
 
     total = len(attacks)
     rate = detected / total if total > 0 else 0
-    print(f"Defense-only scan: {detected}/{total} ({rate * 100:.1f}%) attacks blocked")
-    print(f"Threshold: {threshold}")
+    logger.info("Defense-only scan: %d/%d (%.1f%%) attacks blocked", detected, total, rate * 100)
+    logger.info("Threshold: %s", threshold)
 
     Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
     Path(cfg.report_json_path).write_text(
@@ -259,7 +261,7 @@ def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
             indent=2,
         )
     )
-    print(f"Results: {cfg.report_json_path}")
+    logger.info("Results: %s", cfg.report_json_path)
     return 0
 
 
@@ -268,7 +270,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         system_prompt = _resolve_system_prompt(args)
     except ConfigError as exc:
-        print(f"Configuration error: {exc}", file=sys.stderr)
+        logger.error("Configuration error: %s", exc)
         return 2
 
     cfg = AppConfig(
@@ -306,7 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         validate_config(cfg)
     except ConfigError as exc:
-        print(f"Configuration error: {exc}", file=sys.stderr)
+        logger.error("Configuration error: %s", exc)
         return 2
 
     # Defense-only mode: validate attacks without calling model
@@ -316,16 +318,16 @@ def main(argv: list[str] | None = None) -> int:
     try:
         summary, results = run(cfg)
     except CatalogError as exc:
-        print(f"Catalog error: {exc}", file=sys.stderr)
+        logger.error("Catalog error: %s", exc)
         return 3
     except LLMError as exc:
-        print(f"LLM error: {exc}", file=sys.stderr)
+        logger.error("LLM error: %s", exc)
         return 4
     except ConfigError as exc:
-        print(f"Configuration error: {exc}", file=sys.stderr)
+        logger.error("Configuration error: %s", exc)
         return 2
-    except Exception as exc:
-        print(f"Unexpected error: {exc}", file=sys.stderr)
+    except Exception:
+        logger.exception("Unexpected error in scan command")
         return 1
 
     # Generate HTML report if requested
@@ -340,20 +342,21 @@ def main(argv: list[str] | None = None) -> int:
                 model=args.model,
                 catalog=args.catalog,
             )
-            print(f"HTML report: {args.html_report}")
+            logger.info("HTML report: %s", args.html_report)
         except Exception as exc:
-            print(f"Warning: Failed to write HTML report: {exc}", file=sys.stderr)
+            logger.warning("Failed to write HTML report: %s", exc)
 
     if summary.report_write_failed:
-        print(
-            "Run completed, but report writing failed. Check logs for details.",
-            file=sys.stderr,
-        )
+        logger.error("Run completed, but report writing failed. Check logs for details.")
         return 1
 
-    print(
-        f"Done. total={summary.total} succeeded={summary.succeeded} "
-        f"failed={summary.failed} flagged={summary.flagged} duration={summary.duration_seconds:.2f}s"
+    logger.info(
+        "Done. total=%d succeeded=%d failed=%d flagged=%d duration=%.2fs",
+        summary.total,
+        summary.succeeded,
+        summary.failed,
+        summary.flagged,
+        summary.duration_seconds,
     )
     return 0
 

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import sys
 import time
 from dataclasses import dataclass
@@ -24,6 +25,8 @@ from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
 from .models import AppConfig
 from .orchestrator import run
+
+logger = logging.getLogger(__name__)
 
 
 # Preset definitions - maps preset name to catalog path(s)
@@ -324,6 +327,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Benchmark failed: {exc}", file=sys.stderr)
         return 1
     except Exception as exc:
+        logger.exception("Unexpected error in benchmark command")
         print(f"Unexpected error: {exc}", file=sys.stderr)
         return 1
 

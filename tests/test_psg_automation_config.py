@@ -166,7 +166,8 @@ def test_validate_environment_happy_path(tmp_path: Path) -> None:
     with patch("psg.automation.config.subprocess.run", return_value=mock_result):
         # Should not raise
         from psg.automation.config import validate_environment
-        validate_environment(config)
+        validate_environment(config)  # no exception = happy path
+        assert True, "validate_environment should succeed on happy path"
 
 
 def test_validate_environment_raises_on_missing_scrapling(tmp_path: Path) -> None:

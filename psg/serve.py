@@ -14,10 +14,13 @@ Endpoints:
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import time
 from dataclasses import dataclass
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 try:
     from fastapi import FastAPI
@@ -35,7 +38,7 @@ except ImportError:
         return None
 
 
-from .security.classifier import classify_response_v2
+from .security.classifier import classify_response_v2  # noqa: E402
 
 
 @dataclass
@@ -249,15 +252,13 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     """Run the server."""
     if not FASTAPI_AVAILABLE:
-        print("Error: FastAPI not installed.", file=sys.stderr)
-        print("Install with: pip install fastapi uvicorn", file=sys.stderr)
+        logger.error("FastAPI not installed. Install with: pip install fastapi uvicorn")
         return 1
 
     try:
         import uvicorn
     except ImportError:
-        print("Error: uvicorn not installed.", file=sys.stderr)
-        print("Install with: pip install uvicorn", file=sys.stderr)
+        logger.error("uvicorn not installed. Install with: pip install uvicorn")
         return 1
 
     parser = build_parser()
@@ -269,9 +270,9 @@ def main(argv: list[str] | None = None) -> int:
         threshold=args.threshold,
     )
 
-    print(f"Starting PSG server on {config.host}:{config.port}")
-    print(f"Default threshold: {config.threshold}")
-    print(f"Docs: http://{config.host}:{config.port}/docs")
+    logger.info("Starting PSG server on %s:%d", config.host, config.port)
+    logger.info("Default threshold: %s", config.threshold)
+    logger.info("Docs: http://%s:%d/docs", config.host, config.port)
 
     # Create app with config
     app = create_app(config)

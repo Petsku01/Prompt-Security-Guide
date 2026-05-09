@@ -210,7 +210,7 @@ class VectorGenerator:
         data = json.loads(response.strip())
         return self._normalize_vectors(data)
 
-    def _normalize_vectors(self, data) -> list:
+    def _normalize_vectors(self, data: list | dict) -> list:
         """Normalize different JSON structures to a list of vectors."""
         if isinstance(data, list):
             return data

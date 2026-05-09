@@ -8,8 +8,11 @@ Use as monitoring/alerting layer, not as security boundary.
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -237,6 +240,18 @@ def validate_output(
     blocked = score >= block_threshold
     if block_on_secrets and secrets:
         blocked = True
+
+    if blocked:
+        logger.info(
+            "Output blocked: score=%.2f labels=%s secrets=%s pii=%s exfil=%s",
+            score,
+            sorted(set(labels)),
+            secrets,
+            pii,
+            exfil,
+        )
+    elif labels:
+        logger.debug("Output flagged (below threshold): score=%.2f labels=%s", score, labels)
 
     return OutputValidationResult(
         blocked=blocked,

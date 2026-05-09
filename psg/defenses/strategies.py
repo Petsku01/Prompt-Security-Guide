@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import logging
+
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 
 class InstructionLevel(str, Enum):
@@ -95,4 +99,7 @@ def conflict_with_higher_priority(
     references_policy = any(
         token in trusted for token in ("must", "never", "policy", "do not")
     )
-    return asks_to_override and references_policy
+    result = asks_to_override and references_policy
+    if result:
+        logger.debug("Conflict detected: untrusted instruction attempts override")
+    return result

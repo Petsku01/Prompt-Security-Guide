@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from urllib.parse import urlparse
 
 from .automation.validation import validate_url
 from .models import AppConfig, ClassificationInputMode, RedactionMode
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigError(ValueError):
@@ -17,6 +20,7 @@ def validate_config(cfg: AppConfig) -> AppConfig:
 
     catalog = Path(cfg.catalog_path)
     if not catalog.exists() or not catalog.is_file():
+        logger.error("Catalog does not exist: %s", cfg.catalog_path)
         raise ConfigError(f"catalog does not exist: {cfg.catalog_path}")
 
     _validate_endpoint_url(

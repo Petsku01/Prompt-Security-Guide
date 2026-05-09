@@ -63,7 +63,8 @@ def install_cron(schedule: str = "0 3 * * *") -> bool:
             timeout=10,
         )
         existing = result.stdout if result.returncode == 0 else ""
-    except (subprocess.SubprocessError, OSError):
+    except (subprocess.SubprocessError, OSError) as exc:
+        logger.warning("Failed to read crontab: %s", exc)
         existing = ""
 
     # Remove any previous marker-tagged line to avoid duplicates
@@ -87,7 +88,8 @@ def install_cron(schedule: str = "0 3 * * *") -> bool:
             timeout=10,
         )
         return result.returncode == 0
-    except (subprocess.SubprocessError, OSError):
+    except (subprocess.SubprocessError, OSError) as exc:
+        logger.warning("Failed to write crontab: %s", exc)
         return False
 
 
@@ -106,7 +108,8 @@ def remove_cron() -> bool:
         if result.returncode != 0:
             return False
         existing = result.stdout
-    except (subprocess.SubprocessError, OSError):
+    except (subprocess.SubprocessError, OSError) as exc:
+        logger.warning("Failed to read crontab for removal: %s", exc)
         return False
 
     lines = [
@@ -197,20 +200,20 @@ def mark(config_dir: Path | None = None) -> None:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: daily_check.py [check|mark]")
+        logger.error("Usage: daily_check.py [check|mark]")
         return 1
 
     action = sys.argv[1]
 
     if action == "check":
         result = check()
-        print(result)
+        logger.info(result)
         return 0 if result == "ALREADY_RUN" else 1
     elif action == "mark":
         mark()
         return 0
     else:
-        print(f"Unknown action: {action}")
+        logger.error("Unknown action: %s", action)
         return 1
 
 

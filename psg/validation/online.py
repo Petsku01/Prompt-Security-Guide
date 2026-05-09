@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ipaddress
+import logging
 import socket
 import threading
 import time
@@ -8,6 +9,8 @@ from functools import lru_cache
 from urllib.parse import quote, urlparse
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT_SECONDS = 5.0
 DEFAULT_MAX_REQUESTS_PER_SECOND = 10.0
@@ -81,7 +84,8 @@ def _validate_url_cached(
             timeout=timeout,
             headers={"User-Agent": _USER_AGENT},
         )
-    except requests.RequestException:
+    except requests.RequestException as exc:
+        logger.debug("URL validation request failed for %s: %s", url, exc)
         return False
     return 200 <= response.status_code < 400
 
@@ -110,7 +114,8 @@ def _validate_doi_cached(
             timeout=timeout,
             headers={"User-Agent": _USER_AGENT},
         )
-    except requests.RequestException:
+    except requests.RequestException as exc:
+        logger.debug("DOI validation request failed for %s: %s", doi, exc)
         return False
     return 200 <= response.status_code < 400
 
@@ -126,6 +131,7 @@ def _is_safe_url(url: str, *, allowlist: tuple[str, ...] = ()) -> bool:
     try:
         parsed = urlparse(url)
     except ValueError:
+        logger.debug("Failed to parse URL: %s", url)
         return False
 
     if parsed.scheme.lower() not in {"http", "https"}:
@@ -175,7 +181,8 @@ def _resolve_host_ips(
 ) -> set[ipaddress.IPv4Address | ipaddress.IPv6Address]:
     try:
         infos = socket.getaddrinfo(hostname, port or 443, proto=socket.IPPROTO_TCP)
-    except OSError:
+    except OSError as exc:
+        logger.debug("DNS resolution failed for %s: %s", hostname, exc)
         return set()
 
     resolved: set[ipaddress.IPv4Address | ipaddress.IPv6Address] = set()

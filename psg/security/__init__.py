@@ -4,7 +4,7 @@ from .redaction import redact_text
 __all__ = ["classify_response", "redact_text", "evaluate"]
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> object:
     if name == "evaluate":
         from . import evaluate as evaluate_module
 

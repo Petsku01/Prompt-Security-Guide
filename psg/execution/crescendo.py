@@ -56,7 +56,7 @@ class CrescendoOrchestrator:
         cfg: AppConfig,
         max_turns: int = 10,
         temperature: float = 0.7,
-    ):
+    ) -> None:
         self.client = client
         self.cfg = cfg
         self.max_turns = max_turns
@@ -155,7 +155,7 @@ class CrescendoOrchestrator:
                     assistant_msg = response_data.content
 
                 except LLMError as e:
-                    logger.warning(f"Crescendo turn {turn_num} failed: {e}")
+                    logger.warning("Crescendo turn %d failed: %s", turn_num, e)
                     return CrescendoResult(
                         success=False,
                         turns=turns,
@@ -196,7 +196,7 @@ class CrescendoOrchestrator:
             )
 
         except Exception as e:
-            logger.error(f"Crescendo attack failed: {e}")
+            logger.exception("Crescendo attack failed unexpectedly")
             return CrescendoResult(
                 success=False,
                 turns=turns,
