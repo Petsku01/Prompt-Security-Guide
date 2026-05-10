@@ -1,0 +1,42 @@
+# Acceptance Tests — hermes-update-audit skill creation
+# Pipeline ID: skill-hermes-update-audit-2026-05-10
+
+acceptance_tests:
+  - test_name: test_skill_loads
+    spec_ref: "Skill can be loaded via skill_view without errors"
+    input_description: "Call skill_view(name='hermes-update-audit')"
+    expected_behavior: "SKILL.md content returned with valid YAML frontmatter"
+    edge_cases:
+      - "Missing frontmatter fields = FAIL"
+      - "Empty skill = FAIL"
+
+  - test_name: test_checklist_steps_reproducible
+    spec_ref: "Every checklist step maps to a runnable hermes command"
+    input_description: "Scan SKILL.md for all hermes commands referenced in checklists"
+    expected_behavior: "Every command exists in hermes CLI (hermes --help)"
+    edge_cases:
+      - "Deprecated commands flagged"
+      - "Version-specific commands noted with minimum version"
+
+  - test_name: test_pitfalls_minimum_3
+    spec_ref: "Pitfalls section contains at least 3 production findings"
+    input_description: "Count entries in Pitfalls section"
+    expected_behavior: ">= 3 pitfalls from real production incidents"
+    edge_cases:
+      - "Each pitfall has remediation command"
+      - "Pitfalls are version-tagged"
+
+  - test_name: test_security_defaults_coverage
+    spec_ref: "Security defaults section covers redact_secrets, redact_pii, approvals.mode"
+    input_description: "Check SKILL.md for all three security toggle names"
+    expected_behavior: "All three present with current default values and recommended values"
+    edge_cases:
+      - "Defaults that changed between versions are noted"
+      - "Remediation commands provided for each toggle"
+
+  - test_name: test_no_pipeline_cross_reference
+    spec_ref: "Skill does not reference autonomous-pipeline (different workflow)"
+    input_description: "Grep SKILL.md for 'autonomous-pipeline' or 'P1/P2/P3/P4/P5' pipeline phases"
+    expected_behavior: "No references to pipeline phases; this is a verification checklist, not a code review pipeline"
+    edge_cases:
+      - "Mentioning 'pipeline' in general context is OK (e.g. 'CI pipeline')"
