@@ -15,6 +15,11 @@ results/*
 !results/samples/**
 *.log
 
+# Coverage
+.coverage
+coverage.json
+htmlcov/
+
 # Secrets / env
 .env
 .env.*
@@ -37,10 +42,25 @@ build/
 logs/
 models/
 
+# Pipeline artefacts (not project source)
+.hermes/
+
+# Root-level pipeline artefacts
+/ARCHITECTURE.md
+/IMPROVEMENT_PLAN.md
+/KIMI_AUDIT_GUIDE.md
+/SENIOR_CODE_REVIEW.md
+
+# PSG automation runtime
+psg/.hermes/
+psg/automation/implementation.log
+psg/automation/sources_*.json
+!psg/automation/known_sources.json
+!psg/automation/known_vectors.json
+psg/security/baseline_metrics.json
+
 # Research sources (compiled, not source code)
 research/sources_*.md
 
 # Ruff cache
 .ruff_cache/
-.coverage
-htmlcov/
