@@ -14,7 +14,10 @@ results/*
 !results/samples/
 !results/samples/**
 *.log
+.last_discovery
 
+# Auto-generated datasets
+datasets/auto_*.json
 # Coverage
 .coverage
 coverage.json
