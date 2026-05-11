@@ -13,13 +13,13 @@ What is real today:
 - Daily automation pipeline for discovery/generation/testing (mostly internal tooling style)
 
 What is missing relative to positioning:
-- No runtime API product mode (request-time screening endpoint)
-- No plugin/extension architecture for custom probes/detectors/reporters
-- No true parallel/distributed multi-model execution in core runtime
+- ✅ ~~No runtime API product mode (request-time screening endpoint)~~ — Implemented: `psg serve` (psg/serve.py)
+- ✅ ~~No plugin/extension architecture for custom probes/detectors/reporters~~ — Implemented: `psg/plugins/` (base.py, builtin.py)
+- ✅ ~~No true parallel/distributed multi-model execution in core runtime~~ — Implemented: `psg/execution/parallel.py`
 - No continuous monitoring loop with alerting/SIEM-native outputs in core product
-- No first-class LangChain/LlamaIndex middleware package
-- No visual dashboard in active runtime (only text/json reports)
-- No standardized benchmark runner with confidence intervals in shipped CLI
+- ✅ ~~No first-class LangChain/LlamaIndex middleware package~~ — Implemented: `psg/integrations/langchain.py`
+- ✅ ~~No visual dashboard in active runtime (only text/json reports)~~ — Implemented: `psg/reporting/html_report.py`
+- ✅ ~~No standardized benchmark runner with confidence intervals in shipped CLI~~ — Implemented: `psg/benchmark.py`
 - Defense guidance exists but was historically descriptive, not actionable by default
 - No automated remediation loop (policy update suggestions, CI guardrails, auto-ticketing)
 
@@ -27,17 +27,17 @@ What is missing relative to positioning:
 
 Legend: `Strong` = clearly present, `Partial` = limited/manual, `Gap` = not first-class.
 
-| Capability | PSG | NVIDIA Garak | Rebuff | LLM Guard | Lakera Guard |
-|---|---|---|---|---|---|
-| Real-time API mode | Gap | Partial | Partial | Partial | Strong |
-| Plugin architecture | Gap | Strong | Partial | Partial | Strong (managed platform controls) |
-| Multi-model testing | Partial | Strong | Gap | Partial | Strong |
-| Continuous monitoring | Partial (automation scripts) | Partial | Partial | Partial | Strong |
-| LangChain/LlamaIndex integration | Gap | Partial | Partial | Partial | Strong/partner integrations |
-| Visual dashboards | Gap | Partial | Partial | Gap | Strong |
-| Standard benchmark workflows | Partial | Strong | Gap | Partial | Partial |
-| Defense recommendations | Partial (now improved) | Partial | Partial | Partial | Strong (policy-centric UX) |
-| Automated remediation | Gap | Gap | Gap | Gap | Partial |
+|| Capability | PSG | NVIDIA Garak | Rebuff | LLM Guard | Lakera Guard |
+||---|---|---|---|---|---|
+|| Real-time API mode | ✅ Implemented (psg serve) | Partial | Partial | Partial | Strong |
+|| Plugin architecture | ✅ Implemented (psg/plugins/) | Strong | Partial | Partial | Strong (managed platform controls) |
+|| Multi-model testing | ✅ Partial → Strong (parallel.py) | Strong | Gap | Partial | Strong |
+|| Continuous monitoring | Partial (automation scripts) | Partial | Partial | Partial | Strong |
+|| LangChain/LlamaIndex integration | ✅ Implemented (psg/integrations/) | Partial | Partial | Partial | Strong/partner integrations |
+|| Visual dashboards | ✅ Implemented (html_report.py) | Partial | Partial | Gap | Strong |
+|| Standard benchmark workflows | ✅ Implemented (psg benchmark) | Strong | Gap | Partial | Partial |
+|| Defense recommendations | Partial (now improved) | Partial | Partial | Partial | Strong (policy-centric UX) |
+|| Automated remediation | Gap | Gap | Gap | Gap | Partial |
 
 ### Specific strategic delta
 - Versus **Garak**: PSG lacks breadth/depth of probe ecosystem and extension model.
@@ -57,15 +57,15 @@ Legend: `Strong` = clearly present, `Partial` = limited/manual, `Gap` = not firs
 
 | Priority | Improvement | Why it matters | Effort |
 |---|---|---|---|
-| 1 | Add runtime screening API (`psg serve`) with sync/async `/screen` endpoint | Converts PSG from offline tool to production guardrail building block | M |
-| 2 | Ship LangChain/LlamaIndex middleware adapters | Immediate adoption lift in real app stacks | S |
-| 3 | Implement plugin interfaces for probes/detectors/reporters | Unblocks ecosystem and enterprise customization | M |
-| 4 | Add parallel execution in core orchestrator (`--workers`, `--models`) | Massive throughput gains for benchmarking and CI | M |
-| 5 | Standard benchmark command (`psg benchmark`) with JBB/OWASP presets + confidence intervals | Credible competitive claims and reproducible scorecards | M |
-| 6 | Build HTML dashboard report artifact with trend charts | Better stakeholder communication and decision speed | M |
+|| 1 | Add runtime screening API (`psg serve`) with sync/async `/screen` endpoint | Converts PSG from offline tool to production guardrail building block | ✅ Implemented |
+|| 2 | Ship LangChain/LlamaIndex middleware adapters | Immediate adoption lift in real app stacks | ✅ Implemented |
+|| 3 | Implement plugin interfaces for probes/detectors/reporters | Unblocks ecosystem and enterprise customization | ✅ Implemented |
+|| 4 | Add parallel execution in core orchestrator (`--workers`, `--models`) | Massive throughput gains for benchmarking and CI | ✅ Implemented |
+|| 5 | Standard benchmark command (`psg benchmark`) with JBB/OWASP presets + confidence intervals | Credible competitive claims and reproducible scorecards | ✅ Implemented |
+|| 6 | Build HTML dashboard report artifact with trend charts | Better stakeholder communication and decision speed | ✅ Implemented |
 | 7 | Add continuous monitoring mode (scheduled runs + delta alerts) | Moves from one-off tests to ongoing risk management | M |
 | 8 | Add policy-specific defense recommendation engine (rule-driven) | Shortens time from finding to mitigation | S |
-| 9 | Add CI/CD “security gate” action (fail build on threshold regression) | Makes PSG operationally enforceable | S |
+|| 9 | Add CI/CD "security gate" action (fail build on threshold regression) | Makes PSG operationally enforceable | ✅ Implemented |
 | 10 | Add remediation playbooks with auto-generated patch suggestions for system prompts/filters | Differentiates PSG from scanner-only competitors | L |
 
 ## Improvement Roadmap
@@ -76,27 +76,27 @@ Legend: `Strong` = clearly present, `Partial` = limited/manual, `Gap` = not firs
 - Add prioritized, actionable remediation guidance based on observed failures.
 - Success metric: every defense report contains at least one concrete action.
 
-2. **LangChain adapter (minimal package)**
+2. **LangChain adapter (minimal package)** ✅ Implemented (`psg/integrations/langchain.py`)
 - `PSGGuardMiddleware` for request/response checks.
 - Success metric: demo app integration in <15 lines.
 
-3. **CI regression gate command**
-- `psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85`
+3. **CI regression gate command** ✅ Implemented (`.github/workflows/test.yml`)
+- `psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85`
 - Success metric: ready for GitHub Actions usage.
 
-4. **Parallel scan flag in orchestrator**
+4. **Parallel scan flag in orchestrator** ✅ Implemented (`psg/execution/parallel.py`)
 - `--workers N` for attack-level concurrency.
 - Success metric: 2-4x speedup on standard catalog.
 
-5. **Benchmark preset command scaffold**
+5. **Benchmark preset command scaffold** ✅ Implemented (`psg/benchmark.py`)
 - `psg benchmark --preset jbb --model ...`
 - Success metric: one-command standardized run.
 
 ## Near-Term (2-6 Weeks)
 
-1. Runtime API server (`psg serve`) with auth and structured policy responses.
-2. Plugin system (`entry_points`) for custom detectors/probes.
-3. HTML report with trend visualization from historical results.
+1. Runtime API server (`psg serve`) ✅ Implemented (`psg/serve.py`) with auth and structured policy responses.
+2. Plugin system (`entry_points`) ✅ Implemented (`psg/plugins/`) for custom detectors/probes.
+3. HTML report ✅ Implemented (`psg/reporting/html_report.py`) with trend visualization from historical results.
 4. Multi-model matrix execution + comparative output artifact.
 5. Alerting adapters (Slack/Discord/webhook) for regression deltas.
 

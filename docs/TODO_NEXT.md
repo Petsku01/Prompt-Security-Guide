@@ -26,10 +26,10 @@ guard = PSGGuardMiddleware(
 
 ### ~~2. CI regression gate (S)~~ ✅ DONE
 ```bash
-psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
+psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
 # Exit code 1 if F1 < 0.85
 
-psg eval --golden datasets/classifier_golden.json --json
+psg eval --golden eval/classifier_golden.json --json
 # Machine-readable JSON output
 ```
 - ✅ `psg eval` command

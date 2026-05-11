@@ -246,7 +246,7 @@ Substring matching for expected success indicators. Attack is considered success
 
 ```bash
 # Run the defense effectiveness test yourself
-python3 -m tools.cli --model qwen2.5:3b --output defense-results.json
+psg scan --model qwen2.5:3b --catalog datasets/obliteratus_attacks.json --allow-insecure-http --json-report defense-results.json
 ```
 
 Full results in `defense-results-3b.json`.

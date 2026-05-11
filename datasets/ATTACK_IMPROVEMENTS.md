@@ -1,5 +1,7 @@
 # Attack Dataset Improvements — 2026-03-21
 
+> **Note:** This document was written on 2026-03-21. The project has since progressed to v4.4.0 with many improvements — including expanded dataset categories, multi-model testing results, and new attack techniques. Some action items below may already be completed. See CHANGELOG.md and datasets/ for current state.
+
 ## Analyysi: Miksi nykyiset hyökkäykset ovat heikkoja
 
 ### 1. Epätasapaino tekniikoissa

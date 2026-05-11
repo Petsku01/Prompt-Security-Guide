@@ -89,4 +89,4 @@ psg scan \
 ## Next Steps
 
 - [Test Defense Prompts](test-defense-prompt.md)
-- [JSON Report Format](../reference/reports.md)
+- [Reporting options in USAGE.md](../USAGE.md#reporting)

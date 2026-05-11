@@ -171,11 +171,11 @@ datasets/
 │   ├── illegal.json          # 20-30 promptia
 │   ├── dangerous_advice.json # 20-30 promptia
 │   └── system_manipulation.json # 20-30 promptia
-├── techniques/
+├── techniques/              # [planned] Does not exist yet; use datasets/categories/ instead
 │   ├── jailbreaks.json       # Tunnetut jailbreak-templatet
 │   ├── encodings.json        # Base64, ROT13, etc.
 │   └── roleplay.json         # Roolileikkitekniikat
-└── combined/
+└── combined/                # [planned] Does not exist yet; use datasets/categories/ instead
     └── full_test_suite.json  # Kaikki yhdistettynä
 ```
 
@@ -240,22 +240,22 @@ Tämä dataset on VAIN:
 ## Toteutussuunnitelma
 
 ### Vaihe 1: Kategoriakohtaiset promptit
-- [ ] physical_harm.json (20+ promptia)
-- [ ] malware.json (20+ promptia)
-- [ ] fraud.json (20+ promptia)
-- [ ] ... (loput kategoriat)
+- [x] physical_harm.json (20+ promptia)
+- [x] malware.json (20+ promptia)
+- [x] fraud.json (20+ promptia)
+- [x] ... (loput kategoriat)
 
 ### Vaihe 2: Tekniikkavariantit
-- [ ] Lisää jailbreak-templatet
-- [ ] Lisää encoding-variantit
-- [ ] Lisää roleplay-variantit
+- [x] Lisää jailbreak-templatet
+- [x] Lisää encoding-variantit
+- [x] Lisää roleplay-variantit
 
 ### Vaihe 3: Evaluaatio-pipeline
-- [ ] LLM-as-judge implementaatio
+- [x] LLM-as-judge implementaatio
 - [ ] Validointi manuaalisella otoksella
 
 ### Vaihe 4: Ensimmäinen testikierros
-- [ ] Testaa 3-5 mallia
+- [x] Testaa 3-5 mallia
 - [ ] Validoi tulokset
 - [ ] Julkaise sensuroitu raportti
 

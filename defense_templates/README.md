@@ -62,7 +62,7 @@ The following are longer form protection instructions:
 - [Do not Leak!](./Do%20not%20Leak!.md)
 - [The 5 Rules](./The%205%20Rules.md)
 - [The Soup Boy](./The%20Soup%20Boy.md)
-- [I will report you](/I%20will%20report%20you.md)
+- [I will report you](./I%20will%20report%20you.md)
 - [Overly protective parent](./Overly%20protective%20parent.md)
 - [Top Secret Core Instructions](./Top%20Secret%20Core%20Instructions.md)
 - [Bot data protection](./Bot%20data%20protection.md)

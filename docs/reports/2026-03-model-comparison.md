@@ -1,7 +1,7 @@
 # LLM Jailbreak Resistance Comparison
 
 > **Date:** March 2026  
-> **Test Version:** Jailbreak Tester v3.0  
+> **Test Version:** PSG v3.0  
 > **Dataset:** 65 attack vectors (direct prompts + 5 jailbreak variants)
 
 ---
@@ -182,7 +182,7 @@ Flagged responses contained the following categories:
 ### Test environment
 
 - **Runtime:** Ollama (localhost)
-- **Testikehys:** Jailbreak Tester v3.0
+- **Testikehys:** PSG v3.0
 - **Detector:** Pattern-based + keyword matching
 
 ### Dataset

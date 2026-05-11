@@ -192,7 +192,7 @@ psg benchmark --preset full --model llama3:8b \
 Evaluate detector against golden dataset.
 
 ```bash
-psg eval --golden datasets/golden.json --threshold 0.5 --json
+psg eval --golden eval/classifier_golden.json --threshold 0.5 --json
 ```
 
 ---

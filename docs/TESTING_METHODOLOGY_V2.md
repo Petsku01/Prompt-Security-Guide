@@ -264,30 +264,29 @@ ls datasets/categories/*.json
 
 ```bash
 # Single model, one category
-python -m psg \
+psg scan \
   --model llama3:8b \
   --catalog datasets/categories/malware.json \
   --base-url http://localhost:11434/v1 \
+  --allow-insecure-http \
   --json-report results/llama3_malware.json \
   --temperature 0.0
 
 # All categories for one model
 for cat in malware fraud physical_harm privacy disinformation system_manipulation; do
-  python -m psg \
+  psg scan \
     --model llama3:8b \
     --catalog datasets/categories/${cat}.json \
+    --allow-insecure-http \
     --json-report results/llama3_${cat}.json
 done
-
-# Multi-model testing (script)
-./run_multi_model_test.sh
 ```
 
 ### 5.3 Phase 3: LLM-Judge Evaluation
 
 ```bash
 # Run LLM judge on top of pattern matching results
-python -m psg.evaluate \
+psg eval \
   --input results/llama3_malware.json \
   --judge-model llama3:8b \
   --output results/llama3_malware_judged.json
@@ -296,10 +295,14 @@ python -m psg.evaluate \
 ### 5.4 Phase 4: Analyze Results
 
 ```python
-# Aggregate results
-python scripts/aggregate_results.py \
-  --input results/*.json \
-  --output results/summary.json
+# Aggregate and analyze results from JSON reports
+# Use: psg eval or review results/*.json directly
+import json, glob
+results = []
+for f in glob.glob("results/*.json"):
+    with open(f) as fh:
+        results.append(json.load(fh))
+# Process results as needed
 ```
 
 ---
@@ -421,19 +424,19 @@ Techniques effectiveness:
 ## 9. Next Development Steps
 
 ### Short Term
-- [ ] Implementoi parannettu classifier (refusal detection)
-- [ ] Add LLM-judge evaluation
-- [ ] Run tests on 3 models with the new dataset
+- [x] ✅ Implementoi parannettu classifier (refusal detection)
+- [x] ✅ Add LLM-judge evaluation
+- [x] Run tests on 3 models with the new dataset
 
 ### Mid Term
-- [ ] HarmBench classifier integration
-- [ ] Automated report generation
-- [ ] CI/CD test automation
+- [x] ✅ HarmBench classifier integration
+- [x] ✅ Automated report generation
+- [x] ✅ CI/CD test automation
 
 ### Long Term
-- [ ] Multi-turn attack support
+- [x] ✅ Multi-turn attack support
 - [ ] Encoding attack variations
-- [ ] Defense effectiveness testing
+- [x] ✅ Defense effectiveness testing
 
 ---
 

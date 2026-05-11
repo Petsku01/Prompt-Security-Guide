@@ -123,5 +123,4 @@ psg scan \
 
 ## Next Steps
 
-- [Fine-tune a Custom Detector](fine-tune-detector.md)
 - [CLI Reference](../reference/cli.md)

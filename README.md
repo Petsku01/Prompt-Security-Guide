@@ -125,7 +125,7 @@ python -m psg.automation --config config.yaml
 psg/              — core library and CLI
 psg/automation/   — auto vector pipeline modules
 datasets/         — attack catalogs (JSON)
-tests/            — 502 tests
+tests/            — 581 tests
 docs/             — methodology and research
 ```
 

@@ -28,4 +28,4 @@ Legacy files (for example `full-61-substring.json`) are retained as historical a
 
 - Attack counts are not fully aligned across all files; compare like-for-like subsets when possible.
 - JSON schema fields (`schema_version`, `runtime_config`) are present for reproducibility.
-- See `ANALYSIS_SUMMARY.md` for integrated interpretation.
+- See `ANALYSIS_SUMMARY.md` for integrated interpretation. <!-- TODO: ANALYSIS_SUMMARY.md does not exist yet -->

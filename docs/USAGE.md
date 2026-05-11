@@ -149,7 +149,7 @@ Ensure classifier quality doesn't degrade:
 
 ```bash
 python3 -m psg eval \
-  --golden datasets/classifier_golden.json \
+  --golden eval/classifier_golden.json \
   --fail-on-macro-f1-below 0.85
 ```
 
@@ -159,7 +159,7 @@ Exit code 1 if F1 score drops below threshold. Use `--json` for machine-readable
 
 ```yaml
 - name: PSG Classifier Gate
-  run: python3 -m psg eval --golden datasets/classifier_golden.json --fail-on-macro-f1-below 0.85
+  run: python3 -m psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
 ```
 
 ---

@@ -102,7 +102,7 @@ Security tools must:
 ### Step 1: Fork and Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/prompt-security-guide.git
+git clone https://github.com/YOUR_USERNAME/Prompt-Security-Guide.git
 cd prompt-security-guide
 ```
 

@@ -1,5 +1,7 @@
 # ROADMAP.md — prompt-security-guide v4.0
 
+> **⚠️ DRAFT — Last updated 2026-03-19.** Project has since progressed to v4.4.0. Many proposed items have been implemented with different structure. See CHANGELOG.md for current state. The proposed directory structures (e.g., `psg/probes/`, `psg/evaluation/`, `psg/generators/`) do not match the current codebase layout. This document is retained for historical reference and future planning.
+
 > Plan to transform the repo into a professional LLM security testing framework.
 
 **Version:** Draft 1.0  
@@ -78,7 +80,7 @@ prompt-security-guide/
 │   ├── jbb_behaviors.json    # JailbreakBench aligned
 │   ├── strongreject.json     # StrongREJECT categories
 │   ├── owasp_aitg.json       # OWASP AI Testing Guide
-│   └── custom/               # Custom datasets
+│   └── custom/               # Custom datasets [planned — does not exist yet]
 │
 ├── docs/                     # Documentation
 │   ├── README.md
@@ -279,7 +281,7 @@ test:
 
 lint:
 	ruff check psg/
-	black --check psg/
+	ruff format --check psg/
 
 scan:
 	python -m psg scan --model ollama/llama3:8b --probes quick
@@ -404,12 +406,12 @@ repos:
 
 ## Next steps
 
-1. [ ] Approve ROADMAP.md
-2. [ ] Create `psg/` rakenne
-3. [ ] Migrate old runtime structure → `psg/`
-4. [ ] Move old files → `_archive/`
-5. [ ] Update `pyproject.toml`
-6. [ ] Write new README.md
+1. [x] Approve ROADMAP.md
+2. [x] Create `psg/` rakenne
+3. [x] Migrate old runtime structure → `psg/`
+4. [x] Move old files → `_archive/`
+5. [x] Update `pyproject.toml`
+6. [x] Write new README.md
 
 ---
 
