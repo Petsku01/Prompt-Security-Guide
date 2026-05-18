@@ -1,4 +1,4 @@
-# Käyttämättömät lähteet prompt-security-guide repossa — 2026-03-21
+# Käyttämättömät lähteet prompt-security-guide repossa -- 2026-03-21
 
 ## Löydetyt resurssit
 

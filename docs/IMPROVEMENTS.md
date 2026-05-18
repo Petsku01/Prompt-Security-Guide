@@ -13,13 +13,13 @@ What is real today:
 - Daily automation pipeline for discovery/generation/testing (mostly internal tooling style)
 
 What is missing relative to positioning:
-- ✅ ~~No runtime API product mode (request-time screening endpoint)~~ — Implemented: `psg serve` (psg/serve.py)
-- ✅ ~~No plugin/extension architecture for custom probes/detectors/reporters~~ — Implemented: `psg/plugins/` (base.py, builtin.py)
-- ✅ ~~No true parallel/distributed multi-model execution in core runtime~~ — Implemented: `psg/execution/parallel.py`
+- ✅ ~~No runtime API product mode (request-time screening endpoint)~~ -- Implemented: `psg serve` (psg/serve.py)
+- ✅ ~~No plugin/extension architecture for custom probes/detectors/reporters~~ -- Implemented: `psg/plugins/` (base.py, builtin.py)
+- ✅ ~~No true parallel/distributed multi-model execution in core runtime~~ -- Implemented: `psg/execution/parallel.py`
 - No continuous monitoring loop with alerting/SIEM-native outputs in core product
-- ✅ ~~No first-class LangChain/LlamaIndex middleware package~~ — Implemented: `psg/integrations/langchain.py`
-- ✅ ~~No visual dashboard in active runtime (only text/json reports)~~ — Implemented: `psg/reporting/html_report.py`
-- ✅ ~~No standardized benchmark runner with confidence intervals in shipped CLI~~ — Implemented: `psg/benchmark.py`
+- ✅ ~~No first-class LangChain/LlamaIndex middleware package~~ -- Implemented: `psg/integrations/langchain.py`
+- ✅ ~~No visual dashboard in active runtime (only text/json reports)~~ -- Implemented: `psg/reporting/html_report.py`
+- ✅ ~~No standardized benchmark runner with confidence intervals in shipped CLI~~ -- Implemented: `psg/benchmark.py`
 - Defense guidance exists but was historically descriptive, not actionable by default
 - No automated remediation loop (policy update suggestions, CI guardrails, auto-ticketing)
 
@@ -31,7 +31,7 @@ Legend: `Strong` = clearly present, `Partial` = limited/manual, `Gap` = not firs
 ||---|---|---|---|---|---|
 || Real-time API mode | ✅ Implemented (psg serve) | Partial | Partial | Partial | Strong |
 || Plugin architecture | ✅ Implemented (psg/plugins/) | Strong | Partial | Partial | Strong (managed platform controls) |
-|| Multi-model testing | ✅ Partial → Strong (parallel.py) | Strong | Gap | Partial | Strong |
+|| Multi-model testing | ✅ Partial -> Strong (parallel.py) | Strong | Gap | Partial | Strong |
 || Continuous monitoring | Partial (automation scripts) | Partial | Partial | Partial | Strong |
 || LangChain/LlamaIndex integration | ✅ Implemented (psg/integrations/) | Partial | Partial | Partial | Strong/partner integrations |
 || Visual dashboards | ✅ Implemented (html_report.py) | Partial | Partial | Gap | Strong |

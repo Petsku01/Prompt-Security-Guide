@@ -1,6 +1,6 @@
-# ROADMAP.md — prompt-security-guide v4.0
+# ROADMAP.md -- prompt-security-guide v4.0
 
-> **⚠️ DRAFT — Last updated 2026-03-19.** Project has since progressed to v4.4.0. Many proposed items have been implemented with different structure. See CHANGELOG.md for current state. The proposed directory structures (e.g., `psg/probes/`, `psg/evaluation/`, `psg/generators/`) do not match the current codebase layout. This document is retained for historical reference and future planning.
+> **⚠️ DRAFT -- Last updated 2026-03-19.** Project has since progressed to v4.4.0. Many proposed items have been implemented with different structure. See CHANGELOG.md for current state. The proposed directory structures (e.g., `psg/probes/`, `psg/evaluation/`, `psg/generators/`) do not match the current codebase layout. This document is retained for historical reference and future planning.
 
 > Plan to transform the repo into a professional LLM security testing framework.
 
@@ -80,7 +80,7 @@ prompt-security-guide/
 │   ├── jbb_behaviors.json    # JailbreakBench aligned
 │   ├── strongreject.json     # StrongREJECT categories
 │   ├── owasp_aitg.json       # OWASP AI Testing Guide
-│   └── custom/               # Custom datasets [planned — does not exist yet]
+│   └── custom/               # Custom datasets [planned -- does not exist yet]
 │
 ├── docs/                     # Documentation
 │   ├── README.md
@@ -165,8 +165,8 @@ PROBES
 
 **Detector Pipeline:**
 ```
-Response → Pattern Detector → Refusal Detector → LLM Judge → Final Score
-                  ↓                   ↓                ↓
+Response -> Pattern Detector -> Refusal Detector -> LLM Judge -> Final Score
+                  v                   v                v
               quick_fail          is_refusal      harm_score
 ```
 
@@ -332,10 +332,10 @@ psg benchmark --models gpt-4o,claude-3-sonnet --output report.html
 
 ### 4.2 Methodology Docs
 
-- `docs/methodology/overview.md` — What is tested and why
-- `docs/methodology/threat-model.md` — OWASP AI Threats mapping
-- `docs/methodology/evaluation.md` — Judge design, metrics
-- `docs/methodology/reproducibility.md` — How to reproduce results
+- `docs/methodology/overview.md` -- What is tested and why
+- `docs/methodology/threat-model.md` -- OWASP AI Threats mapping
+- `docs/methodology/evaluation.md` -- Judge design, metrics
+- `docs/methodology/reproducibility.md` -- How to reproduce results
 
 ---
 
@@ -408,8 +408,8 @@ repos:
 
 1. [x] Approve ROADMAP.md
 2. [x] Create `psg/` rakenne
-3. [x] Migrate old runtime structure → `psg/`
-4. [x] Move old files → `_archive/`
+3. [x] Migrate old runtime structure -> `psg/`
+4. [x] Move old files -> `_archive/`
 5. [x] Update `pyproject.toml`
 6. [x] Write new README.md
 

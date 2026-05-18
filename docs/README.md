@@ -2,31 +2,31 @@
 
 ## Getting Started
 
-- **[USAGE.md](USAGE.md)** — complete command reference and examples
-- **[getting-started.md](getting-started.md)** — quick-start walkthrough
+- **[USAGE.md](USAGE.md)** -- complete command reference and examples
+- **[getting-started.md](getting-started.md)** -- quick-start walkthrough
 
 ## Core Docs
 
-- [TESTING_GUIDE.md](TESTING_GUIDE.md) — running local security tests
-- [TESTING_METHODOLOGY_V2.md](TESTING_METHODOLOGY_V2.md) — comprehensive methodology
-- [BENCHMARKS.md](BENCHMARKS.md) — classifier baselines and benchmark results
-- [METHODOLOGY.md](METHODOLOGY.md) — testing methodology overview
-- [DEFENSE_STRATEGIES.md](DEFENSE_STRATEGIES.md) — defense prompt strategies
-- [DEFENSE_EFFECTIVENESS.md](DEFENSE_EFFECTIVENESS.md) — empirical defense results
-- [SECURITY_GUIDE.md](SECURITY_GUIDE.md) — security best practices
-- [LIMITATIONS.md](LIMITATIONS.md) — known limitations
-- [REFERENCES.md](REFERENCES.md) — research references
-- [IMPROVEMENTS.md](IMPROVEMENTS.md) — planned improvements
-- [TODO_NEXT.md](TODO_NEXT.md) — next action items
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) -- running local security tests
+- [TESTING_METHODOLOGY_V2.md](TESTING_METHODOLOGY_V2.md) -- comprehensive methodology
+- [BENCHMARKS.md](BENCHMARKS.md) -- classifier baselines and benchmark results
+- [METHODOLOGY.md](METHODOLOGY.md) -- testing methodology overview
+- [DEFENSE_STRATEGIES.md](DEFENSE_STRATEGIES.md) -- defense prompt strategies
+- [DEFENSE_EFFECTIVENESS.md](DEFENSE_EFFECTIVENESS.md) -- empirical defense results
+- [SECURITY_GUIDE.md](SECURITY_GUIDE.md) -- security best practices
+- [LIMITATIONS.md](LIMITATIONS.md) -- known limitations
+- [REFERENCES.md](REFERENCES.md) -- research references
+- [IMPROVEMENTS.md](IMPROVEMENTS.md) -- planned improvements
+- [TODO_NEXT.md](TODO_NEXT.md) -- next action items
 
 ## Tutorials
 
-- [tutorials/scan-first-model.md](tutorials/scan-first-model.md) — your first scan
-- [tutorials/test-defense-prompt.md](tutorials/test-defense-prompt.md) — testing defense prompts
+- [tutorials/scan-first-model.md](tutorials/scan-first-model.md) -- your first scan
+- [tutorials/test-defense-prompt.md](tutorials/test-defense-prompt.md) -- testing defense prompts
 
 ## Reference
 
-- [reference/cli.md](reference/cli.md) — CLI reference
+- [reference/cli.md](reference/cli.md) -- CLI reference
 
 ## Research
 
@@ -45,10 +45,10 @@
 
 ## Examples
 
-- [examples/basic-usage.py](examples/basic-usage.py) — minimal Python usage
+- [examples/basic-usage.py](examples/basic-usage.py) -- minimal Python usage
 
 ## Project Docs
 
-- [ROADMAP.md](ROADMAP.md) — project roadmap
-- [../ARCHITECTURE.md](../ARCHITECTURE.md) — technical architecture
-- [../CHANGELOG.md](../CHANGELOG.md) — version history
+- [ROADMAP.md](ROADMAP.md) -- project roadmap
+- [../ARCHITECTURE.md](../ARCHITECTURE.md) -- technical architecture
+- [../CHANGELOG.md](../CHANGELOG.md) -- version history

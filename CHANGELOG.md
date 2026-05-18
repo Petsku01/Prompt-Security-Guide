@@ -5,25 +5,25 @@
 ### Security Fixes
 - **Judge prompt injection protection**: Random delimiter (`secrets.token_hex(8)`) per call prevents `</response>` injection attacks in LLM Judge (improvement plan 1.2)
 - **Ensemble short-circuit confidence threshold**: Keyword detector now only short-circuits the LLM judge when `harm_score >= 0.8`. Low-confidence keyword hits are forwarded to the judge for correction, preventing false positives from blocking remediation (improvement plan 1.3)
-- **Judge max_tokens**: Increased from 8 to 16 — truncated judge responses were parsed as UNKNOWN (code review M8)
+- **Judge max_tokens**: Increased from 8 to 16 -- truncated judge responses were parsed as UNKNOWN (code review M8)
 - **Canary token collection**: All leaked canary tokens are now collected, not just the first. Multiple tokens can now be detected in a single response (code review M18)
 - **custom_detectors semantics**: Empty list `[]` no longer silently replaced with `None`. `custom_input_detectors=[]` is now preserved (code review H8)
 
 ### New Features
-- **needs_review field**: `ClassificationResult` includes `needs_review: bool` — true when `0.3 < harm_score < 0.7`, flagging uncertain classifications for human review (improvement plan 2.2)
+- **needs_review field**: `ClassificationResult` includes `needs_review: bool` -- true when `0.3 < harm_score < 0.7`, flagging uncertain classifications for human review (improvement plan 2.2)
 
 ### Code Quality
 - **ruff format**: All 52 source files reformatted to project style
 - **ruff lint**: Removed 5 extraneous f-string prefixes in execution modules; cleaned 22 unused imports/variables in tests
 - **mypy**: Fixed `binascii` import reference in `normalize.py`; installed `types-requests` stubs for transport/validation/discovery modules
-- **test coverage**: Added test for ensemble low-confidence behavior (keyword FP → judge still runs)
-- **audit iteration 2**: canary token normalization (case-insensitive), catalog validator alias support (`ID_ALIASES`/`PROMPT_ALIASES`), dead guard removal → assert, silent except → `logging.warning` (ML load/inference), `defend.py` msg-is-dict guard, `_as_labels()` dedup helper, orchestrator lambda dedup, stale `results` alias removed
+- **test coverage**: Added test for ensemble low-confidence behavior (keyword FP -> judge still runs)
+- **audit iteration 2**: canary token normalization (case-insensitive), catalog validator alias support (`ID_ALIASES`/`PROMPT_ALIASES`), dead guard removal -> assert, silent except -> `logging.warning` (ML load/inference), `defend.py` msg-is-dict guard, `_as_labels()` dedup helper, orchestrator lambda dedup, stale `results` alias removed
 
 ### Already Implemented (verified)
-- LangChain middleware: `fail_open=False` by default (code review H1) — was already correct
-- WildGuard singleton: thread-safe with `_classifier_lock` double-check (code review H2) — was already correct
-- Canary normalization: `normalize_text()` applied before comparison (code review H9) — was already correct
-- FP-reduction: GATE 1 logic in `calculate_harm_score()` handles refusal + no compliance = low score regardless of keywords (improvement plan 2.3) — already implemented
+- LangChain middleware: `fail_open=False` by default (code review H1) -- was already correct
+- WildGuard singleton: thread-safe with `_classifier_lock` double-check (code review H2) -- was already correct
+- Canary normalization: `normalize_text()` applied before comparison (code review H9) -- was already correct
+- FP-reduction: GATE 1 logic in `calculate_harm_score()` handles refusal + no compliance = low score regardless of keywords (improvement plan 2.3) -- already implemented
 
 ## 4.3.0 - 2026-03-27
 
@@ -51,9 +51,9 @@
 - `fabricated_doi_unverified` - suspicious DOI detected
 
 ### Test Coverage
-- Added tests for evaluate.py (0% → 77%)
-- Added tests for wildguard_classifier.py (0% → 68%)
-- Total tests: 161 → 178
+- Added tests for evaluate.py (0% -> 77%)
+- Added tests for wildguard_classifier.py (0% -> 68%)
+- Total tests: 161 -> 178
 
 ## 4.2.0 - 2026-03-26
 
@@ -121,8 +121,8 @@
 
 ### Repository cleanup
 - Removed deprecated files (tester.py, tools symlink, requirements.txt)
-- Renamed attacks/ → generators/
-- Moved research/ → docs/research/
+- Renamed attacks/ -> generators/
+- Moved research/ -> docs/research/
 - Fixed CI workflow to use pyproject.toml
 
 ## 4.0.0 - 2026-03-23

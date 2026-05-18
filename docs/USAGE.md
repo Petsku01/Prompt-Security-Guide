@@ -38,8 +38,8 @@ python3 -m psg scan \
   --rate-limit 10
 ```
 
-- `--workers N` — parallel workers (1-32)
-- `--rate-limit RPS` — max requests per second
+- `--workers N` -- parallel workers (1-32)
+- `--rate-limit RPS` -- max requests per second
 
 ### Test a defense prompt
 
@@ -132,7 +132,7 @@ python3 -m psg benchmark --preset jbb --model llama3:8b
 
 | Preset | Description |
 |--------|-------------|
-| `jbb` | JailbreakBench — 100 harmful behavior prompts |
+| `jbb` | JailbreakBench -- 100 harmful behavior prompts |
 | `owasp` | OWASP Top 10 LLM attacks (2025) |
 | `obliteratus` | Curated multi-technique attack collection |
 | `full` | All datasets combined |
@@ -174,11 +174,11 @@ python3 -m psg serve --port 8000
 ```
 
 Endpoints:
-- `POST /screen` — screen single text
-- `POST /screen/bulk` — screen multiple texts
-- `GET /health` — health check
-- `GET /metrics` — request metrics
-- `GET /docs` — OpenAPI documentation
+- `POST /screen` -- screen single text
+- `POST /screen/bulk` -- screen multiple texts
+- `GET /health` -- health check
+- `GET /metrics` -- request metrics
+- `GET /docs` -- OpenAPI documentation
 
 Example:
 ```bash
@@ -221,9 +221,9 @@ python3 -m psg plugins
 ```
 
 Built-in plugins:
-- `keyword` — rule-based detector
-- `classifier` — ML classifier detector
-- `harm-classifier` — harm classification
+- `keyword` -- rule-based detector
+- `classifier` -- ML classifier detector
+- `harm-classifier` -- harm classification
 
 Create custom plugins via entry points:
 
@@ -249,9 +249,9 @@ llm = ChatOpenAI(
 ```
 
 Options:
-- `threshold` — harm score threshold (0.0-1.0)
-- `screen_input` — check prompts for injection (default: True)
-- `screen_output` — check responses for harmful content (default: True)
+- `threshold` -- harm score threshold (0.0-1.0)
+- `screen_input` -- check prompts for injection (default: True)
+- `screen_output` -- check responses for harmful content (default: True)
 
 Raises `PSGSecurityException` when threshold exceeded. Async version: `AsyncPSGGuardMiddleware`.
 
@@ -286,6 +286,6 @@ python3 -m psg scan \
   --validation-timeout 10
 ```
 
-- `--validate-urls` — HTTP HEAD check for URLs
-- `--validate-dois` — CrossRef API check for DOIs
-- `--validation-timeout` — seconds to wait (default: 5)
+- `--validate-urls` -- HTTP HEAD check for URLs
+- `--validate-dois` -- CrossRef API check for DOIs
+- `--validation-timeout` -- seconds to wait (default: 5)

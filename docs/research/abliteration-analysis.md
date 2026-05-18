@@ -17,12 +17,12 @@ Based on key finding (Arditi et al. 2024, NeurIPS): **Refusal is encoded as a si
 ## 2. The 6-Stage Pipeline
 
 ```
-SUMMON  → Load model into memory
-PROBE   → Collect activations on harmful/harmless prompts
-DISTILL → Extract refusal directions via SVD decomposition
-EXCISE  → Project directions out of weights
-VERIFY  → Check coherence (perplexity, KL divergence)
-REBIRTH → Save the "liberated" model
+SUMMON  -> Load model into memory
+PROBE   -> Collect activations on harmful/harmless prompts
+DISTILL -> Extract refusal directions via SVD decomposition
+EXCISE  -> Project directions out of weights
+VERIFY  -> Check coherence (perplexity, KL divergence)
+REBIRTH -> Save the "liberated" model
 ```
 
 ---
@@ -31,9 +31,9 @@ REBIRTH → Save the "liberated" model
 
 ### 3.1 PROBE: Activation Collection
 
-1. Run model on **harmful** prompts → record activations at each layer
-2. Run model on **harmless** prompts → record activations
-3. (Optional) Run **jailbreak-templated** versions → three-way contrastive analysis
+1. Run model on **harmful** prompts -> record activations at each layer
+2. Run model on **harmless** prompts -> record activations
+3. (Optional) Run **jailbreak-templated** versions -> three-way contrastive analysis
 
 **Why it works:** Harmful vs harmless prompts activate different "directions" in the residual stream. The difference = refusal direction.
 

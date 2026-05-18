@@ -5,8 +5,8 @@ Automated pipeline for discovering, generating, testing, and reporting LLM jailb
 
 ## Architecture
 ```
-discovery.py → generator.py → tester.py → reporter.py
-     ↓              ↓              ↓            ↓
+discovery.py -> generator.py -> tester.py -> reporter.py
+     v              v              v            v
   sources.json  new_vectors.json  results/   report.md
 ```
 
@@ -58,9 +58,9 @@ discovery.py → generator.py → tester.py → reporter.py
 - `config.yaml` - Models, queries, thresholds
 
 ## Error Handling
-- If Ollama down → log warning + skip testing
-- If model missing → skip that model, continue others
-- If web search fails → use cached sources
+- If Ollama down -> log warning + skip testing
+- If model missing -> skip that model, continue others
+- If web search fails -> use cached sources
 
 > **SSRF Note:** `validate_url()` rejects URLs whose hostnames fail DNS resolution by default (the safe default). This prevents SSRF attacks via unresolvable or internal hostnames.
 
@@ -75,8 +75,8 @@ discovery.py → generator.py → tester.py → reporter.py
 📅 Date: YYYY-MM-DD
 🆕 New vectors: X
 🧪 Models tested: Y
-⚠️ Flagged: Z      ← only when flagged > 0
-Flagged: Z                ← when flagged == 0
+⚠️ Flagged: Z      <- only when flagged > 0
+Flagged: Z                <- when flagged == 0
 
 Top findings:
 - [technique] flagged on [models]

@@ -67,12 +67,12 @@ psg catalog list
 
 ## Features
 
-- **50 attack catalogs, 2700+ attacks** — JailbreakBench, HarmBench, OWASP 2025, encoding attacks
-- **Defense layer** — input validation, canary tokens, ML classifier
-- **Parallel scanning** — `--workers 4 --rate-limit 10`
-- **CI integration** — fail builds on classifier regression
-- **API server** — FastAPI with `/screen` endpoint
-- **LangChain middleware** — drop-in input/output screening
+- **50 attack catalogs, 2700+ attacks** -- JailbreakBench, HarmBench, OWASP 2025, encoding attacks
+- **Defense layer** -- input validation, canary tokens, ML classifier
+- **Parallel scanning** -- `--workers 4 --rate-limit 10`
+- **CI integration** -- fail builds on classifier regression
+- **API server** -- FastAPI with `/screen` endpoint
+- **LangChain middleware** -- drop-in input/output screening
 
 ## Installation Options
 
@@ -85,10 +85,10 @@ pip install -e ".[all]"      # everything
 
 ## Documentation
 
-- **[docs/USAGE.md](docs/USAGE.md)** — full command reference
-- **[docs/METHODOLOGY.md](docs/METHODOLOGY.md)** — how detection works
-- **[docs/DEFENSE_STRATEGIES.md](docs/DEFENSE_STRATEGIES.md)** — defense patterns
-- **[CHANGELOG.md](CHANGELOG.md)** — version history
+- **[docs/USAGE.md](docs/USAGE.md)** -- full command reference
+- **[docs/METHODOLOGY.md](docs/METHODOLOGY.md)** -- how detection works
+- **[docs/DEFENSE_STRATEGIES.md](docs/DEFENSE_STRATEGIES.md)** -- defense patterns
+- **[CHANGELOG.md](CHANGELOG.md)** -- version history
 
 ## Auto Vector Pipeline
 
@@ -117,16 +117,16 @@ python -m psg.automation --config config.yaml
 | `validation.py` | URL & query validation (SSRF protection) |
 | `dedup.py` | SHA-256 deduplication store |
 | `daily_check.py` | Cron-friendly run-once-per-day marker |
-| `main.py` | Orchestrator: discovery → generation → testing → reporting |
+| `main.py` | Orchestrator: discovery -> generation -> testing -> reporting |
 
 ## Repository Layout
 
 ```
-psg/              — core library and CLI
-psg/automation/   — auto vector pipeline modules
-datasets/         — attack catalogs (JSON)
-tests/            — 581 tests
-docs/             — methodology and research
+psg/ -- core library and CLI
+psg/automation/ -- auto vector pipeline modules
+datasets/ -- attack catalogs (JSON)
+tests/ -- 581 tests
+docs/ -- methodology and research
 ```
 
 ## Safety

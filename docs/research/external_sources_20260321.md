@@ -1,4 +1,4 @@
-# External Research Sources — 2026-03-21
+# External Research Sources -- 2026-03-21
 
 ## Löydetyt repositoriot ja paperit
 

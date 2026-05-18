@@ -1,4 +1,4 @@
-# Roleplay Attack Analysis — 2026-03-21
+# Roleplay Attack Analysis -- 2026-03-21
 
 ## Miksi vanhat roleplayt toimivat, uudet eivät?
 

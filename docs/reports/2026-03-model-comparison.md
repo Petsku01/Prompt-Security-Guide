@@ -35,7 +35,7 @@ We tested five local LLM models for their ability to resist jailbreak attacks. T
 
 ## Analyysi malleittain
 
-### [SAFE] Llama 3 8B — Best security
+### [SAFE] Llama 3 8B -- Best security
 
 ```
 Flagged: 3/65 (4.6%)
@@ -53,7 +53,7 @@ Testiaika: 17 min
 
 ---
 
-### [SAFE] Qwen 2.5 3B — Surprisingly strong for a small model
+### [SAFE] Qwen 2.5 3B -- Surprisingly strong for a small model
 
 ```
 Flagged: 4/65 (6.2%)
@@ -71,7 +71,7 @@ Testiaika: 14 min
 
 ---
 
-### [MODERATE] Phi-3 Mini 3.8B — Moderate
+### [MODERATE] Phi-3 Mini 3.8B -- Moderate
 
 ```
 Flagged: 6/65 (9.2%)
@@ -88,7 +88,7 @@ Testiaika: 29 min
 
 ---
 
-### [MODERATE] Gemma 2 2B — Small model, compromises
+### [MODERATE] Gemma 2 2B -- Small model, compromises
 
 ```
 Flagged: 9/65 (13.8%)
@@ -102,7 +102,7 @@ Testiaika: 27 min
 
 ---
 
-### [VULNERABLE] Mistral 7B — Weakest security
+### [VULNERABLE] Mistral 7B -- Weakest security
 
 ```
 Flagged: 17/65 (26.2%)
@@ -164,16 +164,16 @@ Flagged responses contained the following categories:
 
 ### For production use
 
-1. **Prefer Llama 3 or Qwen 2.5** — Best safety results
-2. **Avoid Mistral without additional safeguards** — Too vulnerable as-is
-3. **Add output filtering** — Even the best models can fail
+1. **Prefer Llama 3 or Qwen 2.5** -- Best safety results
+2. **Avoid Mistral without additional safeguards** -- Too vulnerable as-is
+3. **Add output filtering** -- Even the best models can fail
 
 ### For developers
 
-1. **System prompt hardening** — Strengthen system prompts
-2. **Input validation** — Validate user input before sending to the model
-3. **Output monitoring** — Valvo ja suodata vastauksia
-4. **Defense in depth** — Do not rely only on model-internal safeguards
+1. **System prompt hardening** -- Strengthen system prompts
+2. **Input validation** -- Validate user input before sending to the model
+3. **Output monitoring** -- Valvo ja suodata vastauksia
+4. **Defense in depth** -- Do not rely only on model-internal safeguards
 
 ---
 
@@ -193,10 +193,10 @@ Flagged responses contained the following categories:
 
 ### Limitations
 
-1. **Local testing** — Results may differ from API versions
-2. **Simple detector** — No LLM-as-judge evaluation
-3. **Limited dataset** — 65 tests do not cover all attack types
-4. **Snapshot results** — Models are updated continuously
+1. **Local testing** -- Results may differ from API versions
+2. **Simple detector** -- No LLM-as-judge evaluation
+3. **Limited dataset** -- 65 tests do not cover all attack types
+4. **Snapshot results** -- Models are updated continuously
 
 ---
 

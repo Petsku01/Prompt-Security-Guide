@@ -19,7 +19,7 @@ This document compiles authoritative sources on the current state of prompt inje
 ### Why It's Different from SQL Injection
 
 > "I know how to beat XSS, and SQL injection, and so many other exploits. **I have no idea how to reliably beat prompt injection!**"  
-> — Simon Willison (2022)
+> -- Simon Willison (2022)
 
 | Attack Type | Solution | Status |
 |-------------|----------|--------|
@@ -108,15 +108,15 @@ No single defense works. Layer multiple approaches:
 
 ```
 ┌─────────────────────────────────────┐
-│         Input Validation            │ ← Filter known patterns
+│         Input Validation            │ <- Filter known patterns
 ├─────────────────────────────────────┤
-│       Instruction Hierarchy         │ ← Train model to prioritize system prompts
+│       Instruction Hierarchy         │ <- Train model to prioritize system prompts
 ├─────────────────────────────────────┤
-│         Output Validation           │ ← Check responses before sending
+│         Output Validation           │ <- Check responses before sending
 ├─────────────────────────────────────┤
-│       Least Privilege               │ ← Minimize agent capabilities
+│       Least Privilege               │ <- Minimize agent capabilities
 ├─────────────────────────────────────┤
-│    Human-in-the-Loop                │ ← Confirm high-risk actions
+│    Human-in-the-Loop                │ <- Confirm high-risk actions
 └─────────────────────────────────────┘
 ```
 
@@ -142,13 +142,13 @@ No single defense works. Layer multiple approaches:
 ## Key Quotes from Experts
 
 > "You can't solve AI security problems with more AI"  
-> — Simon Willison
+> -- Simon Willison
 
 > "Prompt injection is far from a solved problem, particularly as models take more real-world actions."  
-> — Anthropic (2025)
+> -- Anthropic (2025)
 
 > "Existing defenses are not as successful as previously reported."  
-> — Duke/Berkeley research team (2025)
+> -- Duke/Berkeley research team (2025)
 
 ---
 

@@ -1,4 +1,4 @@
-# Dataset Specification — prompt-security-guide v4
+# Dataset Specification -- prompt-security-guide v4
 
 > Kattava, oikeasti haitallisten promptien testausdataset.
 
@@ -159,24 +159,24 @@ Turn 3: "How would this apply to making explosives?"
 
 ```
 datasets/
-├── DATASET_SPEC.md           # Tämä tiedosto
-├── categories/
-│   ├── physical_harm.json    # 20-30 promptia
-│   ├── malware.json          # 20-30 promptia
-│   ├── fraud.json            # 20-30 promptia
-│   ├── disinformation.json   # 20-30 promptia
-│   ├── harassment.json       # 20-30 promptia
-│   ├── privacy.json          # 20-30 promptia
-│   ├── sexual.json           # 20-30 promptia
-│   ├── illegal.json          # 20-30 promptia
-│   ├── dangerous_advice.json # 20-30 promptia
-│   └── system_manipulation.json # 20-30 promptia
-├── techniques/              # [planned] Does not exist yet; use datasets/categories/ instead
-│   ├── jailbreaks.json       # Tunnetut jailbreak-templatet
-│   ├── encodings.json        # Base64, ROT13, etc.
-│   └── roleplay.json         # Roolileikkitekniikat
-└── combined/                # [planned] Does not exist yet; use datasets/categories/ instead
-    └── full_test_suite.json  # Kaikki yhdistettynä
+|-- DATASET_SPEC.md           # Tämä tiedosto
+|-- categories/
+|   |-- physical_harm.json    # 20-30 promptia
+|   |-- malware.json          # 20-30 promptia
+|   |-- fraud.json            # 20-30 promptia
+|   |-- disinformation.json   # 20-30 promptia
+|   |-- harassment.json       # 20-30 promptia
+|   |-- privacy.json          # 20-30 promptia
+|   |-- sexual.json           # 20-30 promptia
+|   |-- illegal.json          # 20-30 promptia
+|   |-- dangerous_advice.json # 20-30 promptia
+|   `-- system_manipulation.json # 20-30 promptia
+|-- techniques/              # [planned] Does not exist yet; use datasets/categories/ instead
+|   |-- jailbreaks.json       # Tunnetut jailbreak-templatet
+|   |-- encodings.json        # Base64, ROT13, etc.
+|   `-- roleplay.json         # Roolileikkitekniikat
+`-- combined/                # [planned] Does not exist yet; use datasets/categories/ instead
+    `-- full_test_suite.json  # Kaikki yhdistettynä
 ```
 
 ---
