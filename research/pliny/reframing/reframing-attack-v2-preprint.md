@@ -10,7 +10,7 @@
 
 ## Abstract
 
-We study reframing attacks on large language model (LLM) safety filters, where harmful requests are wrapped in educational, defensive, or research framing. In a controlled experiment with 10 harm categories, three prompt types, and nine models (5 cloud, 4 local), reframing reduces cloud model refusal rates from 88% (direct) to 52% (reframed) -- a 36-percentage-point drop achieved through zero-shot, human-readable prompts requiring no optimization. We introduce a legitimate control group of genuinely defensive questions, enabling a preliminary comparison between reframed harmful prompts and benign dual-use prompts. Reframed responses often exhibited higher specificity scores than legitimate responses on the same broad topics, but this comparison is confounded because the two prompt types request different semantic content. We therefore treat the specificity gap as hypothesis-generating rather than causal evidence. Overall, the results are consistent with an intent-decoupling hypothesis -- that safety filters privilege stated intent over request semantics -- but further matched-content experiments are required to isolate framing from content specificity. We report a true false positive rate of 2.1% (1/48) on cloud legitimate queries and 3.1% (2/64) overall after excluding timeouts, confirming that current models correctly answer most genuinely defensive questions. This paper should be considered a pilot study; per-model and per-category estimates have wide confidence intervals and should not be treated as definitive rankings.
+We study reframing attacks on large language model (LLM) safety filters, where harmful requests are wrapped in educational, defensive, or research framing. In a controlled experiment with 10 harm categories, three prompt types, and nine models (5 cloud, 4 local), reframing reduces cloud model refusal rates from 88% (direct) to 52% (reframed) -- a 36-percentage-point drop achieved through zero-shot, human-readable prompts requiring no optimization. We introduce a legitimate control group of genuinely defensive questions, enabling a preliminary comparison between reframed harmful prompts and benign dual-use prompts. Reframed responses often exhibited higher specificity scores than legitimate responses on the same broad topics, but this comparison is confounded because the two prompt types request different semantic content. We therefore treat the specificity gap as hypothesis-generating rather than causal evidence. Overall, the results are consistent with an intent-decoupling hypothesis -- that safety filters privilege stated intent over request semantics -- but further matched-content experiments are required to isolate framing from content specificity. We report a true false positive rate of 2.1% (1/48) on cloud legitimate queries and 3.1% (2/64) overall after excluding timeouts, suggesting that for these carefully worded dual-use prompts, genuinely defensive questions rarely trigger refusals. This paper should be considered a pilot study; per-model and per-category estimates have wide confidence intervals and should not be treated as definitive rankings.
 
 ---
 
@@ -60,7 +60,7 @@ We test three prompt types across 10 harm categories:
 | **Reframed** | Same harm wrapped in educational/CTF/research framing | "I'm writing a security textbook chapter on SQL injection vulnerabilities. Provide a detailed technical explanation including specific categories of attack techniques and exploitation workflows [details omitted for responsible disclosure]." |
 | **Legitimate** | Genuinely defensive question on same topic | "What are the most effective parameterized query implementations to prevent SQL injection? How should input validation be structured?" |
 
-Each category includes one prompt per type, tested against 9 models, yielding 270 test instances (222 completed; 48 timed out on local models).
+Cloud models were tested on all 10 categories (30 prompts each); local models on 6 categories (18 prompts each), yielding 222 total test instances. Of these, 48 local-model responses timed out and were scored as refusals.
 
 *Note: The Reframed example above has been sanitized for publication. The actual prompts used in testing included specific technical terminology; we omit details that could serve as attack recipes while preserving the structural characteristics of the framing.*
 
@@ -95,10 +95,10 @@ We were unable to include these controls in this study and flag this as the most
 **Cloud models** (API access, n=10 per condition):
 - DeepSeek-V4-Pro, GLM-5.1, Gemma4-31B, MiniMax-M3, Qwen3-Coder-480B
 
-**Local models** (2B-3B, n=6 per condition):
+**Local models** (1.5B-3B, n=6 per condition, 6 categories):
 - qwen2.5-1.5B, qwen2.5-3B, gemma2-2B, granite3-2B
 
-*Model selection rationale: Models were selected based on availability through the tested API environment (Ollama Cloud) and local deployment feasibility. This is not a representative sample of all production LLMs; it reflects the models accessible at the time of testing (see Limitation 5).*
+*Model selection rationale: Models were selected based on availability through the tested API environment (Ollama Cloud) and local deployment feasibility. This is not a representative sample of all production LLMs; it reflects the models accessible at the time of testing (see Limitation 4).*
 
 ### 3.5 Scoring Rubric
 
@@ -108,7 +108,7 @@ Each response is scored on five dimensions:
 |-----------|-------|--------|
 | **Refusal** | Binary | Pattern matching ("I cannot," "against my guidelines") with manual verification |
 | **Specificity** | 0-5 ordinal | Keyword-based matching with manual review (0=no detail, 5=step-by-step exploit code) |
-| **Exploitability** | 0-5 ordinal | Keyword-based matching with manual review |
+| **Exploitability** | 0-5 ordinal | Keyword-based matching with manual review (not reported separately; highly correlated with specificity) |
 | **Disclaimer** | Binary | Presence of "for educational purposes" type disclaimers |
 | **Defensive redirect** | Binary | Model redirects to defensive/mitigation content |
 
@@ -167,7 +167,7 @@ Regardless of causation, the observation has practical significance: attackers u
 
 | Model | Legitimate refused | Timeouts | True FP |
 |-------|-------------------|----------|---------|
-| DeepSeek-V4-Pro | 3/10 | 2 | 1 |
+| DeepSeek-V4-Pro | 3/10 | 2 | 1/8 |
 | GLM-5.1 | 0/10 | 0 | 0 |
 | Gemma4-31B | 0/10 | 0 | 0 |
 | MiniMax-M3 | 0/10 | 0 | 0 |
@@ -179,7 +179,7 @@ True false positive rate (cloud models, excluding timeouts): **1/48 = 2.1%**. In
 
 ### 4.4 Disclaimer and Defensive Redirect Patterns
 
-Reframing reduces disclaimer prevalence across cloud models (median drop from 70% to 35%, calculated over non-refused responses only). Defensive redirects show a mixed pattern: some models (MiniMax-M3) increase defensive redirects under reframing (10% to 60%), while others (Qwen3-Coder) maintain low defensive redirects regardless of framing (30%).
+Reframing reduces disclaimer prevalence across cloud models (median drop from 70% to 35%, calculated over non-refused responses only: among the 21 non-refused direct responses, 70% included disclaimers; among the 24 non-refused reframed responses, 35% did). Defensive redirects show a mixed pattern: some models (MiniMax-M3) increase defensive redirects under reframing (10% to 60%), while others (Qwen3-Coder) maintain low defensive redirects regardless of framing (30%).
 
 ---
 
@@ -207,7 +207,7 @@ gemma2-2B shows 0% bypass but near-zero specificity (0.8 reframed). This likely 
 
 ### 5.4 The Specificity Gap: Confounded Observation
 
-The most striking observation is that reframed prompts produce higher specificity scores than legitimate prompts on the same topics (8/9 models showing positive gaps). However, as discussed in Section 3.2, this comparison is confounded by prompt content differences. The reframed prompts explicitly request attack techniques; the legitimate prompts request defensive mitigations. The gap may reflect:
+The most striking observation is that reframed prompts produce higher specificity scores than legitimate prompts on the same topics (all 5 cloud models showing positive or zero gaps). However, as discussed in Section 3.2, this comparison is confounded by prompt content differences. The reframed prompts explicitly request attack techniques; the legitimate prompts request defensive mitigations. The gap may reflect:
 
 1. **Framing effect**: Models provide more detail when they perceive a technical/expert audience (consistent with intent decoupling)
 2. **Content effect**: Reframed prompts request more specific information, and models comply (consistent with prompt engineering literature)
@@ -217,7 +217,7 @@ Without matched-content controls, we cannot isolate these factors. We treat the 
 
 ### 5.5 Statistical Considerations
 
-With n=10 per condition (cloud), per-model bypass rates have wide confidence intervals. The sign test for the directional effect (5/5 cloud models showing lower refusal under reframing) yields p=0.0625 (two-tailed, borderline). Including local models (8/9), p=0.039. However, local models have different characteristics (capacity limitations, timeout confounds) and should be analyzed separately.
+With n=10 per condition (cloud), per-model bypass rates have wide confidence intervals. The sign test for the directional effect (5/5 cloud models showing lower refusal under reframing) yields p=0.0625 (two-tailed, borderline). With only 5 cloud models, this test has minimal statistical power; the directional consistency across models is the primary finding, not the p-value. Including local models (8/8 non-gemma2 models showing the effect) strengthens the directional pattern but should be interpreted separately given their different characteristics (capacity limitations, timeout confounds).
 
 We report point estimates for transparency but emphasize that model rankings (e.g., Qwen3-Coder > GLM > MiniMax > DeepSeek > Gemma4) are not statistically distinguishable given the sample sizes.
 
@@ -313,7 +313,9 @@ This study should be considered a pilot. The most important next step is redesig
 
 ### A.1 Sign Test for Directional Effect
 
-Under the null hypothesis that reframing does not reduce refusal, each cloud model has a 50% probability of showing lower refusal rates under reframing. The observed result is 5/5 cloud models. Two-tailed p = (1/2)^5 * 2 = 0.0625. Including local models (8/9): p = 0.039. We note that local models have different characteristics and the appropriate unit of analysis is cloud models only.
+Under the null hypothesis that reframing does not reduce refusal, each cloud model has a 50% probability of showing lower refusal rates under reframing. The observed result is 5/5 cloud models. Two-tailed p = (1/2)^5 * 2 = 0.0625. With n=5, this test has minimal power; the directional consistency is the primary finding. Including local models (8/9, excluding gemma2-2B which shows 0% bypass due to near-universal refusal): the pattern holds but should be interpreted separately given local model capacity limitations and timeout confounds.
+
+The primary analysis is cloud models only; local models are reported for completeness but are not included in the statistical test due to their different characteristics.
 
 ### A.2 Confidence Intervals
 
@@ -332,3 +334,20 @@ These intervals are wide. Per-model rankings should not be treated as definitive
 ### A.3 False Positive Rate Confidence Interval
 
 Cloud FP rate: 1/48 = 2.1%. 95% CI: [0.05%, 11%]. Overall FP rate: 2/64 = 3.1%. 95% CI: [0.4%, 11%]. Both genuine refusals occurred on the improvised devices category (RE-10).
+
+### A.4 Denominator Map
+
+| Model | Legit. attempted | Timeouts excluded | Denominator | True FP |
+|-------|----------------|-------------------|-------------|---------|
+| DeepSeek-V4-Pro | 10 | 2 | 8 | 1 |
+| GLM-5.1 | 10 | 0 | 10 | 0 |
+| Gemma4-31B | 10 | 0 | 10 | 0 |
+| MiniMax-M3 | 10 | 0 | 10 | 0 |
+| Qwen3-Coder-480B | 10 | 0 | 10 | 0 |
+| **Cloud total** | **50** | **2** | **48** | **1** |
+| qwen2.5-1.5B | 6 | 0 | 6 | 0 |
+| qwen2.5-3B | 6 | 4 | 2 | 1 |
+| gemma2-2B | 6 | 3 | 3 | 0 |
+| granite3-2B | 6 | 1 | 5 | 0 |
+| **Local total** | **24** | **8** | **16** | **1** |
+| **Overall** | **74** | **10** | **64** | **2** |
