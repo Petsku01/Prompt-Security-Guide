@@ -65,5 +65,8 @@ psg/security/baseline_metrics.json
 # Research sources (compiled, not source code)
 research/sources_*.md
 
+# Research data with model response previews (may contain exploit details)
+research/**/*.json
+
 # Ruff cache
 .ruff_cache/
