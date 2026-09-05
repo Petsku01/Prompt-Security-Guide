@@ -140,6 +140,10 @@ class BenchmarkResult:
     defense_rate: float  # % of attacks blocked (higher is better)
     duration_seconds: float
     catalogs_used: list[str]
+    obedience_total: int = 0
+    obedience_successful: int = 0
+    policy_bypass_total: int = 0
+    policy_bypass_successful: int = 0
 
 
 def find_catalog_path(catalog: str, base_dir: Path) -> Path:
@@ -166,6 +170,7 @@ def run_benchmark(
     rate_limit: float | None = None,
     system_prompt: str | None = None,
     detector: str = "keyword",
+    attack_set: str = "all",
     output_dir: str = "results",
     base_dir: Path | None = None,
 ) -> BenchmarkResult:
@@ -184,6 +189,10 @@ def run_benchmark(
     total_flagged = 0
     total_failed = 0
     total_succeeded = 0
+    obedience_total = 0
+    obedience_successful = 0
+    policy_bypass_total = 0
+    policy_bypass_successful = 0
     started = time.perf_counter()
     catalogs_used = []
 
@@ -204,6 +213,7 @@ def run_benchmark(
             rate_limit=rate_limit,
             system_prompt=system_prompt,
             detector=detector,
+            attack_set=attack_set,
             checkpoint_path=str(output_path / f"benchmark_{preset}_checkpoint.jsonl"),
             report_json_path=str(output_path / f"benchmark_{preset}_report.json"),
             report_text_path=str(output_path / f"benchmark_{preset}_report.txt"),
@@ -222,6 +232,10 @@ def run_benchmark(
         total_flagged += summary.flagged
         total_failed += summary.failed
         total_succeeded += summary.succeeded
+        obedience_total += summary.obedience_total
+        obedience_successful += summary.obedience_flagged
+        policy_bypass_total += summary.policy_bypass_total
+        policy_bypass_successful += summary.policy_bypass_flagged
 
     elapsed = time.perf_counter() - started
 
@@ -242,6 +256,10 @@ def run_benchmark(
         defense_rate=blocked / total_attacks if total_attacks > 0 else 0.0,
         duration_seconds=elapsed,
         catalogs_used=catalogs_used,
+        obedience_total=obedience_total,
+        obedience_successful=obedience_successful,
+        policy_bypass_total=policy_bypass_total,
+        policy_bypass_successful=policy_bypass_successful,
     )
 
 
@@ -285,6 +303,12 @@ Examples:
         "--detector", choices=["keyword", "llm-judge", "ensemble"], default="keyword"
     )
     parser.add_argument(
+        "--attack-set",
+        choices=["all", "core-14", "full-61"],
+        default="all",
+        help="Canonical subset of attacks to run from each catalog",
+    )
+    parser.add_argument(
         "--output-dir", default="results", help="Output directory for reports"
     )
     parser.add_argument("--json", action="store_true", help="Output results as JSON")
@@ -321,6 +345,7 @@ def main(argv: list[str] | None = None) -> int:
             rate_limit=args.rate_limit,
             system_prompt=args.system_prompt,
             detector=args.detector,
+            attack_set=args.attack_set,
             output_dir=args.output_dir,
         )
     except (CatalogError, LLMError, ConfigError) as exc:
@@ -344,6 +369,16 @@ def main(argv: list[str] | None = None) -> int:
             "defense_rate": round(result.defense_rate, 4),
             "duration_seconds": round(result.duration_seconds, 2),
             "catalogs_used": result.catalogs_used,
+            "obedience_success_rate": (
+                round(result.obedience_successful / result.obedience_total, 4)
+                if result.obedience_total > 0
+                else None
+            ),
+            "policy_bypass_success_rate": (
+                round(result.policy_bypass_successful / result.policy_bypass_total, 4)
+                if result.policy_bypass_total > 0
+                else None
+            ),
         }
         print(json.dumps(output, indent=2))
     else:
@@ -356,6 +391,14 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"Successful:      {result.successful_attacks} ({result.attack_success_rate:.1%})"
         )
+        if result.obedience_total > 0:
+            print(
+                f"Obedience:       {result.obedience_successful}/{result.obedience_total} ({result.obedience_successful / result.obedience_total:.1%})"
+            )
+        if result.policy_bypass_total > 0:
+            print(
+                f"Policy-bypass:   {result.policy_bypass_successful}/{result.policy_bypass_total} ({result.policy_bypass_successful / result.policy_bypass_total:.1%})"
+            )
         print(f"Failed:          {result.failed_attacks}")
         print(f"Duration:        {result.duration_seconds:.1f}s")
         print(f"{'=' * 60}")

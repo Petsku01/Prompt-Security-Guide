@@ -17,6 +17,13 @@ This methodology covers local-only prompt-injection testing via Ollama.
 
 The suite combines community-derived and original attacks across categories such as structure, multiturn, emotional, jailbreak, classic, obfuscation, and encoding.
 
+Each attack can include `attack_type` metadata:
+
+- `obedience`: tests whether the model follows an unsafe or misleading instruction pattern (instruction-following failure)
+- `policy-bypass`: tests whether the model violates safety policy boundaries (safety failure)
+
+Reported rates are split by these attack types so "followed instruction" and "violated policy" are not conflated.
+
 ## Success Detection
 
 Two detector modes are used:
@@ -34,6 +41,14 @@ When comparing vulnerability rates:
 4. Record `fallback_used`, `detector_used`, and per-attack `error` fields.
 5. Fail-closed by default for judge unavailability (no silent fallback unless explicitly enabled).
 6. Flag non-aligned run sizes (e.g., 34 vs 14 vs 12 attacks) as a comparison caveat.
+
+Use canonical attack sets to keep runs comparable:
+
+- `all` (default): full catalog
+- `core-14`: first 14 attacks from the selected catalog
+- `full-61`: first 61 attacks from the selected catalog
+
+When comparing reports, use `psg compare-runs --left <runA.json> --right <runB.json>`. The tool checks attack-set name and exact attack ID alignment and warns on mismatches.
 
 ## 2026-02-15 Procedure Snapshot
 

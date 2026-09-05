@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from psg.benchmark import PRESETS, BenchmarkResult, find_catalog_path, main
+from psg.benchmark import PRESETS, BenchmarkResult, build_parser, find_catalog_path, main
 
 
 def test_presets_defined() -> None:
@@ -72,3 +72,9 @@ def test_main_missing_args(capsys: pytest.CaptureFixture[str]) -> None:
     assert exit_code == 2
     captured = capsys.readouterr()
     assert "--model" in captured.err or "required" in captured.err.lower()
+
+
+def test_build_parser_parses_attack_set() -> None:
+    parser = build_parser()
+    args = parser.parse_args(["--preset", "jbb", "--model", "m", "--attack-set", "core-14"])
+    assert args.attack_set == "core-14"

@@ -7,6 +7,12 @@ import time
 from .catalog import load_catalog
 from .checkpoint import JSONLCheckpoint
 from .errors import CatalogError, ReportError
+from .attack_sets import (
+    ATTACK_TYPE_OBEDIENCE,
+    ATTACK_TYPE_POLICY_BYPASS,
+    get_attack_type,
+    select_attack_set,
+)
 from .execution.multi_turn import (
     _process_multi_turn_attack as _process_multi_turn_attack_impl,
 )
@@ -36,6 +42,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     started = time.perf_counter()
     try:
         attacks = load_catalog(cfg.catalog_path)
+        attacks = select_attack_set(attacks, cfg.attack_set)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         raise CatalogError(f"failed to load catalog {cfg.catalog_path}: {exc}") from exc
 
@@ -71,6 +78,34 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
             checkpoint_tag="baseline",
         )
 
+    attack_types = {attack.id: get_attack_type(attack) for attack in attacks}
+    for result in defended_results:
+        result.attack_type = attack_types.get(result.attack_id, ATTACK_TYPE_POLICY_BYPASS)
+    if baseline_results:
+        for result in baseline_results:
+            result.attack_type = attack_types.get(
+                result.attack_id, ATTACK_TYPE_POLICY_BYPASS
+            )
+
+    obedience_total = sum(
+        1 for result in defended_results if result.attack_type == ATTACK_TYPE_OBEDIENCE
+    )
+    obedience_flagged = sum(
+        1
+        for result in defended_results
+        if result.attack_type == ATTACK_TYPE_OBEDIENCE and result.flagged
+    )
+    policy_bypass_total = sum(
+        1
+        for result in defended_results
+        if result.attack_type == ATTACK_TYPE_POLICY_BYPASS
+    )
+    policy_bypass_flagged = sum(
+        1
+        for result in defended_results
+        if result.attack_type == ATTACK_TYPE_POLICY_BYPASS and result.flagged
+    )
+
     elapsed = time.perf_counter() - started
     summary = RunSummary(
         total=len(defended_results),
@@ -78,8 +113,18 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         failed=sum(1 for r in defended_results if r.error),
         flagged=sum(1 for r in defended_results if r.flagged),
         duration_seconds=elapsed,
+        obedience_total=obedience_total,
+        obedience_flagged=obedience_flagged,
+        policy_bypass_total=policy_bypass_total,
+        policy_bypass_flagged=policy_bypass_flagged,
         report_write_failed=False,
     )
+
+    run_metadata = {
+        "catalog": cfg.catalog_path,
+        "attack_set": cfg.attack_set,
+        "attack_ids": [attack.id for attack in attacks],
+    }
 
     report_errors: list[str] = []
     for report_path, writer in (
@@ -87,7 +132,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         (cfg.report_text_path, write_text_report),
     ):
         try:
-            writer(report_path, summary, defended_results)
+            writer(report_path, summary, defended_results, run_metadata=run_metadata)
         except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {report_path}: {exc}")
             logger.error(str(err))

@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 def write_text_report(
-    path: str, summary: RunSummary, results: list[AttemptResult]
+    path: str,
+    summary: RunSummary,
+    results: list[AttemptResult],
+    *,
+    run_metadata: dict[str, object] | None = None,
 ) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -30,9 +34,15 @@ def write_text_report(
         f"Failed: {summary.failed}",
         f"Flagged: {summary.flagged}",
         f"Needs Review: {needs_review_count}",
+        f"Obedience Success: {summary.obedience_flagged}/{summary.obedience_total}",
+        f"Policy-Bypass Success: {summary.policy_bypass_flagged}/{summary.policy_bypass_total}",
         f"Duration(s): {summary.duration_seconds:.2f}",
         "",
     ]
+    if run_metadata:
+        attack_set = run_metadata.get("attack_set", "all")
+        lines.append(f"Attack Set: {attack_set}")
+        lines.append("")
     for r in results:
         status = "FLAGGED" if r.flagged else "OK"
         if getattr(r, "needs_review", False):

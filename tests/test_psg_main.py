@@ -49,3 +49,4 @@ def test_main_help_lists_scan_and_catalog_commands() -> None:
     help_text = build_parser().format_help()
     assert "scan" in help_text
     assert "catalog" in help_text
+    assert "compare-runs" in help_text
