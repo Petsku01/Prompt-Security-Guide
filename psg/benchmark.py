@@ -210,9 +210,9 @@ def run_benchmark(
         if preset == "full" and required_attacks is not None:
             try:
                 catalog_attacks = load_catalog(str(catalog_path))
-            except (OSError, ValueError, json.JSONDecodeError):
-                catalog_attacks = None
-            if catalog_attacks is not None and len(catalog_attacks) < required_attacks:
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                raise CatalogError(f"failed to load catalog {catalog_path}: {exc}") from exc
+            if len(catalog_attacks) < required_attacks:
                 print(
                     f"Warning: Skipping undersized catalog for attack set {attack_set}: "
                     f"{catalog} has {len(catalog_attacks)} attacks; requires {required_attacks}",

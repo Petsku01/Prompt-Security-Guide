@@ -14,6 +14,7 @@ from psg.benchmark import (
     main,
     run_benchmark,
 )
+from psg.errors import CatalogError
 from psg.models import RunSummary
 
 
@@ -139,3 +140,30 @@ def test_run_benchmark_full_skips_undersized_catalog_for_attack_set(
     assert result.catalogs_used == [str(big_catalog)]
     captured = capsys.readouterr()
     assert "Skipping undersized catalog for attack set full-61" in captured.err
+
+
+def test_run_benchmark_full_preserves_catalog_load_errors(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    bad_catalog = tmp_path / "datasets" / "bad.json"
+    bad_catalog.parent.mkdir(parents=True)
+    bad_catalog.write_text('{"attacks": [}', encoding="utf-8")
+    monkeypatch.setitem(
+        PRESETS,
+        "full",
+        {
+            "name": "Full Suite",
+            "description": "All available attack datasets combined",
+            "catalogs": ["datasets/bad.json"],
+        },
+    )
+
+    with pytest.raises(CatalogError, match="failed to load catalog"):
+        run_benchmark(
+            preset="full",
+            model="test-model",
+            attack_set="full-61",
+            base_dir=tmp_path,
+            output_dir=str(tmp_path / "results"),
+        )
