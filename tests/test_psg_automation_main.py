@@ -12,7 +12,6 @@ from psg.automation.main import Pipeline, main
 from psg.automation.reporter import PipelineReport
 from psg.automation.tester import ModelTestResult
 
-
 # ── helpers ────────────────────────────────────────────────────────────────
 
 def _make_config(tmp_path: Path) -> PipelineConfig:

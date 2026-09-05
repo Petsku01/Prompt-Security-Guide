@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 from psg.plugins import (
     DetectionResult,
     PluginRegistry,
@@ -10,9 +9,9 @@ from psg.plugins import (
     load_plugins,
 )
 from psg.plugins.builtin import (
-    KeywordDetectorPlugin,
     ClassifierDetectorPlugin,
     HarmClassifierPlugin,
+    KeywordDetectorPlugin,
     register_builtin_plugins,
 )
 

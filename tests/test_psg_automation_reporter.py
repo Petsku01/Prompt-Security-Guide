@@ -4,13 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 from psg.automation.config import PipelineConfig
 from psg.automation.discovery import Source
 from psg.automation.generator import AttackVector
 from psg.automation.reporter import PipelineReport, Reporter
 from psg.automation.tester import ModelTestResult
-
 
 # ── helpers ────────────────────────────────────────────────────────────────
 

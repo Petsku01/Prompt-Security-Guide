@@ -13,7 +13,6 @@ from psg.automation.config import PipelineConfig
 from psg.automation.dedup import DeduplicationStore
 from psg.automation.discovery import DiscoveryEngine, Source, retry
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

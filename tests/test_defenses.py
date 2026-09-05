@@ -7,15 +7,14 @@ Bypass tests document known weaknesses - they SHOULD fail detection.
 
 from __future__ import annotations
 
-
 from psg.defenses import DefenseConfig, DefenseLayer
 from psg.defenses.input_validators import (
+    _heuristic_injection_score,
     detect_canary_token,
     detect_known_injection_patterns,
     ml_injection_score,
     normalize_text,
     validate_input,
-    _heuristic_injection_score,
 )
 from psg.defenses.output_validators import (
     detect_data_exfiltration,
@@ -29,7 +28,6 @@ from psg.defenses.strategies import (
     recommend_defense_strategy,
     sort_by_instruction_hierarchy,
 )
-
 
 # =============================================================================
 # INPUT VALIDATION TESTS

@@ -7,7 +7,6 @@ import yaml
 
 from psg.automation.config import PipelineConfig, load_config
 
-
 # ── Existing tests (kept) ────────────────────────────────────────────────
 
 def test_load_config_empty_yaml_returns_defaults(tmp_path: Path) -> None:
@@ -139,7 +138,7 @@ def test_load_config_unknown_keys_raises_typerror(tmp_path: Path) -> None:
 def test_validate_environment_happy_path(tmp_path: Path) -> None:
     """validate_environment succeeds when scrapling_python exists and can
     import scrapling."""
-    from unittest.mock import patch, MagicMock
+    from unittest.mock import MagicMock, patch
 
     scrapling_bin = tmp_path / "bin" / "python"
     scrapling_bin.parent.mkdir(parents=True)
@@ -173,7 +172,7 @@ def test_validate_environment_happy_path(tmp_path: Path) -> None:
 def test_validate_environment_raises_on_missing_scrapling(tmp_path: Path) -> None:
     """validate_environment raises RuntimeError when scrapling_python
     import fails (non-zero returncode)."""
-    from unittest.mock import patch, MagicMock
+    from unittest.mock import MagicMock, patch
 
     scrapling_bin = tmp_path / "bin" / "python"
     scrapling_bin.parent.mkdir(parents=True)

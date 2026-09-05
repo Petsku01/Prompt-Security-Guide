@@ -64,8 +64,8 @@ class WildGuardClassifier:
         self._load_attempted = True
 
         try:
-            from transformers import AutoModelForCausalLM, AutoTokenizer
             import torch
+            from transformers import AutoModelForCausalLM, AutoTokenizer
 
             logger.info("Loading WildGuard model: %s...", self.model_name)
 
@@ -122,9 +122,9 @@ Analyze the above conversation. Classify:
         don't flag as harmful even if keywords present.
         """
         from .classifier import (
-            detect_refusal,
-            detect_harmful_content,
             detect_compliance,
+            detect_harmful_content,
+            detect_refusal,
         )
 
         # Step 1: Detect refusal

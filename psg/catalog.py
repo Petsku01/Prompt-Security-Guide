@@ -9,6 +9,37 @@ from .models import Attack
 
 logger = logging.getLogger(__name__)
 
+_ATTACK_TYPE_OBEDIENCE = "obedience"
+_ATTACK_TYPE_POLICY_BYPASS = "policy-bypass"
+_OBEDIENCE_HINTS = (
+    "hallucination",
+    "fake_citation",
+    "invented_facts",
+    "false_urls",
+    "non_existent_apis",
+    "package_hallucination",
+    "code_hallucination",
+    "confidently_wrong_facts",
+    "make up",
+    "fabricate",
+    "invent a",
+)
+_POLICY_BYPASS_HINTS = (
+    "jailbreak",
+    "prompt injection",
+    "ignore previous instructions",
+    "bypass",
+    "malware",
+    "fraud",
+    "harassment",
+    "weapon",
+    "bomb",
+    "explosive",
+    "data_leakage",
+    "pii_extraction",
+    "system_prompt_leaks",
+)
+
 
 def _resolve_catalog_items(data: Any) -> list[Any]:
     """Extract item list from various catalog schemas."""
@@ -24,7 +55,7 @@ def _resolve_catalog_items(data: Any) -> list[Any]:
     raise ValueError("Unsupported catalog schema")
 
 
-def _parse_attack_item(idx: int, item: Any) -> Attack | None:
+def _parse_attack_item(idx: int, item: Any, catalog_path: Path) -> Attack | None:
     """Parse a single catalog item into an Attack, or None if invalid."""
     if isinstance(item, str):
         return Attack(id=str(idx), prompt=item, metadata={})
@@ -46,15 +77,18 @@ def _parse_attack_item(idx: int, item: Any) -> Attack | None:
         for k, v in item.items()
         if k not in {"id", "attack_id", "name", "prompt", "text", "input", "followups"}
     }
+    if "attack_type" not in meta:
+        meta["attack_type"] = _infer_attack_type(item, catalog_path)
     return Attack(id=str(aid), prompt=prompt, metadata=meta, followups=followups)
 
 
 def load_catalog(path: str) -> list[Attack]:
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    catalog_path = Path(path)
+    data = json.loads(catalog_path.read_text(encoding="utf-8"))
     items = _resolve_catalog_items(data)
     attacks: list[Attack] = []
     for idx, item in enumerate(items):
-        attack = _parse_attack_item(idx, item)
+        attack = _parse_attack_item(idx, item, catalog_path)
         if attack:
             attacks.append(attack)
     return attacks
@@ -66,3 +100,41 @@ def _extract_prompt(item: dict[str, Any]) -> str:
         if isinstance(value, str) and value.strip():
             return value
     return ""
+
+
+def _infer_attack_type(item: dict[str, Any], catalog_path: Path) -> str:
+    fields = (
+        "category",
+        "subcategory",
+        "semantic_category",
+        "functional_category",
+        "technique",
+        "behavior",
+        "description",
+        "prompt",
+        "id",
+    )
+    metadata_text = " ".join(
+        str(item.get(field, "")).strip().lower() for field in fields if item.get(field)
+    )
+    if any(hint in metadata_text for hint in _OBEDIENCE_HINTS):
+        return _ATTACK_TYPE_OBEDIENCE
+    if any(hint in metadata_text for hint in _POLICY_BYPASS_HINTS):
+        return _ATTACK_TYPE_POLICY_BYPASS
+
+    catalog_name = catalog_path.name.lower()
+    if "hallucination" in catalog_name:
+        return _ATTACK_TYPE_OBEDIENCE
+    if any(
+        marker in catalog_name
+        for marker in (
+            "owasp",
+            "obliteratus",
+            "jailbreakbench",
+            "harmbench",
+            "data_leakage",
+            "jailbreak",
+        )
+    ):
+        return _ATTACK_TYPE_POLICY_BYPASS
+    return _ATTACK_TYPE_POLICY_BYPASS

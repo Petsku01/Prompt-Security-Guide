@@ -24,6 +24,11 @@ Each attack can include `attack_type` metadata:
 
 Reported rates are split by these attack types so "followed instruction" and "violated policy" are not conflated.
 
+If a catalog item is missing `attack_type`, PSG applies production tagging heuristics from item metadata (`category`, `subcategory`, `technique`, `description`, `prompt`) and catalog identity:
+
+- hallucination-style probe metadata (fake citations/invented facts/non-existent APIs) => `obedience`
+- jailbreak/policy-evasion metadata (OWASP, JailbreakBench, HarmBench, Obliteratus, leakage/jailbreak markers) => `policy-bypass`
+
 ## Success Detection
 
 Two detector modes are used:

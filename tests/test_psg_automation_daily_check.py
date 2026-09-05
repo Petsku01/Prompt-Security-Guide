@@ -6,8 +6,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from psg.automation.daily_check import install_cron, is_cron_installed, remove_cron, validate_cron_schedule
-
+from psg.automation.daily_check import (
+    install_cron,
+    is_cron_installed,
+    remove_cron,
+    validate_cron_schedule,
+)
 
 # ── test 1: install_cron runs crontab with correct schedule ───────────────
 

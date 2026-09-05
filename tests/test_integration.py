@@ -25,7 +25,6 @@ from psg.models import AppConfig, Attack
 from psg.orchestrator import run
 from psg.security.detectors import KeywordDetector, build_detector
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -462,7 +461,7 @@ class TestDefenseLayerIntegration:
     """Defense module with real validators, no mocks."""
 
     def test_injection_detected(self):
-        from psg.defenses import DefenseLayer, DefenseConfig
+        from psg.defenses import DefenseConfig, DefenseLayer
 
         layer = DefenseLayer(
             DefenseConfig(
@@ -481,7 +480,7 @@ class TestDefenseLayerIntegration:
         assert len(result.labels) > 0
 
     def test_canary_token_leak_detected(self):
-        from psg.defenses import DefenseLayer, DefenseConfig
+        from psg.defenses import DefenseConfig, DefenseLayer
 
         layer = DefenseLayer(
             DefenseConfig(
@@ -500,7 +499,7 @@ class TestDefenseLayerIntegration:
         assert any("canary" in label for label in result.labels)
 
     def test_clean_input_passes(self):
-        from psg.defenses import DefenseLayer, DefenseConfig
+        from psg.defenses import DefenseConfig, DefenseLayer
 
         layer = DefenseLayer(
             DefenseConfig(
@@ -516,7 +515,7 @@ class TestDefenseLayerIntegration:
 
     def test_full_evaluate_pipeline(self):
         """evaluate() chains input + output validation."""
-        from psg.defenses import DefenseLayer, DefenseConfig
+        from psg.defenses import DefenseConfig, DefenseLayer
 
         layer = DefenseLayer(
             DefenseConfig(

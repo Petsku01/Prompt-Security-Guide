@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from .logging_config import logger
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
@@ -12,6 +11,7 @@ from typing import Callable
 from .config import PipelineConfig
 from .dedup import DeduplicationStore
 from .discovery import Source
+from .logging_config import logger
 
 
 @dataclass
@@ -44,8 +44,8 @@ def create_generate_func(config: PipelineConfig) -> GenerateFunc:
 
     def generate_func(prompt: str) -> str:
         """Generate using local Ollama model via urllib (no subprocess)."""
-        import urllib.request
         import urllib.error
+        import urllib.request
 
         try:
             data = json.dumps(

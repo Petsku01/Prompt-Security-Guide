@@ -51,11 +51,11 @@ class MyClassifier(ClassifierPlugin):
 """
 
 from .base import (
-    DetectorPlugin,
     ClassifierPlugin,
-    ReporterPlugin,
     DetectionResult,
+    DetectorPlugin,
     PluginRegistry,
+    ReporterPlugin,
     get_registry,
     load_plugins,
 )

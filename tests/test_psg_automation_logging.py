@@ -7,7 +7,6 @@ from pathlib import Path
 
 from psg.automation.logging_config import setup_logging
 
-
 # ── Task 6.2: 3 tests ────────────────────────────────────────────────────
 
 

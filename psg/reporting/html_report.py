@@ -8,7 +8,6 @@ from string import Template
 
 from ..models import AttemptResult, RunSummary
 
-
 HTML_TEMPLATE = Template("""<!DOCTYPE html>
 <html lang="en">
 <head>
