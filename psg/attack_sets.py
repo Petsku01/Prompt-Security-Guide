@@ -26,6 +26,10 @@ def get_attack_type(attack: Attack) -> str:
     return normalize_attack_type(attack.metadata.get("attack_type"))
 
 
+def get_attack_set_size(attack_set: str) -> int | None:
+    return _ATTACK_SET_SIZES.get(attack_set)
+
+
 def select_attack_set(attacks: list[Attack], attack_set: str) -> list[Attack]:
     if attack_set not in _ATTACK_SET_SIZES:
         valid = ", ".join(sorted(_ATTACK_SET_SIZES))

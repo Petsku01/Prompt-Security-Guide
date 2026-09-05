@@ -21,6 +21,8 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from .attack_sets import get_attack_set_size
+from .catalog import load_catalog
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
 from .models import AppConfig
@@ -204,6 +206,21 @@ def run_benchmark(
             print(f"Warning: Catalog not found, skipping: {catalog}", file=sys.stderr)
             continue
 
+        required_attacks = get_attack_set_size(attack_set)
+        if preset == "full" and required_attacks is not None:
+            try:
+                catalog_attacks = load_catalog(str(catalog_path))
+            except (OSError, ValueError, json.JSONDecodeError):
+                catalog_attacks = None
+            if catalog_attacks is not None and len(catalog_attacks) < required_attacks:
+                print(
+                    f"Warning: Skipping undersized catalog for attack set {attack_set}: "
+                    f"{catalog} has {len(catalog_attacks)} attacks; requires {required_attacks}",
+                    file=sys.stderr,
+                )
+                catalogs_used.pop()
+                continue
+
         cfg = AppConfig(
             model=model,
             catalog_path=str(catalog_path),
@@ -306,7 +323,7 @@ Examples:
         "--attack-set",
         choices=["all", "core-14", "full-61"],
         default="all",
-        help="Canonical subset of attacks to run from each catalog",
+        help="Canonical subset of attacks to run from each catalog; preset full skips undersized catalogs with a warning",
     )
     parser.add_argument(
         "--output-dir", default="results", help="Output directory for reports"
