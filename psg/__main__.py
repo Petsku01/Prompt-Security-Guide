@@ -4,6 +4,7 @@ import argparse
 import sys
 
 from .benchmark import main as benchmark_main
+from .benchmark import preset_names
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments
 from .cli import main as cli_main
@@ -44,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     benchmark_parser = subparsers.add_parser("benchmark", help="Run benchmark presets")
     benchmark_parser.add_argument(
-        "--preset", choices=["jbb", "owasp", "obliteratus", "full"], help="Preset name"
+        "--preset", choices=preset_names(), help="Preset name"
     )
     benchmark_parser.add_argument("--model", help="Model name")
     benchmark_parser.add_argument(
@@ -67,7 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--attack-set",
         choices=["all", "core-14", "full-61"],
         default="all",
-        help="Canonical subset of attacks to run from each catalog",
+        help="Canonical subset of attacks to run from each catalog; preset full skips undersized catalogs with a warning",
     )
     benchmark_parser.add_argument(
         "--output-dir", default="results", help="Output directory"

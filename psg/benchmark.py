@@ -21,6 +21,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from .attack_sets import AttackSetSizeError
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
 from .models import AppConfig
@@ -126,6 +127,10 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
 }
 
 
+def preset_names() -> list[str]:
+    return sorted(PRESETS)
+
+
 @dataclass
 class BenchmarkResult:
     """Results from a benchmark run."""
@@ -226,7 +231,19 @@ def run_benchmark(
             print(f"Config error for {catalog}: {exc}", file=sys.stderr)
             continue
 
-        summary, results = run(cfg)
+        try:
+            summary, results = run(cfg)
+        except CatalogError as exc:
+            cause = exc.__cause__
+            if preset == "full" and isinstance(cause, AttackSetSizeError):
+                print(
+                    f"Warning: Skipping undersized catalog for attack set {attack_set}: "
+                    f"{catalog} has {cause.actual} attacks; requires {cause.required}",
+                    file=sys.stderr,
+                )
+                catalogs_used.pop()
+                continue
+            raise
 
         total_attacks += summary.total
         total_flagged += summary.flagged
@@ -283,7 +300,7 @@ Examples:
 """,
     )
     parser.add_argument(
-        "--preset", choices=list(PRESETS.keys()), help="Benchmark preset to run"
+        "--preset", choices=preset_names(), help="Benchmark preset to run"
     )
     parser.add_argument("--model", help="Model name")
     parser.add_argument(
@@ -306,7 +323,7 @@ Examples:
         "--attack-set",
         choices=["all", "core-14", "full-61"],
         default="all",
-        help="Canonical subset of attacks to run from each catalog",
+        help="Canonical subset of attacks to run from each catalog; preset full skips undersized catalogs with a warning",
     )
     parser.add_argument(
         "--output-dir", default="results", help="Output directory for reports"
@@ -322,7 +339,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.list:
         print("Available presets:")
-        for name, info in PRESETS.items():
+        for name in preset_names():
+            info = PRESETS[name]
             print(f"  {name:12} - {info['description']}")
             for catalog in info["catalogs"]:
                 print(f"               └─ {catalog}")

@@ -120,7 +120,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         report_write_failed=False,
     )
 
-    run_metadata = {
+    run_metadata: dict[str, object] = {
         "catalog": cfg.catalog_path,
         "attack_set": cfg.attack_set,
         "attack_ids": [attack.id for attack in attacks],

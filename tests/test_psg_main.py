@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from psg.__main__ import build_parser, main
+from psg.benchmark import PRESETS, preset_names
 
 
 def test_main_dispatches_scan_subcommand(monkeypatch) -> None:
@@ -71,3 +72,13 @@ def test_main_help_lists_scan_and_catalog_commands() -> None:
     assert "scan" in help_text
     assert "catalog" in help_text
     assert "compare-runs" in help_text
+
+
+def test_main_benchmark_parser_accepts_all_presets() -> None:
+    parser = build_parser()
+
+    for preset in preset_names():
+        args = parser.parse_args(["benchmark", "--preset", preset, "--model", "m"])
+        assert args.command == "benchmark"
+        assert args.preset == preset
+    assert sorted(PRESETS) == preset_names()
