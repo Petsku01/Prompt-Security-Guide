@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from psg.attack_sets import AttackSetSizeError
 from psg.benchmark import (
     PRESETS,
     BenchmarkResult,
@@ -122,6 +123,10 @@ def test_run_benchmark_full_skips_undersized_catalog_for_attack_set(
     monkeypatch.setattr("psg.benchmark.validate_config", lambda cfg: None)
 
     def _fake_run(cfg):
+        if cfg.catalog_path == str(small_catalog):
+            raise CatalogError(f"failed to load catalog {cfg.catalog_path}: undersized") from AttackSetSizeError(
+                "full-61", 61, 3
+            )
         seen_catalogs.append(cfg.catalog_path)
         return RunSummary(61, 61, 0, 0, 0.1), []
 
@@ -148,7 +153,7 @@ def test_run_benchmark_full_preserves_catalog_load_errors(
 ) -> None:
     bad_catalog = tmp_path / "datasets" / "bad.json"
     bad_catalog.parent.mkdir(parents=True)
-    bad_catalog.write_text('{"attacks": [}', encoding="utf-8")
+    bad_catalog.write_text('{"attacks": []}', encoding="utf-8")
     monkeypatch.setitem(
         PRESETS,
         "full",
@@ -157,6 +162,13 @@ def test_run_benchmark_full_preserves_catalog_load_errors(
             "description": "All available attack datasets combined",
             "catalogs": ["datasets/bad.json"],
         },
+    )
+    monkeypatch.setattr("psg.benchmark.validate_config", lambda cfg: None)
+    monkeypatch.setattr(
+        "psg.benchmark.run",
+        lambda cfg: (_ for _ in ()).throw(
+            CatalogError(f"failed to load catalog {cfg.catalog_path}: bad json")
+        ),
     )
 
     with pytest.raises(CatalogError, match="failed to load catalog"):

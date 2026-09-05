@@ -11,6 +11,16 @@ _ATTACK_SET_SIZES: dict[str, int | None] = {
 }
 
 
+class AttackSetSizeError(ValueError):
+    def __init__(self, attack_set: str, required: int, actual: int) -> None:
+        self.attack_set = attack_set
+        self.required = required
+        self.actual = actual
+        super().__init__(
+            f"attack set '{attack_set}' requires at least {required} attacks, got {actual}"
+        )
+
+
 def normalize_attack_type(value: object) -> str:
     if not isinstance(value, str):
         return ATTACK_TYPE_POLICY_BYPASS
@@ -26,10 +36,6 @@ def get_attack_type(attack: Attack) -> str:
     return normalize_attack_type(attack.metadata.get("attack_type"))
 
 
-def get_attack_set_size(attack_set: str) -> int | None:
-    return _ATTACK_SET_SIZES.get(attack_set)
-
-
 def select_attack_set(attacks: list[Attack], attack_set: str) -> list[Attack]:
     if attack_set not in _ATTACK_SET_SIZES:
         valid = ", ".join(sorted(_ATTACK_SET_SIZES))
@@ -38,7 +44,5 @@ def select_attack_set(attacks: list[Attack], attack_set: str) -> list[Attack]:
     if size is None:
         return attacks
     if len(attacks) < size:
-        raise ValueError(
-            f"attack set '{attack_set}' requires at least {size} attacks, got {len(attacks)}"
-        )
+        raise AttackSetSizeError(attack_set, size, len(attacks))
     return attacks[:size]

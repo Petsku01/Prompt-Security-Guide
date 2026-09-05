@@ -21,8 +21,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .attack_sets import get_attack_set_size
-from .catalog import load_catalog
+from .attack_sets import AttackSetSizeError
 from .config import ConfigError, validate_config
 from .errors import CatalogError, LLMError
 from .models import AppConfig
@@ -210,21 +209,6 @@ def run_benchmark(
             print(f"Warning: Catalog not found, skipping: {catalog}", file=sys.stderr)
             continue
 
-        required_attacks = get_attack_set_size(attack_set)
-        if preset == "full" and required_attacks is not None:
-            try:
-                catalog_attacks = load_catalog(str(catalog_path))
-            except (OSError, ValueError, json.JSONDecodeError) as exc:
-                raise CatalogError(f"failed to load catalog {catalog_path}: {exc}") from exc
-            if len(catalog_attacks) < required_attacks:
-                print(
-                    f"Warning: Skipping undersized catalog for attack set {attack_set}: "
-                    f"{catalog} has {len(catalog_attacks)} attacks; requires {required_attacks}",
-                    file=sys.stderr,
-                )
-                catalogs_used.pop()
-                continue
-
         cfg = AppConfig(
             model=model,
             catalog_path=str(catalog_path),
@@ -247,7 +231,19 @@ def run_benchmark(
             print(f"Config error for {catalog}: {exc}", file=sys.stderr)
             continue
 
-        summary, results = run(cfg)
+        try:
+            summary, results = run(cfg)
+        except CatalogError as exc:
+            cause = exc.__cause__
+            if preset == "full" and isinstance(cause, AttackSetSizeError):
+                print(
+                    f"Warning: Skipping undersized catalog for attack set {attack_set}: "
+                    f"{catalog} has {cause.actual} attacks; requires {cause.required}",
+                    file=sys.stderr,
+                )
+                catalogs_used.pop()
+                continue
+            raise
 
         total_attacks += summary.total
         total_flagged += summary.flagged
