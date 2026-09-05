@@ -8,6 +8,7 @@
 | `psg defend` | Defense tools (validate, benchmark, templates) |
 | `psg benchmark` | Run preset benchmarks |
 | `psg eval` | Evaluate detector accuracy |
+| `psg compare-runs` | Check report alignment before cross-run comparison |
 | `psg serve` | Start API server |
 | `psg catalog validate` | Validate catalog JSON files |
 
@@ -36,6 +37,7 @@ Scan a model against an attack catalog.
 | `--rate-limit RPS` | None | Max requests per second |
 | `--timeout SECONDS` | 240 | Request timeout |
 | `--allow-insecure-http` | False | Allow http:// URLs |
+| `--attack-set SET` | `all` | Canonical subset: `all`, `core-14`, `full-61` |
 
 ### Detection Options
 
@@ -61,6 +63,7 @@ Scan a model against an attack catalog.
 | `--text-report PATH` | `results/report.txt` | Text report path |
 | `--html-report PATH` | None | HTML dashboard report |
 | `--checkpoint PATH` | `results/checkpoint.jsonl` | Progress checkpoint |
+| `--compare-report PATH` | None | Compare with prior JSON report for attack-set alignment |
 
 ### Examples
 

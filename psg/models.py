@@ -49,6 +49,7 @@ class AttemptResult:
     is_refusal: bool = False
     has_disclaimer: bool = False
     needs_review: bool = False  # True when 0.3 < harm_score < 0.7
+    attack_type: str = "policy-bypass"
     error: str | None = None
     started_at: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
@@ -62,6 +63,10 @@ class RunSummary:
     failed: int
     flagged: int
     duration_seconds: float
+    obedience_total: int = 0
+    obedience_flagged: int = 0
+    policy_bypass_total: int = 0
+    policy_bypass_flagged: int = 0
     report_write_failed: bool = False
 
 
@@ -98,3 +103,4 @@ class AppConfig:
     attack_mode: str = "single"  # single, crescendo, many-shot
     crescendo_turns: int = 7
     many_shot_examples: int = 10
+    attack_set: str = "all"

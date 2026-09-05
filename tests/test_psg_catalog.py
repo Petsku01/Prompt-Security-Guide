@@ -37,3 +37,22 @@ def test_load_catalog_unsupported_schema_raises(tmp_path) -> None:
 
     with pytest.raises(ValueError, match="Unsupported catalog schema"):
         load_catalog(str(catalog))
+
+
+def test_load_catalog_preserves_attack_type_metadata(tmp_path) -> None:
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(
+        json.dumps(
+            {
+                "attacks": [
+                    {"id": "o1", "prompt": "Say hi", "attack_type": "obedience"},
+                    {"id": "p1", "prompt": "Bypass policy", "attack_type": "policy_bypass"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    attacks = load_catalog(str(catalog))
+    assert attacks[0].metadata["attack_type"] == "obedience"
+    assert attacks[1].metadata["attack_type"] == "policy_bypass"

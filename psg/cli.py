@@ -17,6 +17,12 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--model", required=True, help="Model name, e.g. llama3")
     parser.add_argument("--catalog", required=True, help="Path to attacks catalog JSON")
     parser.add_argument(
+        "--attack-set",
+        choices=["all", "core-14", "full-61"],
+        default="all",
+        help="Canonical subset of attacks to run from the catalog",
+    )
+    parser.add_argument(
         "--base-url",
         default="http://localhost:11434/v1",
         help="OpenAI-compatible base URL",
@@ -47,6 +53,11 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--checkpoint", default="results/checkpoint.jsonl")
     parser.add_argument("--json-report", default="results/report.json")
     parser.add_argument("--text-report", default="results/report.txt")
+    parser.add_argument(
+        "--compare-report",
+        default=None,
+        help="Path to prior JSON report for attack-set alignment check",
+    )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-tokens", type=int, default=512)
     system_prompt_group = parser.add_mutually_exclusive_group()
@@ -221,10 +232,14 @@ def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
     import json
     from pathlib import Path
 
+    from .attack_sets import select_attack_set
     from .catalog import load_catalog
     from .defenses import DefenseConfig, DefenseLayer
 
-    attacks = load_catalog(cfg.catalog_path)
+    try:
+        attacks = select_attack_set(load_catalog(cfg.catalog_path), cfg.attack_set)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        raise CatalogError(f"failed to load catalog {cfg.catalog_path}: {exc}") from exc
     layer = DefenseLayer(DefenseConfig(input_block_threshold=threshold))
 
     detected = 0
@@ -256,6 +271,7 @@ def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
                 "detected": detected,
                 "detection_rate": rate,
                 "threshold": threshold,
+                "attack_set": cfg.attack_set,
                 "results": results_data,
             },
             indent=2,
@@ -303,6 +319,7 @@ def main(argv: list[str] | None = None) -> int:
         attack_mode=args.attack_mode,
         crescendo_turns=args.crescendo_turns,
         many_shot_examples=args.many_shot_examples,
+        attack_set=args.attack_set,
     )
 
     try:
@@ -313,7 +330,11 @@ def main(argv: list[str] | None = None) -> int:
 
     # Defense-only mode: validate attacks without calling model
     if args.defense_only:
-        return _run_defense_only(cfg, args.defense_threshold)
+        try:
+            return _run_defense_only(cfg, args.defense_threshold)
+        except CatalogError as exc:
+            logger.error("Catalog error: %s", exc)
+            return 3
 
     try:
         summary, results = run(cfg)
@@ -358,6 +379,30 @@ def main(argv: list[str] | None = None) -> int:
         summary.flagged,
         summary.duration_seconds,
     )
+    if summary.obedience_total > 0:
+        logger.info(
+            "Obedience success rate: %d/%d (%.1f%%)",
+            summary.obedience_flagged,
+            summary.obedience_total,
+            (summary.obedience_flagged / summary.obedience_total) * 100,
+        )
+    if summary.policy_bypass_total > 0:
+        logger.info(
+            "Policy-bypass success rate: %d/%d (%.1f%%)",
+            summary.policy_bypass_flagged,
+            summary.policy_bypass_total,
+            (summary.policy_bypass_flagged / summary.policy_bypass_total) * 100,
+        )
+    if args.compare_report:
+        from .compare_runs import compare_report_files
+
+        comparison = compare_report_files(args.compare_report, args.json_report)
+        if not comparison["aligned"]:
+            logger.warning(
+                "Run comparison misaligned (%s): %s",
+                comparison["reason"],
+                comparison["details"],
+            )
     return 0
 
 

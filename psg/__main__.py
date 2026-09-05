@@ -6,6 +6,7 @@ import sys
 from .benchmark import main as benchmark_main
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments, main as cli_main
+from .compare_runs import main as compare_runs_main
 from .defend import add_defend_arguments, main as defend_main
 from .eval import main as eval_main
 from .serve import main as serve_main
@@ -100,6 +101,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_defend_arguments(defend_parser)
 
+    compare_parser = subparsers.add_parser(
+        "compare-runs", help="Check whether two scan reports are comparable"
+    )
+    compare_parser.add_argument("--left", required=True, help="Baseline report JSON")
+    compare_parser.add_argument("--right", required=True, help="Candidate report JSON")
+
     plugins_parser = subparsers.add_parser("plugins", help="List installed plugins")
     plugins_parser.add_argument(
         "--type",
@@ -153,6 +160,9 @@ def main(argv: list[str] | None = None) -> int:
     if ns.command == "defend":
         defend_args = [*args[1:]]
         return defend_main(defend_args)
+    if ns.command == "compare-runs":
+        compare_args = [*args[1:]]
+        return compare_runs_main(compare_args)
     if ns.command == "plugins":
         return _list_plugins(ns.type)
 

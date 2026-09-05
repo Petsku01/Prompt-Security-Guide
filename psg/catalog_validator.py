@@ -11,7 +11,8 @@ ID_ALIASES = ("id", "attack_id", "name")
 # Prompt field aliases (catalog.py _extract_prompt accepts all of these)
 PROMPT_ALIASES = ("prompt", "text", "input", "query", "content")
 REQUIRED_FIELDS = ID_ALIASES + PROMPT_ALIASES
-OPTIONAL_FIELDS = ("technique", "source", "tier")
+OPTIONAL_FIELDS = ("technique", "source", "tier", "attack_type")
+ATTACK_TYPE_VALUES = ("obedience", "policy-bypass")
 CATALOG_KEYS = ("attacks", "prompts", "tests", "items")
 
 
@@ -104,6 +105,16 @@ def validate_catalog_file(path: Path) -> dict[str, Any]:
         if missing_optional:
             warnings.append(
                 f"[{idx}] Missing optional field(s): {', '.join(missing_optional)}"
+            )
+
+        attack_type = item.get("attack_type")
+        if attack_type is not None and not (
+            _is_non_empty_string(attack_type)
+            and str(attack_type).strip().lower().replace("_", "-")
+            in ATTACK_TYPE_VALUES
+        ):
+            warnings.append(
+                f"[{idx}] Invalid attack_type: {attack_type!r} (expected one of: {', '.join(ATTACK_TYPE_VALUES)})"
             )
 
     return {

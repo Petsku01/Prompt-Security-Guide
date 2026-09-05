@@ -119,6 +119,24 @@ def test_build_parser_with_json_report() -> None:
     assert args.json_report == "/tmp/report.json"
 
 
+def test_build_parser_parses_attack_set_and_compare_report() -> None:
+    parser = build_parser()
+    args = parser.parse_args(
+        [
+            "--model",
+            "llama3",
+            "--catalog",
+            "datasets/tiny_test.json",
+            "--attack-set",
+            "core-14",
+            "--compare-report",
+            "/tmp/old.json",
+        ]
+    )
+    assert args.attack_set == "core-14"
+    assert args.compare_report == "/tmp/old.json"
+
+
 def test_main_returns_3_on_catalog_error(monkeypatch) -> None:
     monkeypatch.setattr("psg.cli.validate_config", lambda cfg: cfg)
     monkeypatch.setattr(
