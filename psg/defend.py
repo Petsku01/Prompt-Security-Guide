@@ -13,16 +13,16 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 from .defenses import (
+    SCENARIOS,
     DefenseConfig,
     DefenseLayer,
+    recommend_defense_strategy,
     validate_input,
     validate_output,
-    recommend_defense_strategy,
-    SCENARIOS,
 )
 
 
@@ -453,9 +453,9 @@ def cmd_info(args: argparse.Namespace) -> int:
 def cmd_templates(args: argparse.Namespace) -> int:
     """List and manage defense templates."""
     from .defenses.templates import (
-        load_templates,
-        get_recommended_templates,
         combine_templates,
+        get_recommended_templates,
+        load_templates,
     )
 
     templates = load_templates(args.dir)

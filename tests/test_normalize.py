@@ -1,11 +1,11 @@
 """Tests for text normalization (obfuscation detection)."""
 
 from psg.security.normalize import (
-    normalize_text,
-    translate_leetspeak,
-    translate_homoglyphs,
     decode_base64_segments,
     normalize_for_classification,
+    normalize_text,
+    translate_homoglyphs,
+    translate_leetspeak,
 )
 
 

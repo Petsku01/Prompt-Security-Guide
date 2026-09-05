@@ -6,7 +6,13 @@ from pathlib import Path
 
 import pytest
 
-from psg.benchmark import PRESETS, BenchmarkResult, build_parser, find_catalog_path, main
+from psg.benchmark import (
+    PRESETS,
+    BenchmarkResult,
+    build_parser,
+    find_catalog_path,
+    main,
+)
 
 
 def test_presets_defined() -> None:

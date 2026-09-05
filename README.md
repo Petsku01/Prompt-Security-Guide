@@ -50,6 +50,14 @@ psg scan --model llama3:8b \
   --defense-report
 ```
 
+## Example: Comparable Benchmark Slice
+
+```bash
+psg benchmark --preset full --model llama3:8b --attack-set core-14
+```
+
+`core-14` and `full-61` are prefix slices of each selected catalog (not curated ID lists). Reports also track `attack_type` (`obedience` vs `policy-bypass`) for split metrics.
+
 ## Example: Detect Injection
 
 ```bash

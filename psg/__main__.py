@@ -5,9 +5,11 @@ import sys
 
 from .benchmark import main as benchmark_main
 from .catalog_validator import main as catalog_validate_main
-from .cli import add_scan_arguments, main as cli_main
+from .cli import add_scan_arguments
+from .cli import main as cli_main
 from .compare_runs import main as compare_runs_main
-from .defend import add_defend_arguments, main as defend_main
+from .defend import add_defend_arguments
+from .defend import main as defend_main
 from .eval import main as eval_main
 from .serve import main as serve_main
 
@@ -60,6 +62,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     benchmark_parser.add_argument(
         "--detector", choices=["keyword", "llm-judge", "ensemble"], default="keyword"
+    )
+    benchmark_parser.add_argument(
+        "--attack-set",
+        choices=["all", "core-14", "full-61"],
+        default="all",
+        help="Canonical subset of attacks to run from each catalog",
     )
     benchmark_parser.add_argument(
         "--output-dir", default="results", help="Output directory"

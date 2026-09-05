@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from .errors import ParseError
 from ..models import LLMResponse
+from .errors import ParseError
 
 
 def parse_chat_completion(data: dict[str, Any]) -> LLMResponse:

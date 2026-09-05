@@ -4,7 +4,6 @@ import json
 
 from psg.automation.dedup import DeduplicationStore, hash_text
 
-
 # ── hash_text tests ──────────────────────────────────────────────────────
 
 def test_hash_text_deterministic() -> None:

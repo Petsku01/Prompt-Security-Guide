@@ -9,7 +9,6 @@ from psg.automation.validation import (
     validate_url,
 )
 
-
 # ── validate_url: DNS resolution tests (original 3) ──────────────────────
 
 

@@ -37,7 +37,7 @@ Scan a model against an attack catalog.
 | `--rate-limit RPS` | None | Max requests per second |
 | `--timeout SECONDS` | 240 | Request timeout |
 | `--allow-insecure-http` | False | Allow http:// URLs |
-| `--attack-set SET` | `all` | Canonical subset: `all`, `core-14`, `full-61` |
+| `--attack-set SET` | `all` | Canonical subset: `all`, `core-14`, `full-61` (prefix slices from the loaded catalog, not curated ID lists) |
 
 ### Detection Options
 
@@ -175,6 +175,7 @@ psg benchmark --preset jbb --model llama3:8b
 # Options
 psg benchmark --preset full --model llama3:8b \
   --base-url http://localhost:11434/v1 \
+  --attack-set core-14 \
   --workers 4 \
   --output-dir results/
 ```
@@ -187,6 +188,26 @@ psg benchmark --preset full --model llama3:8b \
 | `owasp` | OWASP 2025 attacks |
 | `obliteratus` | Obliteratus attack set |
 | `full` | All catalogs |
+
+Benchmark presets forward `--attack-set` to each catalog run. `core-14` and `full-61` always mean "take the first 14/61 attacks from each selected catalog."
+
+---
+
+## psg compare-runs
+
+Validate whether two JSON scan reports are directly comparable.
+
+```bash
+psg compare-runs --left results/baseline.json --right results/candidate.json
+```
+
+The command checks:
+
+- `run_metadata.attack_set` matches (for example `core-14` vs `core-14`)
+- `run_metadata.attack_ids` are present in both reports
+- attack IDs are aligned so delta metrics are meaningful
+
+Use this before comparing split rates such as `attack_type=obedience` versus `attack_type=policy-bypass`.
 
 ---
 

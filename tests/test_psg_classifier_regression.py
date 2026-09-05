@@ -4,7 +4,6 @@ from pathlib import Path
 
 from psg.eval import evaluate, load_golden
 
-
 GOLDEN_PATH = Path("eval/classifier_golden.json")
 
 

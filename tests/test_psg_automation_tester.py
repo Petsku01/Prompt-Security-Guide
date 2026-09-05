@@ -7,10 +7,8 @@ import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-
 from psg.automation.config import PipelineConfig
 from psg.automation.tester import ModelTestResult, PipelineTester
-
 
 # ── helpers ────────────────────────────────────────────────────────────────
 

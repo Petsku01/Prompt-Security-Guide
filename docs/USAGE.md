@@ -130,6 +130,14 @@ Run standard benchmark suites without picking catalogs manually:
 python3 -m psg benchmark --preset jbb --model llama3:8b
 ```
 
+For consistent cross-run comparisons, you can run canonical prefix slices:
+
+```bash
+python3 -m psg benchmark --preset full --model llama3:8b --attack-set core-14
+```
+
+`core-14` and `full-61` always select the first N attacks from each loaded catalog. Catalog entries are also tagged as `attack_type=obedience` or `attack_type=policy-bypass` (from catalog metadata/prompt heuristics) so split metrics are not collapsed into a single default bucket.
+
 | Preset | Description |
 |--------|-------------|
 | `jbb` | JailbreakBench -- 100 harmful behavior prompts |

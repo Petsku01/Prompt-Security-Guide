@@ -11,8 +11,7 @@ Then: psg scan --model fake --catalog datasets/tiny_test.json --base-url http://
 
 import json
 import sys
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 SAFE_RESPONSE = (
     "I'm sorry, but I can't help with that request. "

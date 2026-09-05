@@ -45,6 +45,27 @@ def test_main_allows_legacy_root_scan_flags(monkeypatch) -> None:
     assert captured["argv"] == ["--model", "m", "--catalog", "c"]
 
 
+def test_main_dispatches_benchmark_attack_set(monkeypatch) -> None:
+    captured = {"argv": None}
+
+    def _fake_benchmark(argv):
+        captured["argv"] = argv
+        return 0
+
+    monkeypatch.setattr("psg.__main__.benchmark_main", _fake_benchmark)
+    rc = main(["benchmark", "--preset", "jbb", "--model", "m", "--attack-set", "core-14"])
+
+    assert rc == 0
+    assert captured["argv"] == [
+        "--preset",
+        "jbb",
+        "--model",
+        "m",
+        "--attack-set",
+        "core-14",
+    ]
+
+
 def test_main_help_lists_scan_and_catalog_commands() -> None:
     help_text = build_parser().format_help()
     assert "scan" in help_text

@@ -23,33 +23,33 @@ Example:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Iterable, Callable
+from typing import Callable, Iterable
 
 from .input_validators import (
     InputValidationResult,
-    validate_input,
-    normalize_text,
     ml_injection_score,
+    normalize_text,
+    validate_input,
 )
 from .output_validators import (
     OutputValidationResult,
-    validate_output,
-    detect_secrets,
     detect_pii,
+    detect_secrets,
+    validate_output,
 )
 from .strategies import (
-    InstructionLevel,
-    recommend_defense_strategy,
     SCENARIOS,
-    sort_by_instruction_hierarchy,
+    InstructionLevel,
     conflict_with_higher_priority,
+    recommend_defense_strategy,
+    sort_by_instruction_hierarchy,
 )
 from .templates import (
     DefenseTemplate,
-    load_templates,
-    combine_templates,
     build_defense_prompt,
+    combine_templates,
     get_recommended_templates,
+    load_templates,
 )
 
 

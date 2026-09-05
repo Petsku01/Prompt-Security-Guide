@@ -11,7 +11,7 @@ import logging
 import re
 import unicodedata
 from dataclasses import dataclass
-from typing import Iterable, Callable
+from typing import Callable, Iterable
 
 # Optional ML model support
 try:

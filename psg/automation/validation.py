@@ -1,11 +1,11 @@
 """Input validation for psg.automation."""
 
-import logging
-import socket
-import re
-from urllib.parse import urlparse
 import ipaddress
+import logging
+import re
+import socket
 from typing import Union
+from urllib.parse import urlparse
 
 IPAddress = Union[ipaddress.IPv4Address, ipaddress.IPv6Address]
 
