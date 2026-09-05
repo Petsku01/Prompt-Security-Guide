@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .benchmark import PRESETS
 from .benchmark import main as benchmark_main
+from .benchmark import preset_names
 from .catalog_validator import main as catalog_validate_main
 from .cli import add_scan_arguments
 from .cli import main as cli_main
@@ -45,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     benchmark_parser = subparsers.add_parser("benchmark", help="Run benchmark presets")
     benchmark_parser.add_argument(
-        "--preset", choices=list(PRESETS.keys()), help="Preset name"
+        "--preset", choices=preset_names(), help="Preset name"
     )
     benchmark_parser.add_argument("--model", help="Model name")
     benchmark_parser.add_argument(

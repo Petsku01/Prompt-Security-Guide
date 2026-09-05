@@ -128,6 +128,10 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
 }
 
 
+def preset_names() -> list[str]:
+    return sorted(PRESETS)
+
+
 @dataclass
 class BenchmarkResult:
     """Results from a benchmark run."""
@@ -300,7 +304,7 @@ Examples:
 """,
     )
     parser.add_argument(
-        "--preset", choices=list(PRESETS.keys()), help="Benchmark preset to run"
+        "--preset", choices=preset_names(), help="Benchmark preset to run"
     )
     parser.add_argument("--model", help="Model name")
     parser.add_argument(
@@ -339,7 +343,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.list:
         print("Available presets:")
-        for name, info in PRESETS.items():
+        for name in preset_names():
+            info = PRESETS[name]
             print(f"  {name:12} - {info['description']}")
             for catalog in info["catalogs"]:
                 print(f"               └─ {catalog}")
