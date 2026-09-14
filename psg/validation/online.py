@@ -6,7 +6,7 @@ import socket
 import threading
 import time
 from functools import lru_cache
-from urllib.parse import quote, urlparse
+from urllib.parse import quote, urljoin, urlparse
 
 import requests
 
@@ -18,14 +18,19 @@ def _sanitize_url(url: str) -> str:
     try:
         parsed = urlparse(url)
         if parsed.username or parsed.password:
-            return parsed._replace(netloc=f"{parsed.hostname or ''}{':' + str(parsed.port) if parsed.port else ''}").geturl()
+            return parsed._replace(
+                netloc=f"{parsed.hostname or ''}{':' + str(parsed.port) if parsed.port else ''}"
+            ).geturl()
     except Exception:
         return url
     return url
 
+
 DEFAULT_TIMEOUT_SECONDS = 5.0
 DEFAULT_MAX_REQUESTS_PER_SECOND = 10.0
 _USER_AGENT = "PromptSecurityGuide/4.x validation"
+_MAX_REDIRECT_HOPS = 5
+_REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
 _BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
 _BLOCKED_NETWORKS = (
     ipaddress.ip_network("127.0.0.0/8"),
@@ -91,13 +96,56 @@ def _validate_url_cached(
     try:
         response = requests.head(
             url,
-            allow_redirects=True,
+            allow_redirects=False,  # manual redirect chain: validate EVERY hop
             timeout=timeout,
             headers={"User-Agent": _USER_AGENT},
         )
     except requests.RequestException as exc:
-        logger.debug("URL validation request failed for %s: %s", _sanitize_url(url), exc)
+        logger.debug(
+            "URL validation request failed for %s: %s", _sanitize_url(url), exc
+        )
         return False
+
+    # Walk the redirect chain hop by hop; re-validate each target with
+    # _is_safe_url (scheme, blocked hosts, allowlist, resolved-IP blocking).
+    # Fixes audit P0: allow_redirects=True sent unvalidated hop targets —
+    # attacker-controlled public URL could bounce to localhost/metadata IPs.
+    # Redirect status derived from status code (not response.is_redirect) so
+    # lightweight test doubles without the attribute keep working.
+    hops = 0
+    while response.status_code in _REDIRECT_STATUSES:
+        hops += 1
+        if hops > _MAX_REDIRECT_HOPS:
+            logger.debug("Redirect chain too long starting at %s", _sanitize_url(url))
+            return False
+        location = ""
+        headers = getattr(response, "headers", None)
+        if headers is not None:
+            location = headers.get("Location", "")
+        if not location:
+            return False  # nothing to follow; status decides
+        next_url = urljoin(url, location)  # resolve relative redirects too
+        if not _is_safe_url(next_url, allowlist=allowlist):
+            logger.debug(
+                "Redirect hop blocked: %s -> %s",
+                _sanitize_url(url),
+                _sanitize_url(next_url),
+            )
+            return False
+        if not _allow_request(max_requests_per_second):
+            return False
+        try:
+            response = requests.head(
+                next_url,
+                allow_redirects=False,
+                timeout=timeout,
+                headers={"User-Agent": _USER_AGENT},
+            )
+        except requests.RequestException as exc:
+            logger.debug(
+                "Redirect hop request failed for %s: %s", _sanitize_url(next_url), exc
+            )
+            return False
     return 200 <= response.status_code < 400
 
 

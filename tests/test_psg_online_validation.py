@@ -10,6 +10,7 @@ from psg.validation.online import clear_validation_cache, validate_doi, validate
 class _Resp:
     def __init__(self, status_code: int) -> None:
         self.status_code = status_code
+        self.headers: dict[str, str] = {}
 
 
 def setup_function() -> None:
@@ -28,12 +29,47 @@ def _public_dns(*_args, **_kwargs):
     ]
 
 
-def test_validate_url_returns_true_for_redirect(monkeypatch) -> None:
+def test_validate_url_follows_safe_redirect_chain(monkeypatch) -> None:
+    """301 -> safe public target -> 200: valid (hop targets re-validated)."""
+    monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
+
+    first = _Resp(301)
+    first.headers = {"Location": "https://example.org/final"}
+    responses = [first, _Resp(200)]
+    seen_urls: list[str] = []
+
+    def _head(url, *_args, **_kwargs):
+        seen_urls.append(url)
+        return responses.pop(0)
+
+    monkeypatch.setattr("psg.validation.online.requests.head", _head)
+    # _Resp lacks is_redirect; the code derives redirects from status code
+    assert validate_url("https://example.com") is True
+    assert seen_urls == ["https://example.com", "https://example.org/final"]
+
+
+def test_validate_url_blocks_redirect_to_private_ip(monkeypatch) -> None:
+    """Audit P0: public URL redirecting to a private/internal target is refused."""
+    monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
+
+    def _head(url, *_args, **_kwargs):
+        if url == "https://attacker.example/1":
+            resp = _Resp(302)
+            resp.headers = {"Location": "http://127.0.0.1:8080/admin"}
+            return resp
+        raise AssertionError(f"must never request redirect target: {url}")
+
+    monkeypatch.setattr("psg.validation.online.requests.head", _head)
+    assert validate_url("https://attacker.example/1") is False
+
+
+def test_validate_url_redirect_without_location_not_followed(monkeypatch) -> None:
+    """302 with no Location header: nothing to follow; status decides."""
     monkeypatch.setattr("psg.validation.online.socket.getaddrinfo", _public_dns)
     monkeypatch.setattr(
         "psg.validation.online.requests.head", lambda *_args, **_kwargs: _Resp(302)
     )
-    assert validate_url("https://example.com") is True
+    assert validate_url("https://example.com") is False
 
 
 def test_validate_url_returns_false_on_timeout(monkeypatch) -> None:
