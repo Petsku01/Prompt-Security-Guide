@@ -72,6 +72,7 @@ _MARKERS_STRUCTURAL: tuple[str, ...] = (
 
 # Steganographic transport markers (zero-width & unicode tag ranges).
 _ZERO_WIDTH = {"\u200b", "\u200c", "\u200d", "\ufeff"}
+_VARIATION_SELECTORS = {"\ufe0e", "\ufe0f"}
 
 
 @dataclass(slots=True)
@@ -86,11 +87,14 @@ class PromptVerdict:
 def _count_markers(prompt_lower: str) -> tuple[list[str], list[str]]:
     high: list[str] = []
     structural: list[str] = []
+    # Steg transports often encode letters WITHOUT spaces (circled, tag
+    # channels); match both spaced and space-stripped haystacks.
+    stripped = prompt_lower.replace(" ", "")
     for m in _MARKERS_HIGH:
-        if m in prompt_lower:
+        if m in prompt_lower or m.replace(" ", "") in stripped:
             high.append(m)
     for m in _MARKERS_STRUCTURAL:
-        if m in prompt_lower:
+        if m in prompt_lower or m.replace(" ", "") in stripped:
             structural.append(m)
     return high, structural
 
@@ -99,6 +103,9 @@ def screen_prompt(prompt: str, threshold: float = 0.5) -> PromptVerdict:
     """Score an attack prompt for jailbreak markers; block at threshold."""
     # Normalize: strip zero-width chars, NFC-fold, lowercase.
     cleaned = "".join(c for c in prompt if c not in _ZERO_WIDTH)
+    # Emoji variation selectors (VS15/VS16) are a steg transport layer —
+    # strip so the payload text underneath becomes marker-visible.
+    cleaned = "".join(c for c in cleaned if c not in _VARIATION_SELECTORS)
     cleaned = unicodedata.normalize("NFC", cleaned)
     # Unicode Tags block -> visible payload text (for marker matching).
     tags = "".join(
@@ -115,16 +122,53 @@ def screen_prompt(prompt: str, threshold: float = 0.5) -> PromptVerdict:
         score += 0.4 + 0.15 * (len(high) - 1)
     score += min(0.3, 0.15 * len(structural))
 
-    # Encircled-unicode density (circled transport detection).
+    # --- Steganographic transport detection -------------------------------
+    # Principle: a deliberately hidden transport channel is itself the
+    # signal — payloads may be harmless probes (SAFE-payload audits), so
+    # blocking keys on the transport, not just on decoded content.
+
+    # Encircled-unicode density + decode circled letters into the haystack
+    # so payload text becomes marker-visible.
     circled = sum(1 for c in prompt if 0x24B6 <= ord(c) <= 0x24CF)
-    if circled > 10:
+    circled_text = "".join(
+        chr(ord(c) - 0x24B6 + ord("A")) for c in prompt if 0x24B6 <= ord(c) <= 0x24CF
+    )
+    if circled_text:
+        high, structural = _count_markers(haystack + " " + circled_text.lower())
+        if high:
+            score += 0.4 + 0.15 * (len(high) - 1)
+        score += min(0.3, 0.15 * len(structural))
+    if circled >= 50:  # dense circled transport (payload-length)
+        score += 0.5
+    elif circled > 10:
         score += 0.25
 
-    # Binary transport (long 8-bit group run).
+    # Zero-width density (bit-encoded transport). Two levels:
+    # >=20 → suspicious; >=100 → dense transport, independent block signal.
+    zero_width = sum(1 for c in prompt if c in _ZERO_WIDTH)
+    if zero_width >= 100:
+        score += 0.5
+    elif zero_width >= 20:
+        score += 0.35
+
+    # Unicode Tags density: the tag channel itself is the transport signal.
+    tag_count = sum(1 for c in prompt if 0xE0001 <= ord(c) <= 0xE007F)
+    if tag_count >= 10:
+        score += 0.5
+
+    # Emoji variation selectors (VS15/VS16) density.
+    vs_count = sum(1 for c in prompt if c in _VARIATION_SELECTORS)
+    if vs_count >= 40:
+        score += 0.35
+
+    # Binary transport (long 8-bit group run). Two levels:
+    # >=8 groups → suspicious; >=30 groups → dense transport.
     binary_groups = sum(
         1 for chunk in prompt.split() if len(chunk) == 8 and set(chunk) <= {"0", "1"}
     )
-    if binary_groups >= 8:
+    if binary_groups >= 30:
+        score += 0.5
+    elif binary_groups >= 8:
         score += 0.25
 
     score = min(1.0, score)
