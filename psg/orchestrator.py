@@ -56,14 +56,72 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
     checkpoint = JSONLCheckpoint(cfg.checkpoint_path)
     detector = build_detector(cfg)
 
-    defended_results = _run_attacks(
-        cfg=cfg,
-        attacks=attacks,
-        client=client,
-        checkpoint=checkpoint,
-        detector=detector,
-        system_prompt=cfg.system_prompt,
-        checkpoint_tag="defended",
+    # --with-defense: pre-validate attacks BEFORE sending to the model.
+    # Fail-closed: a detector error blocks the attack (never sends it).
+    blocked: dict[str, str] = {}
+    if cfg.with_defense:
+        from .security.prompt_screen import screen_prompt
+
+        for attack in attacks:
+            verdict = screen_prompt(attack.prompt, threshold=cfg.defense_threshold)
+            if verdict.blocked:
+                blocked[attack.id] = (
+                    f"pre_send_block: prompt_score={verdict.prompt_score:.2f} "
+                    f">= threshold={cfg.defense_threshold} "
+                    f"markers={verdict.markers}"
+                )
+                continue
+            # Response-detector pre-check (defense in depth; response="" probe).
+            try:
+                rverdict = detector.classify(prompt=attack.prompt, response="")
+            except Exception as exc:  # fail-closed: broken detector blocks
+                logger.warning(
+                    "defense pre-validation errored for attack_id=%s: %s — blocking",
+                    attack.id,
+                    exc,
+                )
+                blocked[attack.id] = f"defense_error: {exc}"
+                continue
+            if rverdict.harm_score >= cfg.defense_threshold:
+                blocked[attack.id] = (
+                    f"pre_send_block: harm_score={rverdict.harm_score:.3f} "
+                    f">= threshold={cfg.defense_threshold}"
+                )
+        blocked_count = len(blocked)
+        logger.info(
+            "with-defense pre-validation: %d/%d attacks blocked before send",
+            blocked_count,
+            len(attacks),
+        )
+        sendable = [a for a in attacks if a.id not in blocked]
+        pre_blocked = [
+            AttemptResult(
+                attack_id=a.id,
+                prompt=redact_text(a.prompt, cfg.redaction_mode),
+                response_text="",
+                flagged=False,
+                labels=["defense_blocked"],
+                needs_review=False,
+                defense_blocked=True,
+            )
+            for a in attacks
+            if a.id in blocked
+        ]
+    else:
+        sendable = attacks
+        pre_blocked = []
+
+    defended_results = (
+        _run_attacks(
+            cfg=cfg,
+            attacks=sendable,
+            client=client,
+            checkpoint=checkpoint,
+            detector=detector,
+            system_prompt=cfg.system_prompt,
+            checkpoint_tag="defended",
+        )
+        + pre_blocked
     )
 
     baseline_results: list[AttemptResult] | None = None
@@ -80,7 +138,9 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
 
     attack_types = {attack.id: get_attack_type(attack) for attack in attacks}
     for result in defended_results:
-        result.attack_type = attack_types.get(result.attack_id, ATTACK_TYPE_POLICY_BYPASS)
+        result.attack_type = attack_types.get(
+            result.attack_id, ATTACK_TYPE_POLICY_BYPASS
+        )
     if baseline_results:
         for result in baseline_results:
             result.attack_type = attack_types.get(

@@ -42,6 +42,31 @@ def validate_config(cfg: AppConfig) -> AppConfig:
         raise ConfigError("validation-timeout must be > 0")
     if cfg.max_retries < 0:
         raise ConfigError("max-retries must be >= 0")
+    if not (0.0 <= cfg.defense_threshold <= 1.0):
+        raise ConfigError("defense-threshold must be within 0.0-1.0")
+
+    # Production guardrail (defense-in-depth, on top of the SSRF guard):
+    # when SSRF protection is bypassed (--allow-insecure-http) AND the
+    # base_url is a private/internal target, sending the attack catalog
+    # requires explicit --allow-production-attacks. Public endpoints are
+    # not gated here (the SSRF guard already handles them when enabled).
+    if (
+        cfg.allow_insecure_http
+        and not _is_local_endpoint(cfg.base_url)
+        and _is_private_ip((urlparse(cfg.base_url).hostname or "").lower())
+        and not cfg.allow_production_attacks
+    ):
+        raise ConfigError(
+            "base-url points to a private/internal endpoint while SSRF "
+            "protection is disabled (--allow-insecure-http); sending the "
+            "attack catalog there requires --allow-production-attacks (and "
+            "--with-defense is strongly recommended)"
+        )
+    if cfg.with_defense and cfg.workers > 1:
+        logger.warning(
+            "with-defense pre-validation runs only in the parent process; "
+            "with workers>1 blocked attacks are still excluded pre-send"
+        )
     if cfg.detector not in {"keyword", "llm-judge", "ensemble"}:
         raise ConfigError("detector must be one of: keyword, llm-judge, ensemble")
     if not cfg.judge_model.strip():
@@ -66,6 +91,40 @@ def validate_config(cfg: AppConfig) -> AppConfig:
         cfg.system_prompt = cfg.system_prompt.strip() or None
 
     return cfg
+
+
+def _is_local_endpoint(url: str) -> bool:
+    """True when the endpoint host is clearly local (localhost/127.0.0.1/::1)."""
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except ValueError:
+        return False
+    if not host:
+        return False
+    if host in {"localhost", "::1"} or host.endswith(".localhost"):
+        return True
+    if host == "127.0.0.1" or host.startswith("127."):
+        return True
+    return False
+
+
+def _is_private_ip(host: str) -> bool:
+    """True for RFC1918/loopback/link-local/unique-local IPv4/IPv6 literals."""
+    if host in {"localhost", "::1"} or host.endswith(".localhost"):
+        return True
+    parts = host.split(".")
+    if len(parts) == 4 and all(p.isdigit() for p in parts):
+        a, b = int(parts[0]), int(parts[1])
+        if (
+            a == 10
+            or a == 127
+            or (a == 172 and 16 <= b <= 31)
+            or (a == 192 and b == 168)
+        ):
+            return True
+        if a == 169 and b == 254:
+            return True
+    return host.startswith("fd") or host.startswith("fe80:")
 
 
 def _validate_endpoint_url(

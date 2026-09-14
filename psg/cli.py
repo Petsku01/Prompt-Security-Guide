@@ -139,13 +139,19 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
         "--with-defense",
         action="store_true",
         default=False,
-        help="Run defense validation on attacks before sending to model",
+        help="Pre-validate attacks with the detector and BLOCK (fail-closed) before sending to model",
     )
     parser.add_argument(
         "--defense-threshold",
         type=float,
         default=0.5,
         help="Defense blocking threshold 0.0-1.0 (default: 0.5)",
+    )
+    parser.add_argument(
+        "--allow-production-attacks",
+        action="store_true",
+        default=False,
+        help="Explicitly allow sending the attack catalog to a non-local endpoint",
     )
     parser.add_argument(
         "--defense-only",
@@ -259,7 +265,9 @@ def _run_defense_only(cfg: AppConfig, threshold: float) -> int:
 
     total = len(attacks)
     rate = detected / total if total > 0 else 0
-    logger.info("Defense-only scan: %d/%d (%.1f%%) attacks blocked", detected, total, rate * 100)
+    logger.info(
+        "Defense-only scan: %d/%d (%.1f%%) attacks blocked", detected, total, rate * 100
+    )
     logger.info("Threshold: %s", threshold)
 
     Path(cfg.report_json_path).parent.mkdir(parents=True, exist_ok=True)
@@ -320,6 +328,9 @@ def main(argv: list[str] | None = None) -> int:
         crescendo_turns=args.crescendo_turns,
         many_shot_examples=args.many_shot_examples,
         attack_set=args.attack_set,
+        with_defense=args.with_defense,
+        defense_threshold=args.defense_threshold,
+        allow_production_attacks=args.allow_production_attacks,
     )
 
     try:
@@ -368,7 +379,9 @@ def main(argv: list[str] | None = None) -> int:
             logger.warning("Failed to write HTML report: %s", exc)
 
     if summary.report_write_failed:
-        logger.error("Run completed, but report writing failed. Check logs for details.")
+        logger.error(
+            "Run completed, but report writing failed. Check logs for details."
+        )
         return 1
 
     logger.info(
