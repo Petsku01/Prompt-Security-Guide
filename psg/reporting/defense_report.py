@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-from ..models import Attack, AttemptResult
+from ..models import Attack, AttemptResult, RedactionMode
+from ..security.redaction import redact_text
 
 
 @dataclass(slots=True)
@@ -49,6 +50,7 @@ def write_defense_report(
     attacks: list[Attack],
     defended_results: list[AttemptResult],
     baseline_results: list[AttemptResult] | None = None,
+    redaction_mode: RedactionMode = RedactionMode.PARTIAL,
 ) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -60,7 +62,7 @@ def write_defense_report(
         else None
     )
     category_lines = _render_category_breakdown(attacks, defended_results)
-    prompt_preview = _prompt_preview(system_prompt)
+    prompt_preview = _prompt_preview(system_prompt, redaction_mode)
     catalog_name = Path(catalog_path).name
 
     lines = [
@@ -106,6 +108,11 @@ def write_defense_report(
         )
 
     p.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    # Audit: defense report contains system prompt preview — restrict to owner.
+    try:
+        p.chmod(0o600)
+    except OSError:  # pragma: no cover - best effort on odd filesystems
+        pass
 
 
 def _render_category_breakdown(
@@ -148,10 +155,12 @@ def _category_for_attack(attack: Attack) -> str | None:
     return None
 
 
-def _prompt_preview(system_prompt: str | None) -> str:
+def _prompt_preview(
+    system_prompt: str | None, mode: RedactionMode = RedactionMode.PARTIAL
+) -> str:
     if not system_prompt:
         return "(none)"
-    clean = " ".join(system_prompt.split())
+    clean = " ".join(redact_text(system_prompt, mode).split())
     if len(clean) <= 100:
         return clean
     return f"{clean[:100]}..."

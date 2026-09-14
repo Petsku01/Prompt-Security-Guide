@@ -16,6 +16,7 @@ from ..llm.client import OpenAICompatibleClient
 from ..llm.errors import LLMError
 from ..models import AppConfig, Attack, AttemptResult
 from ..security.detectors import Detector
+from ..security.redaction import redact_text
 
 logger = logging.getLogger(__name__)
 
@@ -228,11 +229,12 @@ def run_crescendo_attack(
         system_prompt=system_prompt,
     )
 
-    # Convert to AttemptResult
+    # Convert to AttemptResult — redact BOTH directions at the source
+    # (audit P0: these paths previously bypassed --redaction entirely).
     return AttemptResult(
         attack_id=attack.id,
-        prompt=attack.prompt,
-        response_text=result.final_response,
+        prompt=redact_text(attack.prompt, cfg.redaction_mode),
+        response_text=redact_text(result.final_response, cfg.redaction_mode),
         error=result.error,
         flagged=result.success,
         labels=[f"crescendo_turn_{len(result.turns)}"],

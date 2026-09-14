@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import asdict
 from typing import Callable
 
 from ..checkpoint import JSONLCheckpoint
 from ..llm.client import OpenAICompatibleClient
 from ..models import AppConfig, Attack, AttemptResult
 from ..security.detectors import Detector
+from ..security.redaction import sanitize_for_persistence
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,12 @@ def _run_attacks_sequential(
     for attack in attacks:
         result = process_attack_fn(cfg, attack, client, detector, system_prompt)
         try:
-            checkpoint.append({**asdict(result), "mode": checkpoint_tag})
+            checkpoint.append(
+                {
+                    **sanitize_for_persistence(result, cfg.redaction_mode),
+                    "mode": checkpoint_tag,
+                }
+            )
         except Exception:
             logger.exception(
                 "failed to append checkpoint for attack_id=%s mode=%s",

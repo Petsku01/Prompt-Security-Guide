@@ -32,3 +32,30 @@ def redact_text(text: str, mode: RedactionMode) -> str:
     redacted = PHONE_RE.sub("[REDACTED_PHONE]", redacted)
     redacted = KEY_RE.sub("[REDACTED_KEY]", redacted)
     return redacted
+
+
+# --- centralized persistence boundary (audit P0: raw attempt data on disk) ---
+
+
+def sanitize_for_persistence(result: object, mode: RedactionMode) -> dict:
+    """Return a dict-safe view of an AttemptResult safe to write to disk.
+
+    Single choke point for EVERY persistence sink (checkpoint, JSON report):
+    redacts prompt/response_text/followups/system_prompt/defense_note
+    according to the run's RedactionMode. mode=off preserves raw text.
+    """
+    from dataclasses import asdict
+
+    data = asdict(result)  # type: ignore[arg-type]
+    if mode == RedactionMode.OFF:
+        return data
+    for field in ("prompt", "response_text"):
+        if isinstance(data.get(field), str):
+            data[field] = redact_text(data[field], mode)
+    if isinstance(data.get("followups"), list):
+        data["followups"] = [
+            redact_text(f, mode) if isinstance(f, str) else f for f in data["followups"]
+        ]
+    if isinstance(data.get("system_prompt"), str):
+        data["system_prompt"] = redact_text(data["system_prompt"], mode)
+    return data

@@ -192,7 +192,18 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
         (cfg.report_text_path, write_text_report),
     ):
         try:
-            writer(report_path, summary, defended_results, run_metadata=run_metadata)
+            if writer is write_json_report:
+                write_json_report(
+                    report_path,
+                    summary,
+                    defended_results,
+                    run_metadata=run_metadata,
+                    redaction_mode=cfg.redaction_mode,
+                )
+            else:
+                writer(
+                    report_path, summary, defended_results, run_metadata=run_metadata
+                )
         except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {report_path}: {exc}")
             logger.error(str(err))
@@ -208,6 +219,7 @@ def run(cfg: AppConfig) -> tuple[RunSummary, list[AttemptResult]]:
                 attacks=attacks,
                 defended_results=defended_results,
                 baseline_results=baseline_results,
+                redaction_mode=cfg.redaction_mode,
             )
         except (OSError, ValueError, RuntimeError) as exc:
             err = ReportError(f"failed writing report {cfg.defense_report_path}: {exc}")
