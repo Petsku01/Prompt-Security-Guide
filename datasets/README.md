@@ -11,6 +11,7 @@ This directory contains curated attack datasets for LLM security testing.
 | `jailbreakbench_behaviors.json` | 100 | [JailbreakBench](https://jailbreakbench.github.io/) | Standardized jailbreak benchmark behaviors |
 | `dan_jailbreaks.json` | 13 | ChatGPT_DAN + L1B3RT4S | Curated DAN variants and liberation commands |
 | `l1b3rt4s_vendor.json` | 73 | [L1B3RT4S](https://github.com/elder-plinius/L1B3RT4S) (AGPL-3.0) | Model-targeted vendor jailbreaks (GPT-5.2/OPUS-4.6/GEMINI-3/GROK-4/LLAMA 4/DEEPSEEK...) |
+| `steganographic_attacks.json` | 15 | PSG-generated (upstream: L1B3RT4S #MOTHERLOAD + P4RS3LT0NGV3) | Steganographic transports: Unicode Tags, zero-width, emoji VS, binary, circled — SAFE probe payloads |
 | `prompt_injection_techniques.json` | 25 | Research compilation | Prompt injection technique taxonomy |
 | `owasp_2025_attacks.json` | ~50 | OWASP AI Security | OWASP Top 10 LLM attack categories |
 | `obliteratus_attacks.json` | ~65 | Internal | Multi-technique curated attacks |
