@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import httpx
 import pytest
 
@@ -15,7 +17,7 @@ from psg.serve import ServerConfig, create_app, reset_metrics
 def app():
     """Create test app."""
     reset_metrics()  # Start fresh
-    config = ServerConfig(threshold=0.5)
+    config = ServerConfig(host="127.0.0.1", rate_limit_per_minute=0)
     return create_app(config)
 
 
@@ -138,19 +140,152 @@ async def test_openapi_docs(app):
 
 
 def test_server_config_defaults():
-    """Test ServerConfig defaults."""
+    """Test ServerConfig defaults (audit P0: localhost, not 0.0.0.0)."""
     config = ServerConfig()
-    assert config.host == "0.0.0.0"
+    assert config.host == "127.0.0.1"
     assert config.port == 8000
     assert config.threshold == 0.5
+    assert config.api_key is None
+    assert config.bulk_max_items == 1000
+    assert config.rate_limit_per_minute == 120
 
 
-def test_server_config_custom_values():
-    """Test ServerConfig with custom values."""
-    config = ServerConfig(host="127.0.0.1", port=9000, threshold=0.8)
-    assert config.host == "127.0.0.1"
-    assert config.port == 9000
-    assert config.threshold == 0.8
+def _run(app, method: str, path: str, **kwargs):
+    """Run an ASGI request synchronously — independent of pytest-asyncio
+    so the sync hardening tests work in every env."""
+
+    async def _inner():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(
+            transport=transport, base_url="http://test"
+        ) as client:
+            return await client.request(method, path, **kwargs)
+
+    return asyncio.new_event_loop().run_until_complete(_inner())
+
+
+def test_server_config_public_bind_requires_api_key():
+    """Audit P0: public bind without api_key must be rejected."""
+    with pytest.raises(ValueError, match="api_key"):
+        ServerConfig(host="0.0.0.0")
+    # explicit public bind WITH a key is fine
+    cfg = ServerConfig(host="0.0.0.0", api_key="secret")
+    assert cfg.api_key == "secret"
+
+
+def test_server_config_validates_threshold_and_limits():
+    """ServerConfig validates threshold range and sane limits."""
+    with pytest.raises(ValueError, match="threshold"):
+        ServerConfig(threshold=1.5)
+    with pytest.raises(ValueError, match="threshold"):
+        ServerConfig(threshold=-0.1)
+    with pytest.raises(ValueError, match="bulk_max_items"):
+        ServerConfig(bulk_max_items=0)
+    with pytest.raises(ValueError, match="rate_limit"):
+        ServerConfig(rate_limit_per_minute=-1)
+
+
+def test_bulk_screen_over_limit_returns_413(app):
+    """Audit P0: bulk requests beyond bulk_max_items are rejected."""
+    response = _run(
+        app,
+        "POST",
+        "/screen/bulk",
+        json={"texts": ["ok"] * (1000 + 1)},
+    )
+    assert response.status_code == 413
+
+
+def test_bulk_screen_oversized_text_returns_413(app):
+    """Audit P0: per-text char limit enforced."""
+    response = _run(
+        app,
+        "POST",
+        "/screen/bulk",
+        json={"texts": ["x" * (100_000 + 1)]},
+    )
+    assert response.status_code == 413
+
+
+def test_bulk_screen_normal_sizes_still_pass(app):
+    """Sanity: legit bulk traffic under the limits still screens fine."""
+    response = _run(
+        app,
+        "POST",
+        "/screen/bulk",
+        json={"texts": ["I cannot help with that.", "Sorry."]},
+    )
+    assert response.status_code == 200
+    assert response.json()["total"] == 2
+
+
+def test_screen_rejects_out_of_range_threshold(app):
+    """Pydantic ge/le must reject thresholds outside [0, 1]."""
+    response = _run(app, "POST", "/screen", json={"text": "hello", "threshold": 2.5})
+    assert response.status_code == 422
+
+
+def test_auth_required_when_api_key_set():
+    """Audit P0: with api_key set, requests without/with-wrong key get 401."""
+    reset_metrics()
+    app = create_app(
+        ServerConfig(
+            host="127.0.0.1",
+            rate_limit_per_minute=0,
+            api_key="test-secret-123",
+        )
+    )
+    response = _run(app, "POST", "/screen", json={"text": "hello"})
+    assert response.status_code == 401
+    response = _run(
+        app,
+        "POST",
+        "/screen",
+        json={"text": "hello"},
+        headers={"X-API-Key": "wrong"},
+    )
+    assert response.status_code == 401
+    response = _run(
+        app,
+        "POST",
+        "/screen",
+        json={"text": "hello"},
+        headers={"X-API-Key": "test-secret-123"},
+    )
+    assert response.status_code == 200
+    response = _run(app, "GET", "/health")
+    assert response.status_code == 200  # health stays open
+
+
+def test_rate_limit_returns_429():
+    """Audit P0: per-client rate limit returns 429 when exhausted."""
+    reset_metrics()
+    app = create_app(
+        ServerConfig(host="127.0.0.1", rate_limit_per_minute=3, threshold=0.5)
+    )
+    for _ in range(3):
+        response = _run(app, "POST", "/screen", json={"text": "test"})
+        assert response.status_code == 200
+    response = _run(app, "POST", "/screen", json={"text": "test"})
+    assert response.status_code == 429
+
+
+def test_enforce_server_threshold_rejects_override():
+    """Audit P0: enforce_server_threshold forbids client threshold."""
+    reset_metrics()
+    app = create_app(
+        ServerConfig(
+            host="127.0.0.1",
+            rate_limit_per_minute=0,
+            enforce_server_threshold=True,
+            threshold=0.9,
+        )
+    )
+    response = _run(app, "POST", "/screen", json={"text": "hello", "threshold": 0.1})
+    assert response.status_code == 400
+    # without override — server threshold applies, normal path
+    response = _run(app, "POST", "/screen", json={"text": "hello"})
+    assert response.status_code == 200
 
 
 @pytest.mark.asyncio
