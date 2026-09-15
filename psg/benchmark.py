@@ -148,6 +148,11 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
         "description": "Attacks targeting GPT-5.1 (indirect injection ~22% ASR, multi-turn LATS, agentic validator framing ISC 6/6; single-turn rows are expected-fail calibration)",
         "catalogs": ["datasets/profiles/gpt51_attacks.json"],
     },
+    "jbb100": {
+        "name": "JailbreakBench 100 Behaviors",
+        "description": "Model-agnostic robustness standard (arXiv 2404.01318): 100 harmful behaviors x 10 categories; comparable ASR across published papers",
+        "catalogs": ["datasets/profiles/jbb100_behaviors.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
