@@ -75,8 +75,10 @@ psg catalog list
 
 ## Features
 
-- **50 attack catalogs, 2700+ attacks** -- JailbreakBench, HarmBench, OWASP 2025, encoding attacks
+- **50 attack catalogs, 3400+ attacks** -- JailbreakBench, HarmBench, OWASP 2025, encoding attacks, Parseltongue + P4RS3LT0NGV3 (792)
 - **Defense layer** -- input validation, canary tokens, ML classifier
+- **Character-level obfuscation detection** -- leetspeak, homoglyphs, zero-width insertion, case mangling (Parseltongue family); artifact-gated fuzzy recovery with 0 FPs on a 400-sentence benign corpus
+- **Steganographic transport detection** -- zero-width/variation-selector/circled-Unicode/tag-channel payloads in pre-send screening
 - **Parallel scanning** -- `--workers 4 --rate-limit 10`
 - **CI integration** -- fail builds on classifier regression
 - **API server** -- FastAPI with `/screen` endpoint

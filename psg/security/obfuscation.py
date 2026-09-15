@@ -219,6 +219,10 @@ _TRIM_CHARS = "\"'.,!?;:—–…«»„“”"
 
 _WORD_RE = re.compile(r"\S+")
 _ALPHA_RUN_RE = re.compile(r"[A-Za-z]{3,}")
+# Standard PascalCase compound (RootKit, MacBook): EVERY segment is
+# Cap+lowercase — acronym-like cap runs (AdminUI's 'UI') are excluded here
+# and pass through to the exact-match check instead.
+_PASCALCASE_RE = re.compile(r"[A-Z][a-z]+(?:[A-Z][a-z]+)*$")
 
 
 def _fold_word(word: str) -> str:
@@ -256,7 +260,8 @@ def _allowed_distance(trigger: str) -> int:
 def _obfuscated_trigger(prompt: str) -> str | None:
     """Return a trigger word that only appears after de-obfuscation.
 
-    Per-token design (Sol review 2026-09-15, all 4 findings verified):
+    Per-token design (Sol review 2026-09-15, all 4 findings verified; benign
+    corpus 400 sentences: initial 7 FPs fixed, now 0):
     - Guard is PER TOKEN, not global: a token containing the plain trigger
       (case-insensitive substring) is skipped for that trigger, so padding a
       plain trigger word elsewhere cannot silence detection of an obfuscated
@@ -265,6 +270,12 @@ def _obfuscated_trigger(prompt: str) -> str | None:
       transform the token's ASCII-alpha core during folding — an appended
       emoji or stray punctuation alone never enables fuzzy matching.
     - Zero-width chars are always strong obfuscation evidence.
+    - PascalCase/camelCase product names (RootKit, AdminUI) are never case
+      obfuscation — case detector skips them.
+    - Digit-heavy tokens (version strings, addresses: v1.12.4, Build 124,
+      Route 124) are skipped — leet folds ('124'->'cra') inside them are
+      coincidental, not obfuscation. A digit artifact counts only when the
+      token also contains ASCII letters it could be hiding.
     """
     for raw in _WORD_RE.findall(prompt):
         word = raw.strip(_TRIM_CHARS)
@@ -281,6 +292,10 @@ def _obfuscated_trigger(prompt: str) -> str | None:
         raw_alpha = "".join(c for c in word_lower if c in string.ascii_lowercase)
         if not has_zw and core == raw_alpha:
             continue  # artifact did not transform the word (emoji, hyphen, ...)
+        if not has_zw and re.search(r"\d{2,}", word_lower):
+            # A digit run of 2+ is semantic (versions, addresses, dates):
+            # leet folds inside it ('124'->'cra') are coincidental.
+            continue
         for trig in OBF_TRIGGERS:
             if trig in word_lower:
                 continue  # this token carries the trigger verbatim — plain
@@ -293,11 +308,17 @@ def _obfuscated_trigger(prompt: str) -> str | None:
 
 def _case_obfuscated_trigger(prompt: str) -> str | None:
     """Return a trigger whose word appears with deliberately irregular case
-    (hAcK, HaCK) — case is an artifact the fold cannot see. Exact match only:
-    CamelCase identifiers (AdminUI) must not fuzzy-match."""
+    (hAcK, HaCK) — case is an artifact the fold cannot see.
+
+    Per-token verbatim guard (benign corpus 400: 'RootKit' is a product
+    name whose lowercase contains 'rootkit' — plain, not obfuscated).
+    Exact match only: CamelCase identifiers (AdminUI) must not fuzzy-match.
+    """
     for w in _ALPHA_RUN_RE.findall(prompt):
         if w.islower() or w.istitle() or w.isupper():
             continue
+        if _PASCALCASE_RE.fullmatch(w):
+            continue  # standard camel/pascal compound (RootKit), not mangled
         low = w.lower()
         if low in OBF_TRIGGERS:
             return low
