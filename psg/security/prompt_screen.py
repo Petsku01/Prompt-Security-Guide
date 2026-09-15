@@ -18,6 +18,11 @@ from __future__ import annotations
 import unicodedata
 from dataclasses import dataclass
 
+from psg.security.obfuscation import (
+    _case_obfuscated_trigger,
+    _obfuscated_trigger,
+)
+
 # High-signal jailbreak markers (case-insensitive, substring match).
 _MARKERS_HIGH: tuple[str, ...] = (
     "!godmode",
@@ -121,6 +126,17 @@ def screen_prompt(prompt: str, threshold: float = 0.5) -> PromptVerdict:
     if high:
         score += 0.4 + 0.15 * (len(high) - 1)
     score += min(0.3, 0.15 * len(structural))
+
+    # --- Character-level obfuscation (Parseltongue family) -----------------
+    # A trigger word that only surfaces through de-obfuscation (leetspeak,
+    # homoglyphs, zero-width insertion, phonetic collapse) is itself the
+    # signal: deliberate evasion. Blocked independently of payload content.
+    obf_trig = _obfuscated_trigger(prompt)
+    if obf_trig is not None:
+        score += 0.65
+    case_trig = _case_obfuscated_trigger(prompt)
+    if case_trig is not None:
+        score += 0.65
 
     # --- Steganographic transport detection -------------------------------
     # Principle: a deliberately hidden transport channel is itself the
