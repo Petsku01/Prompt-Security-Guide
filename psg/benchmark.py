@@ -143,6 +143,11 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
         "description": "Attacks targeting DeepSeek V4/R1 (CoT extraction, legacy-version frames)",
         "catalogs": ["datasets/profiles/deepseek_v4_attacks.json"],
     },
+    "gpt51": {
+        "name": "GPT-5.1-specific",
+        "description": "Attacks targeting GPT-5.1 (indirect injection ~22% ASR, multi-turn LATS, agentic validator framing ISC 6/6; single-turn rows are expected-fail calibration)",
+        "catalogs": ["datasets/profiles/gpt51_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
