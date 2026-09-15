@@ -1,5 +1,38 @@
 # Changelog
 
+## 4.5.0 - 2026-09-15
+
+### Security audit complete (P0 4/4 + P1 10/10)
+- **tmux shell injection closed**: clean argv-lists, no script interpolation, config validation (P0-1)
+- **serve.py bulk DoS closed**: per-item rate-limit weight, 1M char cap, classification in worker executor (P0-2)
+- **Judge API key origin binding**: key never forwarded cross-origin, `resolve_judge_api_key` policy (P0-3)
+- **DNS rebinding closed**: `resolve_and_pin` pins resolved IP, redirects blocked (P0-4)
+- **Crontab lock**: `fcntl.flock` advisory lock around read-modify-write (P1)
+- **Checkpoint durability**: flush + fsync + 0600 permissions (P1)
+- **CI schema gate**: `validate_profiles.py` in CI workflow (P1)
+- **Classification paths unified**: single `compose_result` for both judge detectors, fail-closed quorum, all-UNKNOWN → needs_review (P1)
+- **Node sandbox**: firejail fail-closed wrapper for upstream JS execution (P1)
+- **Multi-turn splits**: gpt51_003/011/024 split into true multi-turn rows with followups (P1)
+- Full report: `docs/audit_2026-09-15.md` (22 findings)
+
+### New features
+- **6 vendor profiles** from L1B3RT4S verbatim material (grok 8, o3 2, copilot, command_r, nova, apple) — 25 profiles / 269 rows total
+- **JBB-100 standardized benchmark preset** (model-agnostic)
+- **GPT-5.1 profile** built from documented research (28 rows, provenance-annotated)
+- **Multi-judge ensemble detector**
+- **Character-level obfuscation detection** (Parseltongue family) + phonetic transform matching
+- **Parseltongue + P4RS3LT0NGV3 catalog** (792 prompts)
+- 31 benchmark presets (was 25)
+
+### Docs
+- `X-API-Key` auth scheme + bulk limits documented (USAGE.md)
+- Tools/discoverability table in USAGE.md; deepseek_v4 naming corrected
+- Portable P4RS_DIR with `P4RS3LT0NGV3_DIR` env override
+
+### Repo maintenance
+- `make clean` removes all caches (pytest/mypy/ruff + __pycache__ sweep)
+- Test suite: 694 passed (was 581)
+
 ## 4.4.0 - 2026-04-28
 
 ### Security Fixes
