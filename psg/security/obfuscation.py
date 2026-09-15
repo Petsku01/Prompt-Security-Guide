@@ -27,6 +27,7 @@ Known limits (documented): phonetic-only transforms (hack->hak) carry no
 artifact and are not detected; ~5% of heavy leetspeak/unicode composites
 still evade (fold collisions inside multi-word tokens).
 """
+
 from __future__ import annotations
 
 import re
@@ -35,49 +36,179 @@ import unicodedata
 
 # Multi-char leet tokens — replaced BEFORE single-char folds (longest first).
 _LEET_MULTI: dict[str, str] = {
-    "|3": "b", "13": "b", "|)": "d", "|>": "d", "|=": "f", "|<": "k", "|{": "k",
-    "|_": "l", "|V|": "m", "|\\|": "n", "|_|": "u", "|2": "r", "12": "r",
-    "|*": "p", "0_": "q", "()_": "q", "7_": "z", "}{": "h", "|-|": "h",
-    "\\/\\/": "w", "\\/": "v", "><": "x", "124": "cra", "()": "o",
-    "/\\/": "n", "/\\/\\": "m", "`/": "y",
+    "|3": "b",
+    "13": "b",
+    "|)": "d",
+    "|>": "d",
+    "|=": "f",
+    "|<": "k",
+    "|{": "k",
+    "|_": "l",
+    "|V|": "m",
+    "|\\|": "n",
+    "|_|": "u",
+    "|2": "r",
+    "12": "r",
+    "|*": "p",
+    "0_": "q",
+    "()_": "q",
+    "7_": "z",
+    "}{": "h",
+    "|-|": "h",
+    "\\/\\/": "w",
+    "\\/": "v",
+    "><": "x",
+    "124": "cra",
+    "()": "o",
+    "/\\/": "n",
+    "/\\/\\": "m",
+    "`/": "y",
 }
 
 # Single-char leet + Unicode homoglyph folds (from G0DM0D3 LEET_MAP /
 # UNICODE_HOMOGLYPHS, plus normalize.HOMOGLYPH_MAP coverage).
 _LEET_SINGLE: dict[str, str] = {
-    "а": "a", "ɑ": "a", "α": "a", "ạ": "a", "ａ": "a", "@": "a", "∂": "a", "λ": "a",
-    "Ь": "b", "ḅ": "b", "ｂ": "b", "ß": "b",
-    "с": "c", "ϲ": "c", "ⅽ": "c", "ｃ": "c", "¢": "c", "©": "c", "<": "c", "(": "c",
-    "ԁ": "d", "ⅾ": "d", "ｄ": "d", "đ": "d",
-    "е": "e", "ė": "e", "ẹ": "e", "ｅ": "e", "€": "e", "£": "e", "∑": "e",
-    "ƒ": "f", "ｆ": "f",
-    "ɡ": "g", "ｇ": "g", "&": "g", "9": "g", "6": "g",
-    "һ": "h", "ḥ": "h", "ｈ": "h", "#": "h",
-    "і": "i", "ι": "i", "ｉ": "i", "¡": "i", "1": "i", "!": "i",
-    "ϳ": "j", "ｊ": "j", "¿": "j",
-    "κ": "k", "ｋ": "k",
-    "ӏ": "l", "ⅼ": "l", "ｌ": "l", "|": "l",
-    "м": "m", "ｍ": "m", "µ": "m",
-    "ո": "n", "ｎ": "n", "η": "n",
-    "о": "o", "ο": "o", "ｏ": "o", "°": "o", "ø": "o", "0": "o",
-    "р": "p", "ρ": "p", "ｐ": "p", "þ": "p",
-    "ѕ": "s", "∫": "s", "$": "s", "5": "s",
-    "τ": "t", "ｔ": "t", "†": "t", "⊤": "t", "+": "t", "7": "t",
-    "υ": "u", "ｕ": "u", "ü": "u",
-    "ν": "v", "ｖ": "v", "√": "v",
-    "ѡ": "w", "ｗ": "w", "ω": "w",
-    "х": "x", "ｘ": "x", "×": "x",
-    "у": "y", "γ": "y", "ｙ": "y", "¥": "y",
-    "ᴢ": "z", "ｚ": "z", "2": "z", "8": "b", "4": "a", "3": "e",
+    "а": "a",
+    "ɑ": "a",
+    "α": "a",
+    "ạ": "a",
+    "ａ": "a",
+    "@": "a",
+    "∂": "a",
+    "λ": "a",
+    "Ь": "b",
+    "ḅ": "b",
+    "ｂ": "b",
+    "ß": "b",
+    "с": "c",
+    "ϲ": "c",
+    "ⅽ": "c",
+    "ｃ": "c",
+    "¢": "c",
+    "©": "c",
+    "<": "c",
+    "(": "c",
+    "ԁ": "d",
+    "ⅾ": "d",
+    "ｄ": "d",
+    "đ": "d",
+    "е": "e",
+    "ė": "e",
+    "ẹ": "e",
+    "ｅ": "e",
+    "€": "e",
+    "£": "e",
+    "∑": "e",
+    "ƒ": "f",
+    "ｆ": "f",
+    "ɡ": "g",
+    "ｇ": "g",
+    "&": "g",
+    "9": "g",
+    "6": "g",
+    "һ": "h",
+    "ḥ": "h",
+    "ｈ": "h",
+    "#": "h",
+    "і": "i",
+    "ι": "i",
+    "ｉ": "i",
+    "¡": "i",
+    "1": "i",
+    "!": "i",
+    "ϳ": "j",
+    "ｊ": "j",
+    "¿": "j",
+    "κ": "k",
+    "ｋ": "k",
+    "ӏ": "l",
+    "ⅼ": "l",
+    "ｌ": "l",
+    "|": "l",
+    "м": "m",
+    "ｍ": "m",
+    "µ": "m",
+    "ո": "n",
+    "ｎ": "n",
+    "η": "n",
+    "о": "o",
+    "ο": "o",
+    "ｏ": "o",
+    "°": "o",
+    "ø": "o",
+    "0": "o",
+    "р": "p",
+    "ρ": "p",
+    "ｐ": "p",
+    "þ": "p",
+    "ѕ": "s",
+    "∫": "s",
+    "$": "s",
+    "5": "s",
+    "τ": "t",
+    "ｔ": "t",
+    "†": "t",
+    "⊤": "t",
+    "+": "t",
+    "7": "t",
+    "υ": "u",
+    "ｕ": "u",
+    "ü": "u",
+    "ν": "v",
+    "ｖ": "v",
+    "√": "v",
+    "ѡ": "w",
+    "ｗ": "w",
+    "ω": "w",
+    "х": "x",
+    "ｘ": "x",
+    "×": "x",
+    "у": "y",
+    "γ": "y",
+    "ｙ": "y",
+    "¥": "y",
+    "ᴢ": "z",
+    "ｚ": "z",
+    "2": "z",
+    "8": "b",
+    "4": "a",
+    "3": "e",
 }
 
 # Trigger vocabulary (G0DM0D3 DEFAULT_TRIGGERS, first 33 unique).
 OBF_TRIGGERS: tuple[str, ...] = (
-    "hack", "exploit", "bypass", "crack", "break", "attack", "penetrate",
-    "inject", "manipulate", "override", "disable", "circumvent", "evade",
-    "malware", "virus", "trojan", "payload", "shellcode", "rootkit",
-    "keylogger", "backdoor", "vulnerability", "weapon", "bomb", "explosive",
-    "poison", "drug", "synthesize", "jailbreak", "unlock", "root", "sudo",
+    "hack",
+    "exploit",
+    "bypass",
+    "crack",
+    "break",
+    "attack",
+    "penetrate",
+    "inject",
+    "manipulate",
+    "override",
+    "disable",
+    "circumvent",
+    "evade",
+    "malware",
+    "virus",
+    "trojan",
+    "payload",
+    "shellcode",
+    "rootkit",
+    "keylogger",
+    "backdoor",
+    "vulnerability",
+    "weapon",
+    "bomb",
+    "explosive",
+    "poison",
+    "drug",
+    "synthesize",
+    "jailbreak",
+    "unlock",
+    "root",
+    "sudo",
     "admin",
 )
 
@@ -125,21 +256,34 @@ def _allowed_distance(trigger: str) -> int:
 def _obfuscated_trigger(prompt: str) -> str | None:
     """Return a trigger word that only appears after de-obfuscation.
 
-    Requires an artifact-bearing token whose folded form fuzzy-matches a
-    trigger, AND no verbatim trigger substring in the raw prompt (security
-    prose using plain 'hack'/'crack' is not an obfuscation signal).
+    Per-token design (Sol review 2026-09-15, all 4 findings verified):
+    - Guard is PER TOKEN, not global: a token containing the plain trigger
+      (case-insensitive substring) is skipped for that trigger, so padding a
+      plain trigger word elsewhere cannot silence detection of an obfuscated
+      token elsewhere in the prompt.
+    - Non-ZW artifacts (digits, leet symbols, homoglyphs) must actually
+      transform the token's ASCII-alpha core during folding — an appended
+      emoji or stray punctuation alone never enables fuzzy matching.
+    - Zero-width chars are always strong obfuscation evidence.
     """
-    raw_lower = prompt.lower()
-    if any(trig in raw_lower for trig in OBF_TRIGGERS):
-        return None
     for raw in _WORD_RE.findall(prompt):
         word = raw.strip(_TRIM_CHARS)
-        if not word or not _has_artifact(word):
+        if not word:
             continue
+        has_zw = any(c in _ZW_CHARS for c in word)
+        if not has_zw and not _has_artifact(word):
+            continue
+        word_lower = word.lower()
         core = "".join(c for c in _fold_word(word).lower() if c.isalnum())
         if not core:
             continue
+        # ASCII-alpha skeleton of the raw token (ZW already excluded).
+        raw_alpha = "".join(c for c in word_lower if c in string.ascii_lowercase)
+        if not has_zw and core == raw_alpha:
+            continue  # artifact did not transform the word (emoji, hyphen, ...)
         for trig in OBF_TRIGGERS:
+            if trig in word_lower:
+                continue  # this token carries the trigger verbatim — plain
             if trig in core:
                 return trig
             if _edit_distance(core, trig) <= _allowed_distance(trig):
@@ -149,12 +293,12 @@ def _obfuscated_trigger(prompt: str) -> str | None:
 
 def _case_obfuscated_trigger(prompt: str) -> str | None:
     """Return a trigger whose word appears with deliberately irregular case
-    (hAcK, HaCK) — case is an artifact the fold cannot see."""
+    (hAcK, HaCK) — case is an artifact the fold cannot see. Exact match only:
+    CamelCase identifiers (AdminUI) must not fuzzy-match."""
     for w in _ALPHA_RUN_RE.findall(prompt):
         if w.islower() or w.istitle() or w.isupper():
             continue
         low = w.lower()
-        for trig in OBF_TRIGGERS:
-            if _edit_distance(low, trig) <= _allowed_distance(trig):
-                return trig
+        if low in OBF_TRIGGERS:
+            return low
     return None
