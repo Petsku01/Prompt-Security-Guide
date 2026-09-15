@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 from pathlib import Path
 
@@ -26,7 +27,12 @@ from node_sandbox import run_sandboxed  # tools/ sibling import (script context)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "datasets" / "parseltongue_attacks.json"
-P4RS_DIR = Path("/home/ette/workspace/P4RS3LT0NGV3")
+# Location of the upstream P4RS3LT0NGV3 checkout; override with env var
+# (hardcoded /home/ette path made the script non-portable — caught in
+# Grok's adversarial review of commit ab23434).
+P4RS_DIR = Path(
+    os.environ.get("P4RS3LT0NGV3_DIR", ROOT.parent / "P4RS3LT0NGV3")
+)
 
 random.seed(20260915)  # deterministic catalog
 
@@ -205,8 +211,8 @@ def build_parseltongue_entries() -> list[dict]:
     return entries
 
 
-NODE_DRIVER = r"""
-const transforms = require('/home/ette/workspace/P4RS3LT0NGV3/src/transformers/loader-node.js');
+NODE_DRIVER_TEMPLATE = r"""
+const transforms = require('%(p4rs_dir)s/src/transformers/loader-node.js');
 const payload = process.argv[1];
 const names = Object.keys(transforms).sort();
 const out = [];
@@ -236,8 +242,11 @@ def load_p4rs_results() -> dict:
     explicitly). Environment is scrubbed to a minimal allowlist so no
     tokens/credentials reach upstream code.
     """
+    # P4RS_DIR is a filesystem path from env/derived default; plain str
+    # replace is safe (no %-formatting semantics apply to str.replace).
+    node_driver = NODE_DRIVER_TEMPLATE.replace("%(p4rs_dir)s", str(P4RS_DIR))
     result = run_sandboxed(
-        ["node", "-e", NODE_DRIVER, PROBE_PAYLOADS[0]],
+        ["node", "-e", node_driver, PROBE_PAYLOADS[0]],
         timeout=120,
         check=True,
     )
