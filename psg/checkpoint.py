@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,15 @@ class JSONLCheckpoint:
         created = not self.path.exists()
         with self.path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
+            # Audit P1-9 (HIGH, 2026-09-15) durability: checkpoints hold
+            # model responses AND run-state used to resume crashed runs.
+            # A bare write() leaves the line in Python's/userspace buffer —
+            # process death or a power cut can drop the LAST events right
+            # when they matter most (the crash context). flush() pushes to
+            # the OS page cache; fsync() forces the OS to commit to disk
+            # so the record survives process death AND machine crash.
+            f.flush()
+            os.fsync(f.fileno())
         if created:
             try:
                 self.path.chmod(0o600)

@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from .cron_lock import install_cron_locked
 from .logging_config import logger
 
 _DEFAULT_MARKER_FILE = Path(__file__).parent / ".last_discovery"
@@ -51,46 +52,55 @@ def install_cron(schedule: str = "0 3 * * *") -> bool:
 
     Raises ValueError if schedule is invalid. Entry is tagged with
     CRON_MARKER for later lookup by is_cron_installed().
+
+    Audit P1-8 (HIGH, 2026-09-15): the whole read→modify→write cycle
+    holds psg_cron_lock.cron_write_lock so two concurrent PSG writers
+    can never interleave and silently drop each other's (or the user's
+    unrelated) crontab lines. If the lock is busy the install is
+    skipped and False is returned — never a torn write.
     """
     validate_cron_schedule(schedule)
 
-    # Retrieve existing crontab (may be empty)
-    try:
-        result = subprocess.run(
-            ["crontab", "-l"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        existing = result.stdout if result.returncode == 0 else ""
-    except (subprocess.SubprocessError, OSError) as exc:
-        logger.warning("Failed to read crontab: %s", exc)
-        existing = ""
+    def _read_modify_write() -> bool:
+        # Retrieve existing crontab (may be empty)
+        try:
+            result = subprocess.run(
+                ["crontab", "-l"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            existing = result.stdout if result.returncode == 0 else ""
+        except (subprocess.SubprocessError, OSError) as exc:
+            logger.warning("Failed to read crontab: %s", exc)
+            existing = ""
 
-    # Remove any previous marker-tagged line to avoid duplicates
-    lines = [
-        ln for ln in existing.splitlines()
-        if CRON_MARKER not in ln
-    ]
+        # Remove any previous marker-tagged line to avoid duplicates
+        lines = [
+            ln for ln in existing.splitlines()
+            if CRON_MARKER not in ln
+        ]
 
-    # Add the new schedule line
-    cron_line = f"{schedule} cd \"$HOME\" && python3 -m psg.automation.main # {CRON_MARKER}"
-    lines.append(cron_line)
+        # Add the new schedule line
+        cron_line = f"{schedule} cd \"$HOME\" && python3 -m psg.automation.main # {CRON_MARKER}"
+        lines.append(cron_line)
 
-    new_crontab = "\n".join(lines) + "\n"
+        new_crontab = "\n".join(lines) + "\n"
 
-    try:
-        result = subprocess.run(
-            ["crontab", "-"],
-            input=new_crontab,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        return result.returncode == 0
-    except (subprocess.SubprocessError, OSError) as exc:
-        logger.warning("Failed to write crontab: %s", exc)
-        return False
+        try:
+            result = subprocess.run(
+                ["crontab", "-"],
+                input=new_crontab,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.returncode == 0
+        except (subprocess.SubprocessError, OSError) as exc:
+            logger.warning("Failed to write crontab: %s", exc)
+            return False
+
+    return install_cron_locked(_read_modify_write)
 
 
 def remove_cron() -> bool:

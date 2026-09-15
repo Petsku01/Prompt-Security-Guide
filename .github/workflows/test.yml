@@ -44,6 +44,9 @@ jobs:
           pip install mypy types-requests
           mypy psg/ --ignore-missing-imports
 
+      - name: Validate profile/catalog schema (audit P1-10 gate)
+        run: python tools/validate_profiles.py
+
       - name: Evaluate classifier (regression gate)
         run: |
           python -m psg eval --golden eval/classifier_golden.json --fail-on-macro-f1-below 0.85
