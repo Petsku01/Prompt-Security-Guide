@@ -192,8 +192,15 @@ Example:
 ```bash
 curl -X POST http://localhost:8000/screen \
   -H "Content-Type: application/json" \
+  -H "X-API-Key: $PSG_API_KEY" \
   -d '{"text": "I cannot help with that request."}'
 ```
+
+Note: when the server is started with an `api_key` in its `ServerConfig`,
+screening endpoints require the `X-API-Key` header (plain key value, no
+`Bearer` prefix). `/health` and `/metrics` are unauthenticated. Bulk
+requests are charged per item by the rate limiter and capped at
+`bulk_max_total_chars` (default 1,000,000 chars).
 
 Response:
 ```json
