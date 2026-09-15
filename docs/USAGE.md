@@ -304,3 +304,27 @@ python3 -m psg scan \
 - `--validate-urls` -- HTTP HEAD check for URLs
 - `--validate-dois` -- CrossRef API check for DOIs
 - `--validation-timeout` -- seconds to wait (default: 5)
+
+---
+
+## Utility scripts (`tools/`)
+
+Dataset generators and maintenance scripts. Run from repo root with
+`PYTHONPATH=.` where noted; none are wired into CI except
+`validate_profiles.py` (schema gate).
+
+| Script | Purpose |
+|---|---|
+| `tools/validate_profiles.py` | Schema validation for all `datasets/**/*.json` (CI gate) |
+| `tools/build_gpt51_profile.py` | Regenerate `datasets/profiles/gpt51_attacks.json` (28 rows, provenance-annotated) |
+| `tools/build_vendor_profiles.py` | Regenerate 6 vendor profiles from `datasets/l1b3rt4s_vendor.json` (verbatim, AGPL-3.0 attribution) |
+| `tools/build_new_family_profiles.py` | Regenerate research-sourced profiles (glm, qwen3, kimi, nemotron, minimax, deepseek) |
+| `tools/build_jbb100_preset.py` | Rebuild JBB-100 preset from upstream CSV |
+| `tools/build_benign_corpus.py` | Regenerate `datasets/benign_corpus.json` (benign control sentences) |
+| `tools/curate_parseltongue.py` | Curate P4RS3LT0NGV3 dataset (runs Node driver via `node_sandbox.py`) |
+| `tools/curate_steganographic.py` | Curate steganographic attack catalog |
+| `tools/curate_l1b3rt4s.py` | Refresh L1B3RT4S vendor snapshot from upstream |
+| `tools/clean_profile_junk.py` | Remove junk rows from profile catalogs |
+| `tools/node_sandbox.py` | firejail sandbox wrapper for the Node driver (fail-closed) |
+
+Regenerated outputs are committed; CI schema validation catches drift.

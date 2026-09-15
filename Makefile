@@ -10,7 +10,7 @@ help:
 	@echo "  make cli-help        Show PSG CLI help"
 	@echo "  make automation-help Show automation CLI help"
 	@echo "  make daily           Run daily automation pipeline script"
-	@echo "  make clean           Remove pytest cache"
+	@echo "  make clean           Remove pytest/mypy/ruff caches + __pycache__"
 
 install:
 	$(PYTHON) -m pip install .
@@ -31,4 +31,5 @@ daily:
 	bash scripts/run_daily_pipeline.sh
 
 clean:
-	rm -rf .pytest_cache
+	rm -rf .pytest_cache .mypy_cache .ruff_cache
+	find . -path ./.git -prune -o -name "__pycache__" -type d -print -exec rm -rf {} + 2>/dev/null; true
