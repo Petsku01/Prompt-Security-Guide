@@ -113,6 +113,36 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
         "description": "Research-validated attacks targeting Anthropic Claude models (30 attacks)",
         "catalogs": ["datasets/profiles/claude_attacks.json"],
     },
+    "glm": {
+        "name": "GLM-specific",
+        "description": "Attacks targeting Zhipu GLM family (GLM-4/5.x, bilingual CN/EN)",
+        "catalogs": ["datasets/profiles/glm_attacks.json"],
+    },
+    "qwen3": {
+        "name": "Qwen3-specific",
+        "description": "Attacks targeting Qwen3 family (coder identity, thinking mode, code-switching)",
+        "catalogs": ["datasets/profiles/qwen3_attacks.json"],
+    },
+    "kimi": {
+        "name": "Kimi-specific",
+        "description": "Attacks targeting Moonshot Kimi (long-context extraction, fiction continuation)",
+        "catalogs": ["datasets/profiles/kimi_attacks.json"],
+    },
+    "nemotron": {
+        "name": "Nemotron-specific",
+        "description": "Attacks targeting NVIDIA Nemotron family (fine-tune identity, eval frames)",
+        "catalogs": ["datasets/profiles/nemotron_attacks.json"],
+    },
+    "minimax": {
+        "name": "MiniMax-specific",
+        "description": "Attacks targeting MiniMax/Hailuo (character cards, competition frames)",
+        "catalogs": ["datasets/profiles/minimax_attacks.json"],
+    },
+    "deepseek-v4": {
+        "name": "DeepSeek V4/R1-specific",
+        "description": "Attacks targeting DeepSeek V4/R1 (CoT extraction, legacy-version frames)",
+        "catalogs": ["datasets/profiles/deepseek_v4_attacks.json"],
+    },
     "full": {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
