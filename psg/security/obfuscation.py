@@ -224,6 +224,23 @@ _ALPHA_RUN_RE = re.compile(r"[A-Za-z]{3,}")
 # and pass through to the exact-match check instead.
 _PASCALCASE_RE = re.compile(r"[A-Z][a-z]+(?:[A-Z][a-z]+)*$")
 
+# Deterministic phonetic substitution (upstream G0DM0D3 applyPhonetic).
+# Triggers whose phonetic form differs from the plain form get an exact
+# second matching path in _obfuscated_trigger: 'hack'->'hak', 'crack'->'krak'
+# are pure-alpha non-words no artifact gate will ever see.
+def _phonetic(word: str) -> str:
+    w = re.sub("ph", "f", word, flags=re.I)
+    w = re.sub("ck", "k", w, flags=re.I)
+    w = re.sub("x", "ks", w, flags=re.I)
+    w = re.sub("qu", "kw", w, flags=re.I)
+    w = re.sub("c(?=[eiy])", "s", w, flags=re.I)
+    return re.sub("c", "k", w, flags=re.I)
+
+
+_PHONETIC_VARIANTS: dict[str, str] = {
+    t: _phonetic(t) for t in OBF_TRIGGERS if _phonetic(t) != t
+}
+
 
 def _fold_word(word: str) -> str:
     """De-obfuscate a single token: NFKC, multi-leet, single fold, ZW strip."""
@@ -282,10 +299,18 @@ def _obfuscated_trigger(prompt: str) -> str | None:
         if not word:
             continue
         has_zw = any(c in _ZW_CHARS for c in word)
+        word_lower = word.lower()
+        # Deterministic phonetic path FIRST: pure-alpha tokens (hak, krak,
+        # eksploit) carry no artifact but exactly match the upstream
+        # applyPhonetic transform of a trigger. No fuzzy matching here.
+        raw_alpha = "".join(c for c in word_lower if c in string.ascii_lowercase)
+        if not has_zw and raw_alpha.isalpha():
+            for trig, ph in _PHONETIC_VARIANTS.items():
+                if raw_alpha == ph:
+                    return trig
         if not has_zw and not _has_artifact(word):
             continue
-        word_lower = word.lower()
-        core = "".join(c for c in _fold_word(word).lower() if c.isalnum())
+        core = "".join(c for c in _fold_word(word_lower).lower() if c.isalnum())
         if not core:
             continue
         # ASCII-alpha skeleton of the raw token (ZW already excluded).
