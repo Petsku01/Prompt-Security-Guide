@@ -99,7 +99,7 @@ def build_rows() -> dict[str, list[dict]]:
         for family, prefix, matches in FAMILIES:
             if any(m in tm for m in matches):
                 row = {
-                    "id": f"{prefix}_{p['id'].split('_', 3)[-1]}" if False else p["id"],
+                    "id": p["id"],  # keep upstream id verbatim — no PSG renaming
                     "prompt": p["prompt"],
                     "technique": technique_label(
                         p.get("attack_type", ""), p.get("technique", "")
