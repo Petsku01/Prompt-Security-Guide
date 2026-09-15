@@ -67,8 +67,17 @@ def validate_config(cfg: AppConfig) -> AppConfig:
             "with-defense pre-validation runs only in the parent process; "
             "with workers>1 blocked attacks are still excluded pre-send"
         )
-    if cfg.detector not in {"keyword", "llm-judge", "ensemble"}:
-        raise ConfigError("detector must be one of: keyword, llm-judge, ensemble")
+    if cfg.detector not in {"keyword", "llm-judge", "ensemble", "multi-judge"}:
+        raise ConfigError(
+            "detector must be one of: keyword, llm-judge, ensemble, multi-judge"
+        )
+    if cfg.detector == "multi-judge":
+        models = [m.strip() for m in (cfg.judge_models or "").split(",") if m.strip()]
+        if len(models) < 2:
+            raise ConfigError(
+                "multi-judge requires --judge-models with at least 2 "
+                "comma-separated models (e.g. 'llama3:8b,qwen2.5:7b')"
+            )
     if not cfg.judge_model.strip():
         raise ConfigError("judge-model is required")
 

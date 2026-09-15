@@ -95,6 +95,7 @@ class AppConfig:
     defense_report_path: str = "results/defense_report.txt"
     detector: str = "keyword"
     judge_model: str = "llama3:8b"
+    judge_models: str | None = None  # comma-separated for multi-judge mode
     judge_url: str | None = None
     classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO
     workers: int = 1  # Number of parallel workers (1 = sequential)

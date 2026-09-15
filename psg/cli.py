@@ -29,12 +29,20 @@ def add_scan_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     )
     parser.add_argument(
         "--detector",
-        choices=["keyword", "llm-judge", "ensemble"],
+        choices=["keyword", "llm-judge", "ensemble", "multi-judge"],
         default="keyword",
         help="Response detector mode",
     )
     parser.add_argument(
         "--judge-model", default="llama3:8b", help="Model used by LLM judge detector"
+    )
+    parser.add_argument(
+        "--judge-models",
+        default=None,
+        help=(
+            "Comma-separated judge models for --detector multi-judge "
+            "(e.g. 'llama3:8b,qwen2.5:7b'); overrides --judge-model"
+        ),
     )
     parser.add_argument(
         "--judge-url",
@@ -315,6 +323,7 @@ def main(argv: list[str] | None = None) -> int:
         defense_report=args.defense_report,
         detector=args.detector,
         judge_model=args.judge_model,
+        judge_models=args.judge_models,
         # Use explicit None check: empty string "" should NOT fall back to base_url
         judge_url=args.judge_url if args.judge_url is not None else args.base_url,
         classification_input_mode=ClassificationInputMode(args.classification_input),

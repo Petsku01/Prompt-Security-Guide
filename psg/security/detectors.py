@@ -139,5 +139,10 @@ def build_detector(cfg: AppConfig) -> Detector:
         return llm_detector
     if mode == "ensemble":
         return EnsembleDetector(keyword=keyword_detector, llm_judge=llm_detector)
+    if mode == "multi-judge":
+        from .multi_judge import MultiJudgeDetector, build_multi_judges
+
+        models = [m.strip() for m in (cfg.judge_models or "").split(",") if m.strip()]
+        return MultiJudgeDetector(judges=build_multi_judges(cfg, models))
 
     raise ValueError(f"unknown detector: {mode}")
