@@ -20,8 +20,9 @@ from __future__ import annotations
 import hashlib
 import json
 import random
-import subprocess
 from pathlib import Path
+
+from node_sandbox import run_sandboxed  # tools/ sibling import (script context)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "datasets" / "parseltongue_attacks.json"
@@ -226,10 +227,19 @@ console.log(JSON.stringify({ payload: payload, results: out }));
 
 
 def load_p4rs_results() -> dict:
-    """Run the Node driver: apply every upstream transform to the probe payload."""
-    result = subprocess.run(
+    """Run the Node driver: apply every upstream transform to the probe payload.
+
+    Audit P1-6 (HIGH, 2026-09-15): the driver executes THIRD-PARTY
+    upstream JS — it now runs inside a sandbox (node_sandbox.py):
+    firejail --net=none --noprofile --private-tmp when installed,
+    fail-closed otherwise (PSG_ALLOW_UNSANDBOXED_NODE=1 overrides
+    explicitly). Environment is scrubbed to a minimal allowlist so no
+    tokens/credentials reach upstream code.
+    """
+    result = run_sandboxed(
         ["node", "-e", NODE_DRIVER, PROBE_PAYLOADS[0]],
-        capture_output=True, text=True, timeout=120, check=True,
+        timeout=120,
+        check=True,
     )
     stdout = "\n".join(
         ln for ln in result.stdout.splitlines() if "emojiData" not in ln
