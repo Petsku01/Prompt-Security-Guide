@@ -148,6 +148,36 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
         "description": "Attacks targeting GPT-5.1 (indirect injection ~22% ASR, multi-turn LATS, agentic validator framing ISC 6/6; single-turn rows are expected-fail calibration)",
         "catalogs": ["datasets/profiles/gpt51_attacks.json"],
     },
+    "grok": {
+        "name": "Grok-specific",
+        "description": "Verbatim L1B3RT4S vendor prompts targeting xAI Grok 2/3/4.x incl. Heavy/Fast (GODMODE, Pliny variable-Z templates, search-smuggling)",
+        "catalogs": ["datasets/profiles/grok_attacks.json"],
+    },
+    "o3": {
+        "name": "O3/O4-mini-specific",
+        "description": "Verbatim L1B3RT4S vendor prompts targeting OpenAI O3/O4-mini reasoning series (tool-use channel smuggling)",
+        "catalogs": ["datasets/profiles/o3_attacks.json"],
+    },
+    "copilot": {
+        "name": "Copilot-specific",
+        "description": "Verbatim L1B3RT4S vendor prompt targeting Microsoft Copilot (instruction override + format framing)",
+        "catalogs": ["datasets/profiles/copilot_attacks.json"],
+    },
+    "command_r": {
+        "name": "Command R+-specific",
+        "description": "Verbatim L1B3RT4S vendor prompt targeting Cohere Command R/R+ (minimal override frame)",
+        "catalogs": ["datasets/profiles/command_r_attacks.json"],
+    },
+    "nova": {
+        "name": "Amazon Nova-specific",
+        "description": "Verbatim L1B3RT4S vendor prompt targeting Amazon Nova models (Pliny variable-Z template)",
+        "catalogs": ["datasets/profiles/nova_attacks.json"],
+    },
+    "apple": {
+        "name": "Apple Intelligence-specific",
+        "description": "Verbatim L1B3RT4S vendor prompt targeting Apple Intelligence 18.2 (Siri + ChatGPT; writing-tool rewrite flow)",
+        "catalogs": ["datasets/profiles/apple_attacks.json"],
+    },
     "jbb100": {
         "name": "JailbreakBench 100 Behaviors",
         "description": "Model-agnostic robustness standard (arXiv 2404.01318): 100 harmful behaviors x 10 categories; comparable ASR across published papers",
