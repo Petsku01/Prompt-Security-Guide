@@ -13,6 +13,7 @@ from .classifier import (
     detect_disclaimer,
     detect_refusal,
 )
+from .judge_key_binding import resolve_judge_api_key
 from .llm_judge import LLMJudge
 
 # Short-circuit threshold for ensemble detection:
@@ -129,8 +130,17 @@ def build_detector(cfg: AppConfig) -> Detector:
         backoff_base_seconds=cfg.backoff_base_seconds,
         backoff_cap_seconds=cfg.backoff_cap_seconds,
     )
+    # Audit P0-3 (HIGH, 2026-09-15): the model api_key is bound to the
+    # base_url origin. A separate judge origin now requires an explicit
+    # judge_api_key — otherwise ConfigError, never a silent key leak.
+    judge_key = resolve_judge_api_key(
+        api_key=cfg.api_key,
+        judge_api_key=cfg.judge_api_key,
+        base_url=cfg.base_url,
+        judge_url=cfg.judge_url,
+    )
     judge_client = OpenAICompatibleClient(
-        judge_url, judge_transport, api_key=cfg.api_key
+        judge_url, judge_transport, api_key=judge_key
     )
     judge = LLMJudge(client=judge_client, model=cfg.judge_model)
     llm_detector = LLMJudgeDetector(judge=judge)

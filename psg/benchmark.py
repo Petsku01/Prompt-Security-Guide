@@ -157,7 +157,7 @@ PRESETS: dict[str, dict[str, str | list[str]]] = {
         "name": "Full Suite",
         "description": "All available attack datasets combined",
         "catalogs": [
-            "datasets/jailbreakbench_behaviors.json",
+            "datasets/profiles/jbb100_behaviors.json",
             "datasets/owasp_2025_attacks.json",
             "datasets/obliteratus_attacks.json",
             "datasets/hallucination_detection_probes.json",

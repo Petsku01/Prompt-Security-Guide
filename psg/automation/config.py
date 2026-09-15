@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -42,6 +43,7 @@ class PipelineConfig:
         ]
     )
     test_timeout: int = 120
+    output_prefix: str = "auto"
     ollama_base_url: str = field(
         default_factory=lambda: os.environ.get(
             "PSG_OLLAMA_URL", "http://localhost:11434"
@@ -115,7 +117,15 @@ class PipelineConfig:
     cron_schedule: str = "0 3 * * *"
 
     def __post_init__(self) -> None:
-        """Ensure paths exist and normalize output locations."""
+        """Ensure paths exist, normalize output locations, validate values.
+
+        Audit P0-1 (HIGH, 2026-09-15): YAML config values reach subprocess
+        boundaries (tmux/python). Validate hostile values here — at the
+        config boundary, before any process is spawned — instead of at
+        each call site.
+        """
+        from .tmux_safe import validate_config_value
+
         self.scrapling_venv_path = Path(self.scrapling_venv_path)
         self.base_dir = Path(self.base_dir)
         self.project_root = Path(self.project_root)
@@ -126,6 +136,25 @@ class PipelineConfig:
         self.known_sources_path = Path(self.known_sources_path)
         self.known_vectors_path = Path(self.known_vectors_path)
         self.reports_dir = Path(self.reports_dir)
+
+        # --- P0-1 validation: reject shell metacharacters in values that
+        # are passed to tmux/subprocess. Metacharacters are never needed
+        # in these fields; a YAML-supplied one is hostile or a typo.
+        validate_config_value("generator_model", self.generator_model,
+                              pattern=r"[\w./:+-]+")
+        if isinstance(self.output_prefix, str):
+            validate_config_value("output_prefix", self.output_prefix,
+                                  pattern=r"[\w-]+")
+        if not isinstance(self.test_timeout, int) or self.test_timeout <= 0:
+            raise ValueError(
+                f"test_timeout must be a positive int, got {self.test_timeout!r}"
+            )
+        for m in self.test_models:
+            validate_config_value("test_models entry", m, pattern=r"[\w./:+-]+")
+        if not re.fullmatch(r"[\w./:+-]+", str(self.python_executable)):
+            raise ValueError(
+                f"python_executable contains a shell metacharacter: {self.python_executable!r}"
+            )
 
         self.datasets_dir.mkdir(parents=True, exist_ok=True)
         self.results_dir.mkdir(parents=True, exist_ok=True)

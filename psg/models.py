@@ -97,6 +97,12 @@ class AppConfig:
     judge_model: str = "llama3:8b"
     judge_models: str | None = None  # comma-separated for multi-judge mode
     judge_url: str | None = None
+    # Audit P0-3 (HIGH, 2026-09-15): dedicated judge credential. When
+    # judge_api_key is unset, the primary api_key is reused ONLY when
+    # judge origin == base_url origin (scheme+host+port). Otherwise the
+    # key is withheld and an error is raised — an OpenAI key must never
+    # silently leak to a third-party judge server.
+    judge_api_key: str | None = None
     classification_input_mode: ClassificationInputMode = ClassificationInputMode.AUTO
     workers: int = 1  # Number of parallel workers (1 = sequential)
     rate_limit: float | None = None  # Max requests per second (None = unlimited)

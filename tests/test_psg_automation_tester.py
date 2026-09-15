@@ -412,38 +412,62 @@ def test_run_all_tests_skips_models_returning_none(tmp_path: Path) -> None:
 
 # ── script in results_dir ───────────────────────────────────────────────
 
-# test 22
-def test_run_in_tmux_writes_script_to_base_dir(tmp_path: Path) -> None:
-    """run_in_tmux must write a shell script to config.base_dir."""
+# test 22 (audit P0-1: korvattu — ei generoitua skriptiä enää)
+def test_run_in_tmux_starts_argv_session_no_script(tmp_path: Path) -> None:
+    """run_in_tmux must start a PURE-ARGV tmux session and write NO script.
+
+    Audit P0-1 (HIGH, 2026-09-15): the old implementation interpolated
+    config values into a generated bash script (shell injection verified
+    live). The fix starts one tmux session per model with a pure argv
+    list and must not write any script file.
+    """
     config = _make_config(tmp_path)
     config.test_models = ["llama3:8b"]
     tester = PipelineTester(config)
 
-    with patch("psg.automation.tester.subprocess.run"):
-        session = tester.run_in_tmux(Path("/tmp/v.json"), "auto")
+    captured: list[list[str]] = []
 
-    script_path = config.base_dir / "run_auto_test.sh"
-    assert script_path.exists()
-    content = script_path.read_text()
-    assert "llama3:8b" in content
-    assert session == "auto_test"
+    def _capture(cmd, **kwargs):
+        captured.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0)
 
-
-# test 23
-def test_run_in_tmux_script_uses_results_dir(tmp_path: Path) -> None:
-    """The generated script must reference config.results_dir for output
-    file paths (checkpoints, reports)."""
-    config = _make_config(tmp_path)
-    config.test_models = ["llama3:8b"]
-    tester = PipelineTester(config)
-
-    with patch("psg.automation.tester.subprocess.run"):
+    with patch("psg.automation.tester.subprocess.run", side_effect=_capture):
         tester.run_in_tmux(Path("/tmp/v.json"), "auto")
 
-    script_path = config.base_dir / "run_auto_test.sh"
-    content = script_path.read_text()
-    # The results_dir path should appear in the script
-    assert str(config.results_dir) in content
+    assert len(captured) == 1
+    argv = captured[0]
+    # tmux session command must be a pure argv list — no "bash <script>"
+    assert argv[:5] == ["tmux", "new-session", "-d", "-s",
+                        "auto_test_0"]
+    assert "bash" not in argv, "no shell intermediary allowed"
+    assert "llama3:8b" in argv
+    # No generated script file anywhere in base_dir
+    scripts = list(config.base_dir.glob("*.sh"))
+    assert scripts == [], f"generated scripts must not exist: {scripts}"
+
+
+# test 23 (audit P0-1: korvattu — results_dir on argv:ssa, ei skriptissä)
+def test_run_in_tmux_argv_uses_results_dir(tmp_path: Path) -> None:
+    """Output paths must route through config.results_dir via argv entries."""
+    config = _make_config(tmp_path)
+    config.test_models = ["llama3:8b"]
+    tester = PipelineTester(config)
+
+    captured: list[list[str]] = []
+
+    def _capture(cmd, **kwargs):
+        captured.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0)
+
+    with patch("psg.automation.tester.subprocess.run", side_effect=_capture):
+        tester.run_in_tmux(Path("/tmp/v.json"), "auto")
+
+    argv = captured[0]
+    joined = " ".join(argv)
+    assert str(config.results_dir) in joined
+    # The tmux invocation must not contain shell metacharacters at all
+    for meta in (";", "&", "|", "`", "$", "&&"):
+        assert meta not in joined, f"shell metachar {meta!r} in argv"
 
 
 # ── logging (M9: no print() in library code) ──────────────────────────────

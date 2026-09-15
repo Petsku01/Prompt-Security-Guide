@@ -24,6 +24,7 @@ from .classifier import (
     detect_disclaimer,
     detect_refusal,
 )
+from .judge_key_binding import resolve_judge_api_key
 from .llm_judge import LLMJudge, LLMJudgeResult
 
 
@@ -80,7 +81,13 @@ class MultiJudgeDetector:
 
 
 def build_multi_judges(cfg: AppConfig, models: list[str]) -> list[tuple[str, LLMJudge]]:
-    """Build one LLMJudge per model on the shared judge endpoint."""
+    """Build one LLMJudge per model on the shared judge endpoint.
+
+    Audit P0-3 (HIGH, 2026-09-15): the judge credential is resolved via
+    judge_key_binding.resolve_judge_api_key — the model api_key is only
+    reused when judge origin == base_url origin; a cross-origin judge
+    requires an explicit judge_api_key (JudgeKeyBindingError otherwise).
+    """
     judge_url = cfg.judge_url or cfg.base_url
     transport = Transport(
         timeout_seconds=cfg.timeout_seconds,
@@ -88,5 +95,11 @@ def build_multi_judges(cfg: AppConfig, models: list[str]) -> list[tuple[str, LLM
         backoff_base_seconds=cfg.backoff_base_seconds,
         backoff_cap_seconds=cfg.backoff_cap_seconds,
     )
-    client = OpenAICompatibleClient(judge_url, transport, api_key=cfg.api_key)
+    judge_key = resolve_judge_api_key(
+        api_key=cfg.api_key,
+        judge_api_key=cfg.judge_api_key,
+        base_url=cfg.base_url,
+        judge_url=cfg.judge_url,
+    )
+    client = OpenAICompatibleClient(judge_url, transport, api_key=judge_key)
     return [(m, LLMJudge(client=client, model=m)) for m in models]

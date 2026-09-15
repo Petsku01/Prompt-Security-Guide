@@ -14,6 +14,7 @@ Endpoints:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import hmac
 import logging
 import os
@@ -61,6 +62,9 @@ class ServerConfig:
     api_key: str | None = None  # when set, requests must send X-API-Key
     bulk_max_items: int = 1000
     bulk_max_text_chars: int = 100_000
+    # Audit P0-2 (HIGH, 2026-09-15): total-body cap so 1000x100k (~100M)
+    # worst case is rejected up front instead of being processed.
+    bulk_max_total_chars: int = 1_000_000
     rate_limit_per_minute: int = 120  # 0 disables
     enforce_server_threshold: bool = False  # reject client threshold overrides
 
@@ -72,6 +76,12 @@ class ServerConfig:
         if self.bulk_max_text_chars < 1:
             raise ValueError(
                 f"bulk_max_text_chars must be >= 1, got {self.bulk_max_text_chars}"
+            )
+        # Audit P0-2: the total-body cap must never exceed items x per-text,
+        # otherwise it is dead config; and it must exist to bound worst case.
+        if self.bulk_max_total_chars < 1:
+            raise ValueError(
+                f"bulk_max_total_chars must be >= 1, got {self.bulk_max_total_chars}"
             )
         if self.rate_limit_per_minute < 0:
             raise ValueError(
@@ -150,18 +160,29 @@ _rate_state: dict[str, tuple[int, float]] = {}  # client_key -> (count, window_s
 _RATE_LOCK = threading.Lock()
 
 
-def _rate_limit_check(client_key: str, limit_per_minute: int) -> bool:
-    """Return True when the client is within the per-minute limit."""
+def _rate_limit_check(
+    client_key: str, limit_per_minute: int, *, weight: int = 1
+) -> bool:
+    """Return True when the client is within the per-minute limit.
+
+    Audit P0-2 (HIGH, 2026-09-15): `weight` lets bulk endpoints charge the
+    limiter per item instead of per request — a bulk of N items consumes N
+    events of the client's window, matching its actual work cost.
+    """
     if limit_per_minute <= 0:
         return True
+    if weight < 1:
+        weight = 1
     now = time.time()
     with _RATE_LOCK:
         count, window_start = _rate_state.get(client_key, (0, now))
         if now - window_start >= 60.0:
             count, window_start = 0, now
-        if count >= limit_per_minute:
+        if count + weight > limit_per_minute:
+            # store the attempted state so near-limit clients see steady 429s
+            _rate_state[client_key] = (count, window_start)
             return False
-        _rate_state[client_key] = (count + 1, window_start)
+        _rate_state[client_key] = (count + weight, window_start)
         return True
 
 
@@ -186,15 +207,26 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
         version=__version__,
     )
 
-    async def _guard(request: Request) -> JSONResponse | None:
-        """Shared auth + rate-limit guard for screening endpoints."""
+    async def _guard(
+        request: Request, *, weight: int = 1
+    ) -> JSONResponse | None:
+        """Shared auth + rate-limit guard for screening endpoints.
+
+        Audit P0-2 (HIGH, 2026-09-15): bulk requests previously consumed
+        ONE rate-limit event regardless of item count (~100M chars with
+        default limits). `weight` now charges the limiter per item so a
+        bulk request costs what its work costs.
+        """
         if cfg.api_key:
             supplied = request.headers.get("X-API-Key")
             if not supplied or not hmac.compare_digest(supplied, cfg.api_key):
                 return JSONResponse(
                     status_code=401, content={"detail": "invalid or missing API key"}
                 )
-        if not _rate_limit_check(_client_ip(request), cfg.rate_limit_per_minute):
+        # Charge weight events (bulk = per-item cost, not per-request)
+        if not _rate_limit_check(
+            _client_ip(request), cfg.rate_limit_per_minute, weight=weight
+        ):
             return JSONResponse(
                 status_code=429, content={"detail": "rate limit exceeded"}
             )
@@ -250,10 +282,15 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
     async def screen_bulk(
         body: BulkScreenRequest, request: Request
     ) -> BulkScreenResponse | JSONResponse:
-        """Screen multiple texts for harmful content."""
-        denied = await _guard(request)
-        if denied is not None:
-            return denied
+        """Screen multiple texts for harmful content.
+
+        Audit P0-2 (HIGH, 2026-09-15): bulk now (a) charges the rate
+        limiter per ITEM (weight=len(body.texts)), (b) enforces a total
+        body-character cap (bulk_max_total_chars) so the ~100M-char
+        worst case is rejected up front, and (c) offloads classification
+        to a bounded worker thread so the event loop is not blocked.
+        """
+        # Pre-validate BEFORE charging the limiter (cheap checks first)
         if len(body.texts) > cfg.bulk_max_items:
             raise HTTPException(
                 status_code=413,
@@ -270,6 +307,20 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
                     f"{cfg.bulk_max_text_chars} at indexes {oversized[:5]}"
                 ),
             )
+        total_chars = sum(len(t) for t in body.texts)
+        if total_chars > cfg.bulk_max_total_chars:
+            raise HTTPException(
+                status_code=413,
+                detail=(
+                    f"bulk request exceeds bulk_max_total_chars="
+                    f"{cfg.bulk_max_total_chars} (got {total_chars})"
+                ),
+            )
+
+        # Charge one rate-limit event PER ITEM (matches work cost)
+        denied = await _guard(request, weight=len(body.texts))
+        if denied is not None:
+            return denied
 
         start = time.perf_counter()
 
@@ -277,9 +328,14 @@ def create_app(config: ServerConfig | None = None) -> "FastAPI":
         results: list[ScreenResponse] = []
         harmful_count = 0
 
+        loop = asyncio.get_running_loop()
         for text in body.texts:
             text_start = time.perf_counter()
-            result = classify_response_v2(text)
+            # Audit P0-2: run the CPU-bound classifier in the default
+            # thread pool so a bulk batch cannot stall the event loop.
+            result = await loop.run_in_executor(
+                None, classify_response_v2, text
+            )
             harmful = result.harm_score >= threshold and result.attack_successful
             text_latency = (time.perf_counter() - text_start) * 1000
 

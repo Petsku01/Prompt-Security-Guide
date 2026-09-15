@@ -6,6 +6,7 @@ from typing import Any
 
 import requests
 
+from .dns_pin import resolve_and_pin
 from .errors import HTTPStatusError, LLMError, RetryExhaustedError
 
 
@@ -27,14 +28,21 @@ class Transport:
     ) -> dict[str, Any]:
         attempts = 0
         request_headers = dict(headers or {})
+        # Audit P0-4 (HIGH, 2026-09-15): pin DNS once. Without pinning, a
+        # config-time SSRF check validates the first resolution while
+        # requests.post re-resolves — DNS rebinding can then route the
+        # attack catalog AND the Authorization header to an internal or
+        # metadata IP.
+        pinned_base, session = resolve_and_pin(url)
         while True:
             attempts += 1
             try:
-                resp = requests.post(
-                    url,
+                resp = session.post(
+                    pinned_base,
                     json=payload,
                     headers=request_headers,
                     timeout=self.timeout_seconds,
+                    allow_redirects=False,
                 )
             except requests.RequestException as exc:
                 if attempts > self.max_retries:

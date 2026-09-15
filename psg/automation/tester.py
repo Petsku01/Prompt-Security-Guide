@@ -1,9 +1,12 @@
-"""Testing module using tmux for background execution."""
+"""Testing module using tmux for background execution.
+
+Audit P0-1 (HIGH, 2026-09-15): tmux sessions are started with pure argv
+lists (see tmux_safe.py) — no generated shell script, no interpolation.
+"""
 
 from __future__ import annotations
 
 import json
-import shlex
 import subprocess
 import time
 from dataclasses import dataclass
@@ -210,43 +213,43 @@ class PipelineTester:
         vectors_path: Path,
         output_prefix: str = "auto",
     ) -> str:
-        """Start tests in tmux session. Returns session name."""
-        result_dir = shlex.quote(str(self.config.results_dir))
-        script = f'''
-cd {shlex.quote(str(self.config.project_root))}
-for MODEL in {" ".join(shlex.quote(m) for m in self.config.test_models)}; do
-    MODEL_SAFE=$(echo $MODEL | tr ':' '_')
-    echo "Testing: $MODEL"
-    {shlex.quote(self.config.python_executable)} -m psg \\
-        --catalog {shlex.quote(str(vectors_path))} \\
-        --model "$MODEL" \\
-        --allow-insecure-http \\
-        --timeout {self.config.test_timeout} \\
-        --checkpoint "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.jsonl" \\
-        --json-report "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.json" \\
-        --text-report "{result_dir}/{output_prefix}_${{MODEL_SAFE}}.txt"
-done
-echo "=== ALL TESTS COMPLETE ==="
-'''
+        """Start tests in tmux session. Returns session name.
 
-        script_path = self.config.base_dir / "run_auto_test.sh"
-        with open(script_path, "w") as f:
-            f.write(script)
-        script_path.chmod(0o755)
+        Audit P0-1 (HIGH, 2026-09-15): the old implementation generated a
+        bash script by interpolating config values inside already-quoted
+        double quotes; shlex.quote() output inside double quotes is treated
+        literally and $()/backticks were re-expanded by the shell
+        (live-verified injection). This version starts ONE tmux session per
+        model whose command is a pure argv list — tmux execs the command
+        directly without a shell, so config values never cross a shell
+        parsing layer. Values are also pre-validated in
+        PipelineConfig.__post_init__.
+        """
+        from .tmux_safe import tmux_new_session_argv
 
-        # Start tmux session
-        subprocess.run(
-            [
-                "tmux",
-                "new-session",
-                "-d",
-                "-s",
-                self.session_name,
-                f"bash {script_path}",
+        results_dir = Path(self.config.results_dir)
+        results_dir.mkdir(parents=True, exist_ok=True)
+
+        session_names: list[str] = []
+        for i, model in enumerate(self.config.test_models):
+            model_safe = model.replace(":", "_")
+            output_base = results_dir / f"{output_prefix}_{model_safe}"
+            argv = [
+                self.config.python_executable,
+                "-m", "psg",
+                "--catalog", str(vectors_path),
+                "--model", model,
+                "--allow-insecure-http",
+                "--timeout", str(int(self.config.test_timeout)),
+                "--checkpoint", f"{output_base}.jsonl",
+                "--json-report", f"{output_base}.json",
+                "--text-report", f"{output_base}.txt",
             ]
-        )
+            sess = f"{self.session_name}_{i}"
+            subprocess.run(tmux_new_session_argv(sess, argv), check=True)
+            session_names.append(sess)
 
-        return self.session_name
+        return session_names[0] if session_names else self.session_name
 
 
 if __name__ == "__main__":
