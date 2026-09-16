@@ -119,22 +119,25 @@ def _is_local_endpoint(url: str) -> bool:
 
 
 def _is_private_ip(host: str) -> bool:
-    """True for RFC1918/loopback/link-local/unique-local IPv4/IPv6 literals."""
+    """True for RFC1918/loopback/link-local/unique-local IPv4/IPv6 literals.
+
+    2026-09-16 (audit S3 follow-up): delegates IP-literal classification
+    to the shared ssrf core; keeps only the hostname-form checks
+    (localhost names, IPv6 ULA/link-local prefixes) that the core's
+    ipaddress-based check handles via literal parsing anyway.
+    """
+    import ipaddress as _ipaddress
+
+    from .validation.ssrf import is_blocked_ip
+
     if host in {"localhost", "::1"} or host.endswith(".localhost"):
         return True
-    parts = host.split(".")
-    if len(parts) == 4 and all(p.isdigit() for p in parts):
-        a, b = int(parts[0]), int(parts[1])
-        if (
-            a == 10
-            or a == 127
-            or (a == 172 and 16 <= b <= 31)
-            or (a == 192 and b == 168)
-        ):
-            return True
-        if a == 169 and b == 254:
-            return True
-    return host.startswith("fd") or host.startswith("fe80:")
+    # Literal-IP path: shared core's classification (covers RFC1918,
+    # loopback, link-local, ULA, reserved — IPv4 and IPv6 alike).
+    try:
+        return is_blocked_ip(_ipaddress.ip_address(host))
+    except ValueError:
+        return False
 
 
 def _validate_url_ssrf(url: str) -> bool:
