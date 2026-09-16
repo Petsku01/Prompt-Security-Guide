@@ -53,14 +53,15 @@ kolmessa muodossa. Ei blokkeria; S3-yhdistys poistaa isomman osan.
 Konsistentti ratkaisu: psg/defend_cli.py (argparse) ja ohut kirjastokerros.
 Matala kattavuus (54 %) juuri CLI-komennoissa.
 
-### S9 (INFO): kokoprofiili
-Suurin moduuli classifier.py 905 r. / 18 funktiota — yhä hallittava
-mutta lähellä split-kynnystä (detect_refusal/harmful/compliance/
-disclaimer/instructional + fabricated_references + harm_score).
-benchmark.py 505 r. ja serve.py 490 r. normaaleja.
-Kattavuus TOTAL 80 %: heikoimmat automation/daily_check 55 %,
-catalog_validator 54 %, defend 54 %, tmux_safe 41 %, dns_pin 22 %,
-judge_key_binding 36 %.
+### S9 (INFO→CLOSED 2026-09-16): kokoprofiili
+Suurin moduuli classifier.py 905 r. / 18 funktiota — **PILKOTTU 16.9**
+(commit ff2f420): refusal-logiikka -> refusals.py (212 r), citation-
+provenanssi -> fabrication.py (187 r), ClassificationResult + harm-score-
+portit -> classification.py (161 r); classifier.py jaa 404 rivin fasadiksi
+joka re-exportaa koko historiallisen API:n (25/25 julkista nimea
+verifioitu). benchmark.py 505 r. ja serve.py 490 r. normaaleja.
+Kattavuus TOTAL 81 %: heikoimmat automation/daily_check 55 %,
+catalog_validator 54 %, defend 54 %.
 
 ## Mikä on KOKEELLISESTI OK
 - Ei moduulitason importisyklejä (ainoa on deferred import -pari S6)
