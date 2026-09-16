@@ -1,26 +1,23 @@
-"""Input validation for psg.automation."""
+"""Input validation for psg.automation.
+
+2026-09-16 (audit S2+S3): the SSRF policy core (blocked hosts/networks,
+IP classification, DNS resolution) now lives in psg.validation.ssrf —
+the single source of truth shared with validation.online. This module
+keeps its offline-predicate semantics and delegates the policy to the
+shared core, removing the second private implementation.
+"""
 
 import ipaddress
 import logging
 import re
 import socket
-from typing import Union
 from urllib.parse import urlparse
 
-IPAddress = Union[ipaddress.IPv4Address, ipaddress.IPv6Address]
-
-BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "169.254.169.254", "::1"}
-BLOCKED_NETWORKS = [
-    ipaddress.ip_network("127.0.0.0/8"),
-    ipaddress.ip_network("10.0.0.0/8"),
-    ipaddress.ip_network("172.16.0.0/12"),
-    ipaddress.ip_network("192.168.0.0/16"),
-    ipaddress.ip_network("169.254.0.0/16"),
-    ipaddress.ip_network("::1/128"),
-    ipaddress.ip_network("fc00::/7"),
-    ipaddress.ip_network("fe80::/10"),
-]
-
+from ..validation.ssrf import (
+    BLOCKED_HOSTS,
+    is_blocked_ip,
+    resolve_host_ips,
+)
 
 MAX_QUERY_LENGTH = 200
 MAX_URL_LENGTH = 2048
@@ -80,14 +77,14 @@ def validate_url(url: str) -> bool:
 
         try:
             ip = ipaddress.ip_address(normalized_hostname)
-            if _is_blocked_ip(ip):
+            if is_blocked_ip(ip):
                 return False
         except ValueError:
-            resolved_ips = _resolve_host_ips(normalized_hostname, parsed.port)
+            resolved_ips = resolve_host_ips_safe(normalized_hostname, parsed.port)
             if not resolved_ips:
                 return False
             for resolved_ip in resolved_ips:
-                if _is_blocked_ip(resolved_ip):
+                if is_blocked_ip(resolved_ip):
                     return False
 
         return True
@@ -97,41 +94,18 @@ def validate_url(url: str) -> bool:
         return False
 
 
-def _is_blocked_ip(ip: IPAddress) -> bool:
-    """Check whether an IP falls into any blocked private/local ranges."""
-    if (
-        ip.is_private
-        or ip.is_loopback
-        or ip.is_link_local
-        or ip.is_reserved
-        or ip.is_unspecified
-        or ip.is_multicast
-    ):
-        return True
-    for network in BLOCKED_NETWORKS:
-        if ip in network:
-            return True
-    return False
-
-
-def _resolve_host_ips(hostname: str, port: int | None) -> set[IPAddress]:
-    """Resolve hostname to all IPv4/IPv6 addresses."""
-    resolved: set[IPAddress] = set()
+def resolve_host_ips_safe(hostname: str, port: int | None) -> set:
+    """Offline-predicate wrapper: resolution failure is an empty set (fail-closed
+    for the config gate), never an exception."""
     try:
-        infos = socket.getaddrinfo(hostname, port or 443, proto=socket.IPPROTO_TCP)
-    except OSError:
-        return resolved
+        return resolve_host_ips(hostname, port)
+    except socket.gaierror:
+        return set()
 
-    for info in infos:
-        sockaddr = info[4]
-        if not sockaddr:
-            continue
-        ip_text = sockaddr[0]
-        try:
-            resolved.add(ipaddress.ip_address(ip_text))
-        except ValueError:
-            continue
-    return resolved
+
+# Compatibility alias: tests and any external callers monkeypatched the
+# historical private name; keep it pointed at the shared-core wrapper.
+_resolve_host_ips = resolve_host_ips_safe
 
 
 

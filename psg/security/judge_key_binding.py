@@ -49,9 +49,6 @@ def _origin(url: str) -> tuple[str, str, int]:
     return scheme, host, port
 
 
-_DEFAULT_PORTS = {"http": 80, "https": 443}
-
-
 def resolve_judge_api_key(
     *,
     api_key: str | None,

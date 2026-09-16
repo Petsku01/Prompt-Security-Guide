@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import logging
+import socket
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .automation.validation import validate_url
 from .models import AppConfig, ClassificationInputMode, RedactionMode
+from .validation.ssrf import resolve_host_ips
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +137,51 @@ def _is_private_ip(host: str) -> bool:
     return host.startswith("fd") or host.startswith("fe80:")
 
 
+def _validate_url_ssrf(url: str) -> bool:
+    """Shared-SSRF-core offline predicate (audit S2/S3).
+
+    Same policy as psg.validation.ssrf.is_blocked_ip; hostnames resolve
+    via the shared resolver (resolution failure = fail-closed for the
+    config gate). Mirrors the old automation.validation.validate_url
+    semantics without the automation-layer import.
+    """
+    import ipaddress as _ipaddress
+
+    from .validation.ssrf import BLOCKED_HOSTS, is_blocked_ip
+
+    if not url or len(url) > 2048:
+        return False
+    try:
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https"):
+            return False
+        if not parsed.netloc:
+            return False
+        hostname = parsed.hostname
+        if hostname is None:
+            return False
+        normalized = hostname.rstrip(".").lower()
+        if normalized in BLOCKED_HOSTS:
+            return False
+        try:
+            ip = _ipaddress.ip_address(normalized)
+            if is_blocked_ip(ip):
+                return False
+        except ValueError:
+            try:
+                resolved = resolve_host_ips(normalized, parsed.port)
+            except socket.gaierror:
+                return False
+            if not resolved:
+                return False
+            if any(is_blocked_ip(ip) for ip in resolved):
+                return False
+        return True
+    except Exception as exc:
+        logger.debug("URL validation failed for %s: %s", url, exc)
+        return False
+
+
 def _validate_endpoint_url(
     field_name: str, url: str, allow_insecure_http: bool
 ) -> None:
@@ -148,8 +194,10 @@ def _validate_endpoint_url(
             f"Refusing insecure http:// {field_name}. Use --allow-insecure-http to override."
         )
 
-    # SSRF guardrails: disallow localhost/private and resolved internal targets by default.
-    if not allow_insecure_http and not validate_url(url):
+    # SSRF guardrails: disallow localhost/private and resolved internal
+    # targets by default. Uses the shared ssrf core directly (audit S2:
+    # core config must not depend on the automation layer).
+    if not allow_insecure_http and not _validate_url_ssrf(url):
         raise ConfigError(
             f"{field_name} target is blocked by SSRF protection. Use --allow-insecure-http to override."
         )

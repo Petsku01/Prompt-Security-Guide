@@ -32,16 +32,11 @@ _USER_AGENT = "PromptSecurityGuide/4.x validation"
 _MAX_REDIRECT_HOPS = 5
 _REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
 _BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
-_BLOCKED_NETWORKS = (
-    ipaddress.ip_network("127.0.0.0/8"),
-    ipaddress.ip_network("10.0.0.0/8"),
-    ipaddress.ip_network("172.16.0.0/12"),
-    ipaddress.ip_network("192.168.0.0/16"),
-    ipaddress.ip_network("169.254.0.0/16"),
-    ipaddress.ip_network("::1/128"),
-    ipaddress.ip_network("fc00::/7"),
-    ipaddress.ip_network("fe80::/10"),
-)
+# 2026-09-16 (audit S3): IP classification + resolution now delegate to the
+# shared ssrf core (psg.validation.ssrf) — the private copy below is gone.
+# _BLOCKED_HOSTS gains 169.254.169.254 (metadata endpoint) from the core set;
+# the network check already covered it, now the host-string check does too.
+_BLOCKED_HOSTS = frozenset(_BLOCKED_HOSTS) | {"169.254.169.254"}
 
 
 class _TokenBucketRateLimiter:
@@ -258,16 +253,10 @@ def _resolve_host_ips(
 
 
 def _is_blocked_ip(ip: ipaddress.IPv4Address | ipaddress.IPv6Address) -> bool:
-    if (
-        ip.is_private
-        or ip.is_loopback
-        or ip.is_link_local
-        or ip.is_reserved
-        or ip.is_unspecified
-        or ip.is_multicast
-    ):
-        return True
-    return any(ip in network for network in _BLOCKED_NETWORKS)
+    # 2026-09-16 (audit S3): delegate to the shared ssrf core.
+    from .ssrf import is_blocked_ip as _core_is_blocked_ip
+
+    return _core_is_blocked_ip(ip)
 
 
 def _allow_request(max_requests_per_second: float | None) -> bool:

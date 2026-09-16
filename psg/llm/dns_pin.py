@@ -72,15 +72,23 @@ class PinnedSession(requests.Session):
         # Rewrite the URL host to the pinned IP, keep original Host header
         # so virtual-hosted endpoints keep working, and reject cross-host
         # redirects (they would bypass the pin).
+        #
+        # Audit follow-up (2026-09-16): the transport passes the pinned URL
+        # (hostname already replaced by the IP) straight into this session,
+        # so the FIRST request arrives here with the pinned IP as its
+        # "host". Accept hostname == pinned IP (it is the pin itself, not a
+        # redirect) and hostname == original host (legitimate same-host
+        # redirects); anything else is a cross-host escape.
         original_host = request.url.split("//", 1)[-1].split("/", 1)[0]
         hostname = original_host.split(":", 1)[0].lower()
-        if hostname != self._host.lower():
+        if hostname not in (self._host.lower(), self._ip.lower()):
             raise LLMError(
                 f"redirect crosses hosts ({self._host} -> {hostname}); "
                 "DNS-pinned transport rejects cross-host redirects — "
                 "re-validate the new endpoint via config instead"
             )
-        request.url = request.url.replace(original_host, self._ip, 1)
+        if hostname != self._ip.lower():
+            request.url = request.url.replace(original_host, self._ip, 1)
         request.headers["Host"] = self._host
         return super().send(request, **kwargs)
 
