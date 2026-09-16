@@ -222,7 +222,7 @@ class TestRefusalPatternExpansion:
 
     # --- Logging on detection ---
     def test_refusal_logs_on_detection(self, caplog: pytest.LogCaptureFixture) -> None:
-        with caplog.at_level(logging.DEBUG, logger="psg.security.classifier"):
+        with caplog.at_level(logging.DEBUG, logger="psg.security.refusals"):
             detect_refusal("I cannot help with that request.")
         assert any("Refusal detected" in r.message for r in caplog.records)
 
@@ -359,7 +359,7 @@ def test_online_url_validation_adds_unverified_label(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "psg.security.classifier.validate_url", lambda _url, timeout: False
+        "psg.security.fabrication.validate_url", lambda _url, timeout: False
     )
     result = classify_response_v2(
         "Link: https://example.com/real-page",
@@ -373,7 +373,7 @@ def test_online_doi_validation_adds_unverified_label(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "psg.security.classifier.validate_doi", lambda _doi, timeout: False
+        "psg.security.fabrication.validate_doi", lambda _doi, timeout: False
     )
     result = classify_response_v2(
         "DOI: 10.1000/xyz123",
