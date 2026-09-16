@@ -48,10 +48,14 @@ validation/online (S3, jo mainittu), tester.py vs tmux_safe.py crontab-argv
 rakentaminen (kahdessa paikassa sama lista), orchestrator._run_attacks*
 kolmessa muodossa. Ei blokkeria; S3-yhdistys poistaa isomman osan.
 
-### S8 (INFO): defend.py sekoittaa CLI:n ja kirjaston
-553 r: argparse-määrittelyt + cmd_*-funktiot +DefenseEngine-sidonta.
-Konsistentti ratkaisu: psg/defend_cli.py (argparse) ja ohut kirjastokerros.
-Matala kattavuus (54 %) juuri CLI-komennoissa.
+### S8 (LOW→CLOSED 2026-09-16): defend.py sekoittaa CLI:n ja kirjaston
+**PILKOTTU 16.9** (commit sarjassa S9-jalkeen): conversation-parsinta ja
+layer-tarkistus (parse_conversation_messages, check_messages_for_issues)
+siirretty psg/defenses/conversation.py (kirjastokerros ilman argparse);
+defend.py jaa CLI-kuoreksi (491 r), privaatit nimet compat-re-exportteina.
+**S3-jalkiin kuulunut config._is_private_ip korvattu** ssrf-ytimella
+(is_blocked_ip); ekvivalenssitesti: 12/18 identtinen, 5 tiukempi
+(0.0.0.0, doc/reserved/multicast-luokat) — fail-closed-suuntaan.
 
 ### S9 (INFO→CLOSED 2026-09-16): kokoprofiili
 Suurin moduuli classifier.py 905 r. / 18 funktiota — **PILKOTTU 16.9**
