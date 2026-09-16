@@ -31,12 +31,9 @@ DEFAULT_MAX_REQUESTS_PER_SECOND = 10.0
 _USER_AGENT = "PromptSecurityGuide/4.x validation"
 _MAX_REDIRECT_HOPS = 5
 _REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
-_BLOCKED_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1"}
-# 2026-09-16 (audit S3): IP classification + resolution now delegate to the
-# shared ssrf core (psg.validation.ssrf) — the private copy below is gone.
-# _BLOCKED_HOSTS gains 169.254.169.254 (metadata endpoint) from the core set;
-# the network check already covered it, now the host-string check does too.
-_BLOCKED_HOSTS = frozenset(_BLOCKED_HOSTS) | {"169.254.169.254"}
+_BLOCKED_HOSTS: frozenset[str] = frozenset(
+    {"localhost", "127.0.0.1", "0.0.0.0", "::1", "169.254.169.254"}
+)
 
 
 class _TokenBucketRateLimiter:
